@@ -1,6 +1,8 @@
 # Limeplayer 3DS
 Limeplayer 3ds is a graphical music player for the 3ds that supports midi, mp3, flac, wav and vorbis (in no particular order) and has metadata parsing.
+
 It checks for music in the `music` folder. If it doesn't exist then it just goes to `sdmc:/`, just like ctrmus. 
+
 The default path for midi patchsets is `/3ds/limeplayer3ds/dgguspat`. The config file can be found in `/3ds/limeplayer3ds/confg.json` This should be automaticly be created (it specifies which patchset to use by default). You can change it with the X button. (or the second option of the "settings menu")
 
 (Improved GUI, TBD. Loading cover pictures. All of the menus (although every one except setting's and copyright's use is TBD).)
