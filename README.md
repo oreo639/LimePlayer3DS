@@ -67,4 +67,4 @@ Nintendo Homebrew: A nice discord that is always giving help with homebrew and d
 
 Family: For providing somewhat helpfull feedback, and testing pre-release versions.
 
-Testers: None rn, but I would be gratefull if anyone wants to help out with either testing, coding, or just tell me how I am doing this project is all wrong.
+Testers: Asty and liquidfrenir. Their testing was minimal but it was better than nothing.
