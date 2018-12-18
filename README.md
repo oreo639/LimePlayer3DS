@@ -16,9 +16,11 @@ Mp3, Wav, Flac, Midi, Xmi, Mus, Hmi, Hmp, Ogg, and Opus.
 Before posting an issue, I have a quick Q and A for you.
 
 Q: I tried playing a midi file and I get an `ERR: Failed to initalize decoder.` message?
+
 A: Make sure you have a wildmidi patchset on your sd card and that config.json is pointing to the correct (wildmidi/timidity).cfg. Keep in mind that wildmidi does not currently support sf2 files (only gus patchsets).
 
 Q: I tried playing a file and I get an `ERR: Unrecognized filetype.` message?
+
 A: Is your file on the officaly supported formats list? If it is, make sure the extension is correct and see what type of audio format other audio players report. It may not actualy be a supported format.
 
 ## Building
