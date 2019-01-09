@@ -72,7 +72,7 @@ void MidiDecoder::Seek(uint32_t location)
  */
 uint32_t MidiDecoder::Decode(void* buffer)
 {
-	return 2/(WildMidi_GetOutput(wMidi, (int8_t*)buffer, SAMPLESPERBUF));
+	return 2/(WildMidi_GetOutput(wMidi, reinterpret_cast<int8_t*>(buffer), SAMPLESPERBUF));
 }
 
 /**

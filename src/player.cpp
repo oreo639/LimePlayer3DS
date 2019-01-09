@@ -15,6 +15,7 @@
 #include "formats/mp3.hpp"
 #include "formats/opus.hpp"
 #include "formats/vorbis.hpp"
+#include "formats/wav.hpp"
 
 Player audioplayer;
 
@@ -160,7 +161,9 @@ void Player::Play(const std::string& filename) {
 
 std::unique_ptr<Decoder> Player::GetFormat(const std::string& filename, int filetype) {
 	if (filetype == FILE_WAV) {
-		App::Error = 10;
+		auto wavdec = std::unique_ptr<Decoder>(new WavDecoder(filename.c_str()));
+		if (wavdec->IsInit())
+			return wavdec;
 	}
 	else if (filetype == FILE_FLAC) {
 		auto flacdec = std::unique_ptr<Decoder>(new FlacDecoder(filename.c_str()));
