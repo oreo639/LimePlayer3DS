@@ -13,6 +13,8 @@
 #include "formats/midi.hpp"
 #include "formats/flac.hpp"
 #include "formats/mp3.hpp"
+#include "formats/opus.hpp"
+#include "formats/vorbis.hpp"
 
 Player audioplayer;
 
@@ -171,10 +173,14 @@ std::unique_ptr<Decoder> Player::GetFormat(const std::string& filename, int file
 			return mp3dec;
 	}
 	else if (filetype == FILE_VORBIS) {
-		App::Error = 10;
+		auto vorbisdec = std::unique_ptr<Decoder>(new VorbisDecoder(filename.c_str()));
+		if (vorbisdec->IsInit())
+			return vorbisdec;
 	}
 	else if (filetype == FILE_OPUS) {
-		App::Error = 10;
+		auto opusdec = std::unique_ptr<Decoder>(new OpusDecoder(filename.c_str()));
+		if (opusdec->IsInit())
+			return opusdec;
 	}	
 	else if (filetype == FILE_MIDI) {
 		auto mididec = std::unique_ptr<Decoder>(new MidiDecoder(filename.c_str(), "sdmc:/3ds/limeplayer3ds/dgguspat/wildmidi.cfg"));

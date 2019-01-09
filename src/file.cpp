@@ -3,8 +3,8 @@
 #include <string.h>
 
 #include "file.hpp"
-//#include "formats/vorbis.h"
-//#include "formats/opus.h"
+#include "formats/vorbis.hpp"
+#include "formats/opus.hpp"
 
 int readmagic(FILE* file, const char* filename){
 	char magic[4];
@@ -26,10 +26,10 @@ int readmagic(FILE* file, const char* filename){
 	/*Ogg or Opus*/
 	else if (!strncmp(magic, "OggS", 4))
 	{
-		//if (!isVorbis(filename))
+		if (!isVorbis(filename))
 			return FILE_VORBIS;
-		//else if (!isOpus(filename))
-			//return FILE_OPUS;
+		else if (!isOpus(filename))
+			return FILE_OPUS;
 	}
 	/*Mp3*/
 	else if (!strncmp(magic, "ID3", 3))

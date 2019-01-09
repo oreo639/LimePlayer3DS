@@ -40,7 +40,7 @@ class Decoder {
 		
 		virtual void Seek(uint32_t location);
 		
-		virtual uint32_t Decode(int16_t* buffer);
+		virtual uint32_t Decode(void* buffer);
 		
 		virtual uint32_t Samplerate(void);
 		

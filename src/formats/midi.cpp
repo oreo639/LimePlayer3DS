@@ -70,7 +70,7 @@ void MidiDecoder::Seek(uint32_t location)
  * \param buffer	Decoded output.
  * \return		Samples read for each channel.
  */
-uint32_t MidiDecoder::Decode(int16_t* buffer)
+uint32_t MidiDecoder::Decode(void* buffer)
 {
 	return 2/(WildMidi_GetOutput(wMidi, (int8_t*)buffer, SAMPLESPERBUF));
 }

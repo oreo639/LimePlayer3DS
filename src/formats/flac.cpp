@@ -47,7 +47,7 @@ void FlacDecoder::Seek(uint32_t location)
 	flacprogress = location;
 }
 
-uint32_t FlacDecoder::Decode(int16_t* buffer)
+uint32_t FlacDecoder::Decode(void* buffer)
 {
 	uint64_t out = drflac_read_s16(pFlac, buffSize, (int16_t*)buffer);
 	flacprogress += out;

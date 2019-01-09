@@ -19,7 +19,7 @@ class Mp3Decoder : public Decoder {
 		
 		void Seek(uint32_t location) override;
 		
-		uint32_t Decode(int16_t* buffer) override;
+		uint32_t Decode(void* buffer) override;
 		
 		uint32_t Samplerate(void) override;
 		
@@ -28,5 +28,4 @@ class Mp3Decoder : public Decoder {
 		int Channels(void) override;
 };
 
-int isFlac(const char* in);
 #endif

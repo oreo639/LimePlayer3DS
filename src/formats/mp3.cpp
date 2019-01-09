@@ -93,7 +93,7 @@ void Mp3Decoder::Seek(uint32_t location)
 	mpg123_seek(mh, location, SEEK_SET);
 }
 
-uint32_t Mp3Decoder::Decode(int16_t* buffer)
+uint32_t Mp3Decoder::Decode(void* buffer)
 {
 	size_t done = 0;
 	mpg123_read(mh, reinterpret_cast<unsigned char*>(buffer), buffSize, &done);
