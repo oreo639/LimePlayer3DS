@@ -9,6 +9,10 @@ The default path for midi patchsets is `/3ds/limeplayer3ds/dgguspat`. The config
 
 Keep in mind that this repo will be updated with the source and liscenses when they are ready, which may be in a few days or longer.
 
+
+## Note
+Limeplayer3ds is currently undergoing a c++ rewrite (instead of just being in c). Alot of its functionality is not going to be avliable right now.
+
 ## Officaly Supported Formats
 Mp3, Wav, Flac, Midi, Xmi, Mus, Hmi, Hmp, Ogg, and Opus.
 
