@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/Oreo639/LimePlayer3DS.svg?branch=master)](https://travis-ci.com/Oreo639/LimePlayer3DS)
 # Limeplayer 3DS
 Limeplayer 3ds is a graphical music player for the 3ds that supports midi, mp3, flac, wav and vorbis (in no particular order) and has metadata parsing.
 
