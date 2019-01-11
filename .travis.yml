@@ -30,7 +30,7 @@ install:
 
 script:
   - cd $TRAVIS_BUILD_DIR
-  - sh .travis/build.sh
+  - make clean && make
 
 deploy:
   provider: pages
