@@ -47,7 +47,7 @@ Note: Wildmidi for limeplayer uses a few patches to fix certain issues and allow
 ## Developers
 These are the contrubuters and maintainers, both big and small (will be updated every once and a while)
 + Maintainers: Oreo639, TBD
-+ Contributers: N/A
++ Contributers: liquidfenrir (fixed the makefile)
 + Check the credits for those who made a big impact on development.
 
 ## Credits
@@ -76,5 +76,3 @@ Others: If I forgot to mention someone important (as in their code is used witho
 Nintendo Homebrew: A nice discord that is always giving help with homebrew and development.
 
 Family: For providing somewhat helpfull feedback, and testing pre-release versions.
-
-Testers: Asty and liquidfrenir. Their testing was minimal but it was better than nothing.
