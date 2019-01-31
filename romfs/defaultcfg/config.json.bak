@@ -1,0 +1,16 @@
+{
+	"settings": {
+		"theme": 0,
+		"WildMidiCFG": "romfs:/8mbgmpat/timidity.cfg"
+	},
+	"playlists": [
+		{
+			"name": "TeamGalitic",
+			"file": "/GalacticGrunt.mid"
+		},
+		{
+			"name": "GGrunt",
+			"file": "/Galacticrunt.mid"
+		}
+	]
+}

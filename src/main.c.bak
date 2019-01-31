@@ -1,0 +1,34 @@
+//Early PoC example of playback with midi files.
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <3ds.h>
+#include "file.h"
+#include "player.h"
+
+
+int main(int argc, char* argv[])
+{
+	gfxInitDefault();
+	consoleInit(GFX_TOP, NULL);
+	romfsInit();
+
+	//printf("%d", FILE_getfiletype("sdmc:/easyrpg_log.txt"));
+	playFile("sdmc:/d_map03m.mid");
+
+	
+	while (aptMainLoop())
+	{
+		gspWaitForVBlank();
+		gfxSwapBuffers();
+		hidScanInput();
+
+		u32 kDown = hidKeysDown();
+		if (kDown & KEY_START)
+			break;
+	}
+
+	gfxExit();
+	return 0;
+}
