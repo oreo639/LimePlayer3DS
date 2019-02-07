@@ -15,14 +15,15 @@
 
 static int LibInit = false;
 
-static midi*		wMidi;
+static midi		*wMidi;
 static struct _WM_Info *midiInfo;
 static const size_t	buffSize = SAMPLESPERBUF*BYTESPERSAMPLE;
 
 MidiDecoder::MidiDecoder(const char* filename, const char* midicfg) {
 	int res = WildMidi_Init(midicfg, MIDISAMPLERATE, 0);
 	wMidi = WildMidi_Open(filename);
-	if (wMidi == NULL || res != 0) {
+	WildMidi_GetInfo(wMidi);
+	if (!wMidi || res != 0) {
 		LibInit = false;
 	}
 	else
@@ -72,7 +73,8 @@ void MidiDecoder::Seek(uint32_t location)
  */
 uint32_t MidiDecoder::Decode(void* buffer)
 {
-	return 2/(WildMidi_GetOutput(wMidi, reinterpret_cast<int8_t*>(buffer), SAMPLESPERBUF));
+	int res = WildMidi_GetOutput(wMidi, reinterpret_cast<int8_t*>(buffer), buffSize);
+	return res/2;
 }
 
 /**
