@@ -25,8 +25,7 @@ Make sure that your issue is descriptive and consise. Also please include the cr
 dkp-pacman, 3ds-dev, 3ds-mpg123, 3ds-libvorbisidec, 3ds-opusfile, 3ds-jansson, and 3ds-wildmidi (if wildmidi isn't avliable just run buildlibs.sh). You will also need [makerom](https://github.com/profi200/Project_CTR) and [bannertool](https://github.com/Steveice10/bannertool/) for cia building (optional).
 
 ### Compiling:
-If wildmidi is not avliable through dkp-portlibs, just run `./buildlibs.sh`. Make sure you have devkitpro-pkgbuild-helpers, cmake, and curl installed for it to work.
-From there you should be able to just run make.
+You should be able to build it by just runing make. (after installing all the prerequsites)
 
 ### Targets: 
 + 3dsx (3dsx only build).
@@ -34,7 +33,6 @@ From there you should be able to just run make.
 + clean (clean compiled files)
 
 If you want to build with compiler optimazitions, just add RELEASE=1 to the end (EX: `make 3dsx RELEASE=1`)
-Note: Wildmidi for limeplayer uses a few patches to fix certain issues and allow installing for a non *nix target.
 
 ## Developers
 These are the contrubuters and maintainers, both big and small (will be updated every once and a while)
@@ -43,25 +41,21 @@ These are the contrubuters and maintainers, both big and small (will be updated 
 + Check the credits for those who made a big impact on development.
 
 ## Credits
-Limeplayer started as a fork of ctrmus, meaning that the majority of its code came from, is based off, or was built on top of ctrmus.
++ Limeplayer started as a fork of ctrmus, meaning that the majority of its code came from, is based off, or was built on top of ctrmus.
 
-Deltabeard: For his work on ctrmus which was the foundation for this application.
++ Deltabeard: For his work on ctrmus which was the foundation for this application.
 
-Astronautlevel & Liquidfernir: For their work on anemone which helped quite a bit when it came to starting with citro2d graphics, and they were very helpful in general.
++ Astronautlevel & Liquidfernir (and the anemone team): For their work on anemone which helped quite a bit when it came to starting with citro2d graphics, and they were very helpful in general.
 
-Liquidferinir: Their config parser from multiupdater was revamped and built on top of.
++ Liquidferinir: Their config parser from multiupdater was revamped and built on top of.
 
-Smealum, WinterMute, Fincs, and the Devkitpro team: For making/maintaining documentation and libraries for libctru and citro2d/3d which were very helpfull when making this project.
++ Smealum, WinterMute, Fincs, and the Devkitpro team: For making/maintaining documentation and libraries for libctru and citro2d/3d which were very helpfull when making this project.
 
-The Easyrpg Team: For inspiring this application with their work porting wildmidi to the 3ds and the switch (the reason I started working on this was because I wondered if there was a midi player for the 3ds).
++ The Easyrpg Team: For inspiring this application with their work porting wildmidi to the 3ds and the switch (the reason I started working on this was because I wondered if there was a midi player for the 3ds).
 
-The Anemone Team: 
++ Others: If I forgot to mention someone important (as in their code is used without credit), please let me know.
 
-~~Linus Walleij: A modified version of his decoder (to be independant from glib's c libraries) for libid3-tag which was origionaly use in GNOMAD2 is used in this application to allow for reading metatadata from mp3 (id3read).~~ (removed during switch from id3tag to mpg123)
-
-Most of the icons under gfx are from the site [icons8.com](https://icons8.com) and are licensed under the [CC-BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/3.0/)
-
-Others: If I forgot to mention someone important (as in their code is used without credit), please let me know.
++ Most of the icons under gfx are from the site [icons8.com](https://icons8.com) and are licensed under the [CC-BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/3.0/)
 
 ## Special Thanks
 Nintendo Homebrew: A nice discord that is always giving help with homebrew and development.
