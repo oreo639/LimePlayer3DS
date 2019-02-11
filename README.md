@@ -18,15 +18,7 @@ Limeplayer3ds is currently undergoing a c++ rewrite (instead of just being in c)
 Mp3, Wav, Flac, Midi, Xmi, Mus, Hmi, Hmp, Ogg, and Opus.
 
 ## Issues
-Before posting an issue, I have a quick Q and A for you.
-
-Q: I tried playing a midi file and I get an `ERR: Failed to initalize decoder.` message?
-
-A: Make sure you have a wildmidi patchset on your sd card and that config.json is pointing to the correct (wildmidi/timidity).cfg. Keep in mind that wildmidi does not currently support sf2 files (only gus patchsets).
-
-Q: I tried playing a file and I get an `ERR: Unrecognized filetype.` message?
-
-A: Is your file on the officaly supported formats list? If it is, make sure the extension is correct and see what type of audio format other audio players report. It may not actualy be a supported format.
+Make sure that your issue is descriptive and consise. Also please include the crash dump if applicable.
 
 ## Building
 ### Prerequsites:
@@ -64,7 +56,6 @@ Smealum, WinterMute, Fincs, and the Devkitpro team: For making/maintaining docum
 The Easyrpg Team: For inspiring this application with their work porting wildmidi to the 3ds and the switch (the reason I started working on this was because I wondered if there was a midi player for the 3ds).
 
 The Anemone Team: 
-
 
 ~~Linus Walleij: A modified version of his decoder (to be independant from glib's c libraries) for libid3-tag which was origionaly use in GNOMAD2 is used in this application to allow for reading metatadata from mp3 (id3read).~~ (removed during switch from id3tag to mpg123)
 
