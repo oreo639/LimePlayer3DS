@@ -1,5 +1,5 @@
 # Limeplayer 3DS
-All development occurs on the [alpha-cpp-rewrite](https://github.com/Oreo639/LimePlayer3DS/tree/alpha-cpp-rewrite) branch
+All development occurs on the master branch.
 
 # Note!
 This is a deprecated version of limeplayer that is kept for archival purposes.
