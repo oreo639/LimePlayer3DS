@@ -16,20 +16,12 @@ addons:
     packages:
       - libstdc++-4.9-dev
 
+cache:
+    directories:
+     - ~/.local/bin
+
 install:
-  - sudo dkp-pacman -Syu 3ds-dev --noconfirm --needed
-  - sudo dkp-pacman -Syu 3ds-mpg123 --noconfirm
-  - sudo dkp-pacman -Syu 3ds-libvorbisidec --noconfirm
-  - sudo dkp-pacman -Syu 3ds-opusfile --noconfirm
-  - sudo dkp-pacman -Syu 3ds-jansson --noconfirm
-  - sudo dkp-pacman -Syu 3ds-wildmidi --noconfirm
-  - source /etc/profile.d/devkit-env.sh
-  - git clone --recursive https://github.com/Steveice10/bannertool && cd bannertool/
-  - make && sudo cp output/linux-x86_64/bannertool /opt/devkitpro/devkitARM/bin/bannertool
-  - cd ../ && rm -rf bannertool/
-  - git clone https://github.com/profi200/Project_CTR.git && cd Project_CTR/makerom
-  - make && sudo cp makerom /opt/devkitpro/devkitARM/bin/makerom
-  - cd ../.. && rm -rf Project_CTR
+  - source ./.travis/prepare.sh
 
 script:
   - cd $TRAVIS_BUILD_DIR
