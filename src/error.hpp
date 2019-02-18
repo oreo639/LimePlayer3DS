@@ -11,5 +11,7 @@
 #define FILE_NOT_SUPPORTED		1002
 #define UNSUPPORTED_CHANNELS	1003
 
+#define DEBUG(...) fprintf(stderr, __VA_ARGS__)
+
 
 #endif //ifndef __ERROR_H__

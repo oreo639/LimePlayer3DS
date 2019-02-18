@@ -17,7 +17,6 @@ C2D_TextBuf g_staticBuf, g_dynamicBuf;
 
 static u8 preVol;
 static u64 trigeredTime = 0;
-static int s_textLang = CFG_LANGUAGE_ES;
 
 int cursor = 0;
 int seloffs = 0;
@@ -63,6 +62,7 @@ void Gui::Drawui(void)
 	}
 	else if (App::appState == App::LOGO) {
 		C2D_SceneBegin(top);
+		C2D_SceneBegin(bot);
 	}
 	
 	if (App::Error != 0) {
@@ -76,7 +76,6 @@ int Gui::InitlimeGFX(void)
 	C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
 	C2D_Init(C2D_DEFAULT_MAX_OBJECTS);
 	C2D_Prepare();
-	//consoleInit(GFX_BOTTOM, NULL);
 
 	// Create screens
 	top = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
@@ -85,7 +84,6 @@ int Gui::InitlimeGFX(void)
 	// Load graphics
 	spriteSheet = C2D_SpriteSheetLoad("romfs:/gfx/sprites.t3x");
 	if (!spriteSheet) svcBreak(USERBREAK_PANIC);
-	//spriteFromPng("romfs:/icons8-music-128.png", &sprite);
 	
 	if (!top && !bot && !spriteSheet)
 		return 1;
@@ -242,9 +240,8 @@ void Gui::drawBaseGui(void) {
 	guiprintColor(string_minutes, 380, 1, 0.5f, 0.5f, 0xFFFFFFFF);
 	
 	char string_volume[4] = {0};
-	sprintf(string_volume, "%d", curVol);
+	sprintf(string_volume, "%d", (int)(curVol/60.0f)*100);
 	guiprintColor(string_volume, 1, 1, 0.5f, 0.5f, 0xFFFFFFFF);
-	//volumeIndicator(curVol);
 	if(curVol != preVol) {
 		trigeredTime = osGetTime();	
 	} 

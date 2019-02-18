@@ -26,8 +26,9 @@ MidiDecoder::MidiDecoder(const char* filename, const char* midicfg) {
 	if (!wMidi || res != 0) {
 		LibInit = false;
 	}
-	else
+	else {
 		LibInit = true;
+	}
 }
 
 MidiDecoder::~MidiDecoder(void) {
@@ -73,8 +74,7 @@ void MidiDecoder::Seek(uint32_t location)
  */
 uint32_t MidiDecoder::Decode(void* buffer)
 {
-	int res = WildMidi_GetOutput(wMidi, reinterpret_cast<int8_t*>(buffer), buffSize);
-	return res/2;
+	return (WildMidi_GetOutput(wMidi, reinterpret_cast<int8_t*>(buffer), buffSize))/2;
 }
 
 /**
