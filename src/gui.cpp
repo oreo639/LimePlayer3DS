@@ -245,7 +245,7 @@ void Gui::drawBaseGui(void) {
 	if(curVol != preVol) {
 		trigeredTime = osGetTime();	
 	} 
-	if (osGetTime() < trigeredTime + 1000){
+	if (osGetTime() - trigeredTime < 1000){
 		volumeIndicator(curVol);
 	}
 	preVol = curVol;

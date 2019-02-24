@@ -107,7 +107,7 @@ uint32_t Mp3Decoder::Samplerate(void)
 
 uint32_t Mp3Decoder::Spf(void* buffer)
 {
-	return mpg123_spf(mh);
+	return Decode(buffer)/Channels();
 }
 
 uint32_t Mp3Decoder::Buffsize(void)

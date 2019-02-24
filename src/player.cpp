@@ -5,10 +5,12 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <3ds.h>
 
 #include "app.hpp"
 #include "player.hpp"
 #include "file.hpp"
+#include "error.hpp"
 
 #include "formats/midi.hpp"
 #include "formats/flac.hpp"
@@ -20,8 +22,6 @@
 Player audioplayer;
 
 static volatile bool	stop = true;
-static int16_t*	buffer1 = NULL;
-static int16_t*	buffer2 = NULL;
 static ndspWaveBuf	waveBuf[2];
 
 void PlayerInterface::ThreadMainFunct(void *input) {
@@ -72,14 +72,14 @@ void Player::Play(const std::string& filename) {
 	stop = false;
 	int filetype = File::GetFileType(filename.c_str());
 	if (!filetype) {
-		App::Error = 10;
+		App::Error = FILE_NOT_SUPPORTED;
 		return;
 	}
 	std::unique_ptr<Decoder> decoder = GetFormat(filename, filetype);
 	
 	if (decoder != nullptr) {
-		buffer1 = (int16_t*)linearAlloc(decoder->Buffsize() * sizeof(int16_t));
-		buffer2 = (int16_t*)linearAlloc(decoder->Buffsize() * sizeof(int16_t));
+		int16_t* buffer1 = (int16_t*)linearAlloc(decoder->Buffsize() * sizeof(int16_t));
+		int16_t* buffer2 = (int16_t*)linearAlloc(decoder->Buffsize() * sizeof(int16_t));
 
 		ndspChnReset(0);
 		ndspChnWaveBufClear(0);
@@ -89,20 +89,25 @@ void Player::Play(const std::string& filename) {
 		ndspChnSetFormat(0, decoder->Channels() == 2 ? NDSP_FORMAT_STEREO_PCM16 : NDSP_FORMAT_MONO_PCM16);
 
 		memset(waveBuf, 0, sizeof(waveBuf));
-		waveBuf[0].nsamples = decoder->Spf(&buffer1[0]);
-		waveBuf[0].data_vaddr = &buffer1[0];
-		ndspChnWaveBufAdd(0, &waveBuf[0]);
-
-		waveBuf[1].nsamples = decoder->Spf(&buffer2[0]);
-		waveBuf[1].data_vaddr = &buffer2[0];
-		ndspChnWaveBufAdd(0, &waveBuf[1]);
+		for(int i = 0; i < decoder->Channels(); i++) {
+			waveBuf[i].nsamples = decoder->Spf(i == 0 ? &buffer1[0] : &buffer2[0]);
+			waveBuf[i].data_vaddr = i == 0 ? &buffer1[0] : &buffer2[0];
+			ndspChnWaveBufAdd(0, &waveBuf[i]);
+		}
 		
 		/**
 		 * There may be a chance that the music has not started by the time we get
 		 * to the while loop. So we ensure that music has started here.
 		 */
-
-		while(ndspChnIsPlaying(0) == false);
+		uint32_t ttime = osGetTime();
+		while(ndspChnIsPlaying(0) == false) {
+			if(osGetTime()-ttime > 5 * 1000) { // Timeout after 5 seconds.
+				DEBUG("player.cpp: Chnn wait imeout.");
+				stop = true;
+				App::Error = DECODER_INIT_TIMEOUT;
+				break;
+			}
+		}
 		//playerget_FileInfo(info);
 		bool lastbuf = false;
 		while(stop == false)
@@ -116,47 +121,33 @@ void Player::Play(const std::string& filename) {
 			while (ndspChnIsPaused(0) == true || lastbuf == true)
 				continue;
 
-			if(waveBuf[0].status == NDSP_WBUF_DONE)
-			{
-				size_t read = decoder->Decode(&buffer1[0]);
-
-				if(read <= 0)
+			for(int i = 0; i < decoder->Channels(); i++) {
+				if(waveBuf[i].status == NDSP_WBUF_DONE)
 				{
-					lastbuf = true;
-					continue;
-				}
-				else if(read < decoder->Buffsize())
-					waveBuf[0].nsamples = read / decoder->Channels();
-	
-				ndspChnWaveBufAdd(0, &waveBuf[0]);
-			}
+					size_t read = decoder->Decode(waveBuf[i].data_pcm16);
 
-			if(waveBuf[1].status == NDSP_WBUF_DONE)
-			{
-				size_t read = decoder->Decode(&buffer2[0]);
-
-				if(read <= 0)
-				{
-					lastbuf = true;
-					continue;
+					if(read <= 0)
+					{
+						lastbuf = true;
+						continue;
+					}
+					else if(read < decoder->Buffsize())
+						waveBuf[i].nsamples = read / decoder->Channels();
+		
+					ndspChnWaveBufAdd(0, &waveBuf[i]);
 				}
-				else if(read < decoder->Buffsize())
-					waveBuf[1].nsamples = read / decoder->Channels();
-	
-				ndspChnWaveBufAdd(0, &waveBuf[1]);
+				DSP_FlushDataCache(waveBuf[i].data_pcm16, decoder->Buffsize() * sizeof(int16_t));
 			}
-		
-		
-			DSP_FlushDataCache(buffer1, decoder->Buffsize() * sizeof(int16_t));
-			DSP_FlushDataCache(buffer2, decoder->Buffsize() * sizeof(int16_t));
 		}
 		linearFree(buffer1);
 		linearFree(buffer2);
 		ndspChnWaveBufClear(0);
+		DEBUG("player.cpp: Playback complete.");
+		App::Error = 30;
 	} else {
-		App::Error = 31;
+		App::Error = DECODER_INIT_FAIL;
+		DEBUG("player.cpp: Decoder could not be initalized.");
 	}
-	App::Error = 30;
 }
 
 std::unique_ptr<Decoder> Player::GetFormat(const std::string& filename, int filetype) {

@@ -69,7 +69,7 @@ uint32_t OpusDecoder::Samplerate(void)
 
 uint32_t OpusDecoder::Spf(void* buffer)
 {
-	return 4096*4;
+	return Decode(buffer)/Channels();
 }
 
 uint32_t OpusDecoder::Buffsize(void)

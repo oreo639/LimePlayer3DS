@@ -69,7 +69,7 @@ uint32_t VorbisDecoder::Samplerate(void)
 
 uint32_t VorbisDecoder::Spf(void* buffer)
 {
-	return 4096;
+	return Decode(buffer)/Channels();
 }
 
 

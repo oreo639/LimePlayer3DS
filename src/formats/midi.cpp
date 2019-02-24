@@ -88,6 +88,7 @@ uint32_t MidiDecoder::Samplerate(void)
 
 uint32_t MidiDecoder::Spf(void* buffer)
 {
+	Decode(buffer);
 	return SAMPLESPERBUF;
 }
 
