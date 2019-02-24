@@ -89,11 +89,11 @@ void Player::Play(const std::string& filename) {
 		ndspChnSetFormat(0, decoder->Channels() == 2 ? NDSP_FORMAT_STEREO_PCM16 : NDSP_FORMAT_MONO_PCM16);
 
 		memset(waveBuf, 0, sizeof(waveBuf));
-		waveBuf[0].nsamples = decoder->Decode(&buffer1[0]) / decoder->Channels();
+		waveBuf[0].nsamples = decoder->Spf(&buffer1[0]);
 		waveBuf[0].data_vaddr = &buffer1[0];
 		ndspChnWaveBufAdd(0, &waveBuf[0]);
 
-		waveBuf[1].nsamples = decoder->Decode(&buffer2[0]) / decoder->Channels();
+		waveBuf[1].nsamples = decoder->Spf(&buffer2[0]);
 		waveBuf[1].data_vaddr = &buffer2[0];
 		ndspChnWaveBufAdd(0, &waveBuf[1]);
 		

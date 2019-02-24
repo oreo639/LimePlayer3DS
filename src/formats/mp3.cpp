@@ -105,6 +105,10 @@ uint32_t Mp3Decoder::Samplerate(void)
 	return rate;
 }
 
+uint32_t Mp3Decoder::Spf(void* buffer)
+{
+	return mpg123_spf(mh);
+}
 
 uint32_t Mp3Decoder::Buffsize(void)
 {

@@ -43,6 +43,8 @@ class Decoder {
 		virtual uint32_t Decode(void* buffer);
 		
 		virtual uint32_t Samplerate(void);
+
+		virtual uint32_t Spf(void* buffer);
 		
 		virtual uint32_t Buffsize(void);
 		

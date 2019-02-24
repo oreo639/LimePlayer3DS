@@ -65,6 +65,13 @@ uint32_t FlacDecoder::Buffsize(void)
 	return buffSize;
 }
 
+uint32_t FlacDecoder::Spf(void* buffer)
+{
+	// There doesn't seem to be a better solution to this.
+	return Decode(buffer)/Channels();
+}
+
+
 int FlacDecoder::Channels(void)
 {
 	return pFlac->channels;

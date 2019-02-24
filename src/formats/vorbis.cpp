@@ -67,6 +67,11 @@ uint32_t VorbisDecoder::Samplerate(void)
 	return vi->rate;
 }
 
+uint32_t VorbisDecoder::Spf(void* buffer)
+{
+	return 4096;
+}
+
 
 uint32_t VorbisDecoder::Buffsize(void)
 {

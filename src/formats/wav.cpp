@@ -59,6 +59,11 @@ uint32_t WavDecoder::Samplerate(void)
 	return pWav->sampleRate;
 }
 
+uint32_t WavDecoder::Spf(void* buffer)
+{
+	// There doesn't seem to be a better solution to this.
+	return Decode(buffer)/Channels();
+}
 
 uint32_t WavDecoder::Buffsize(void)
 {

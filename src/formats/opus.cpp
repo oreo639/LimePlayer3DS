@@ -67,6 +67,10 @@ uint32_t OpusDecoder::Samplerate(void)
 	return 48000;
 }
 
+uint32_t OpusDecoder::Spf(void* buffer)
+{
+	return 1024;
+}
 
 uint32_t OpusDecoder::Buffsize(void)
 {

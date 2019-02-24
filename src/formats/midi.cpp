@@ -10,7 +10,7 @@
 #include "midi.hpp"
 
 #define MIDISAMPLERATE 22050
-#define SAMPLESPERBUF (MIDISAMPLERATE / 30)
+#define SAMPLESPERBUF 4096
 #define BYTESPERSAMPLE 4
 
 static int LibInit = false;
@@ -26,9 +26,8 @@ MidiDecoder::MidiDecoder(const char* filename, const char* midicfg) {
 	if (!wMidi || res != 0) {
 		LibInit = false;
 	}
-	else {
+	else
 		LibInit = true;
-	}
 }
 
 MidiDecoder::~MidiDecoder(void) {
@@ -74,7 +73,7 @@ void MidiDecoder::Seek(uint32_t location)
  */
 uint32_t MidiDecoder::Decode(void* buffer)
 {
-	return (WildMidi_GetOutput(wMidi, reinterpret_cast<int8_t*>(buffer), buffSize))/2;
+	return WildMidi_GetOutput(wMidi, reinterpret_cast<int8_t*>(buffer), buffSize);
 }
 
 /**
@@ -85,6 +84,11 @@ uint32_t MidiDecoder::Decode(void* buffer)
 uint32_t MidiDecoder::Samplerate(void)
 {
 	return MIDISAMPLERATE;
+}
+
+uint32_t MidiDecoder::Spf(void* buffer)
+{
+	return SAMPLESPERBUF;
 }
 
 uint32_t MidiDecoder::Buffsize(void)

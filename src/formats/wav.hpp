@@ -22,6 +22,8 @@ class WavDecoder : public Decoder {
 		uint32_t Decode(void* buffer) override;
 		
 		uint32_t Samplerate(void) override;
+
+		uint32_t Spf(void* buffer) override;
 		
 		uint32_t Buffsize(void) override;
 		
