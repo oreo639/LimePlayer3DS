@@ -99,9 +99,8 @@ void Player::Play(const std::string& filename) {
 		 * There may be a chance that the music has not started by the time we get
 		 * to the while loop. So we ensure that music has started here.
 		 */
-		uint32_t ttime = osGetTime();
-		while(ndspChnIsPlaying(0) == false) {
-			if(osGetTime()-ttime > 5 * 1000) { // Timeout after 5 seconds.
+		for(int i = 0; ndspChnIsPlaying(0) == false; i++) {
+			if(i > 1000) {
 				DEBUG("player.cpp: Chnn wait imeout.");
 				stop = true;
 				App::Error = DECODER_INIT_TIMEOUT;
@@ -143,7 +142,8 @@ void Player::Play(const std::string& filename) {
 		linearFree(buffer2);
 		ndspChnWaveBufClear(0);
 		DEBUG("player.cpp: Playback complete.");
-		App::Error = 30;
+		if (!App::Error)
+			App::Error = 30;
 	} else {
 		App::Error = DECODER_INIT_FAIL;
 		DEBUG("player.cpp: Decoder could not be initalized.");
