@@ -1,24 +1,38 @@
-#define DR_FLAC_IMPLEMENTATION
-#include <dr_libs/dr_flac.h>
+/*Copyright 2018-2019 Oreo639
+*
+*Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the *"Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, *distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to *the following conditions:
+*
+*The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+*
+*THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF *MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR *ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH *THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+#include <cstring>
+#include <cassert>
+
+#include <FLAC/stream_decoder.h>
 
 #include "flac.hpp"
+#include "flacwrap/flacwrap.hpp"
+#include "error.hpp"
 
 static int LibInit = false;
-static drflac*		pFlac;
-static const size_t	buffSize = 16 * 1024;
-uint32_t flacprogress; //Credit Tangerine.
+flacwrap_t flacstruct;
+static const size_t	buffSize = 4096 * 16;
 
 FlacDecoder::FlacDecoder(const char* filename) {
-	pFlac = drflac_open_file(filename);
-	flacprogress = 0;
-	if (pFlac == NULL)
+	flacstruct.dFlac = FLAC__stream_decoder_new();
+	if(FLACWRAP_init(filename, &flacstruct)) {
+		return;
+	}
+	if (flacstruct.dFlac == NULL)
 		LibInit = false;
 	else
 		LibInit = true;
 }
 
 FlacDecoder::~FlacDecoder(void) {
-	drflac_close(pFlac);
+	FLACWRAP_free(&flacstruct);
+	FLAC__stream_decoder_delete(flacstruct.dFlac);
 	LibInit = false;
 }
 
@@ -31,38 +45,29 @@ void FlacDecoder::Info(std::string& copyright) {
 }
 
 uint32_t FlacDecoder::Position(void) {
-	return flacprogress;
+	return 0;
 }
 
 uint32_t FlacDecoder::Length(void) {
-	return pFlac->totalSampleCount;
+	return flacstruct.mFlac.total_samples;
 }
 
 void FlacDecoder::Seek(uint32_t location)
 {
-	if(location > pFlac->totalSampleCount) {
+	if(location > flacstruct.mFlac.total_samples) {
 		return;
 	}
-	drflac_seek_to_sample(pFlac, location);
-	flacprogress = location;
+	FLAC__stream_decoder_seek_absolute(flacstruct.dFlac, location);
 }
 
 uint32_t FlacDecoder::Decode(void* buffer)
 {
-	uint64_t out = drflac_read_s16(pFlac, buffSize, (int16_t*)buffer);
-	flacprogress += out;
-	return out;
+	return FLACWRAP_decode(&flacstruct, reinterpret_cast<int16_t*>(buffer), buffSize);
 }
 
 uint32_t FlacDecoder::Samplerate(void)
 {
-	return pFlac->sampleRate;
-}
-
-
-uint32_t FlacDecoder::Buffsize(void)
-{
-	return buffSize;
+	return flacstruct.mFlac.sample_rate;
 }
 
 uint32_t FlacDecoder::Spf(void* buffer)
@@ -71,12 +76,17 @@ uint32_t FlacDecoder::Spf(void* buffer)
 }
 
 
-int FlacDecoder::Channels(void)
+uint32_t FlacDecoder::Buffsize(void)
 {
-	return pFlac->channels;
+	return buffSize;
 }
 
-int isFlac(const char* in)
+int FlacDecoder::Channels(void)
+{
+	return flacstruct.mFlac.channels;
+}
+
+/*int isFlac(const char* in)
 {
 	int err = -1;
 	drflac* pFlac = drflac_open_file(in);
@@ -86,4 +96,4 @@ int isFlac(const char* in)
 
 	drflac_close(pFlac);
 	return err;
-}
+}*/

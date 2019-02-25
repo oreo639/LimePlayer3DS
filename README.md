@@ -57,6 +57,10 @@ These are the contrubuters and maintainers, both big and small (will be updated 
 
 + Most of the icons under gfx are from the site [icons8.com](https://icons8.com) and are licensed under the [CC-BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/3.0/)
 
+## Copyright
+The exact license varies between MIT and GPLv2-or-later depending on what file it is. Please look at the top of the file to see which.
+The application is licensed under GPLv2-or-later.
+
 ## Special Thanks
 Nintendo Homebrew: A nice discord that is always giving help with homebrew and development.
 
