@@ -78,20 +78,19 @@ void Player::Play(const std::string& filename) {
 	std::unique_ptr<Decoder> decoder = GetFormat(filename, filetype);
 	
 	if (decoder != nullptr) {
-		int16_t* buffer1 = (int16_t*)linearAlloc(decoder->Buffsize() * sizeof(int16_t));
-		int16_t* buffer2 = (int16_t*)linearAlloc(decoder->Buffsize() * sizeof(int16_t));
+		int16_t* audioBuffer = (int16_t*)linearAlloc((decoder->Buffsize() * sizeof(int16_t)) * 2);
 
 		ndspChnReset(0);
 		ndspChnWaveBufClear(0);
 		ndspSetOutputMode(NDSP_OUTPUT_STEREO);
-		ndspChnSetInterp(0, NDSP_INTERP_POLYPHASE);
+		ndspChnSetInterp(0, decoder->Channels() == 2 ? NDSP_INTERP_POLYPHASE : NDSP_INTERP_LINEAR);
 		ndspChnSetRate(0, decoder->Samplerate());
 		ndspChnSetFormat(0, decoder->Channels() == 2 ? NDSP_FORMAT_STEREO_PCM16 : NDSP_FORMAT_MONO_PCM16);
 
 		memset(waveBuf, 0, sizeof(waveBuf));
-		for(int i = 0; i < decoder->Channels(); i++) {
-			waveBuf[i].nsamples = decoder->Spf(i == 0 ? &buffer1[0] : &buffer2[0]);
-			waveBuf[i].data_vaddr = i == 0 ? &buffer1[0] : &buffer2[0];
+		for(int i = 0; i < 2; i++) {
+			waveBuf[i].nsamples = decoder->Spf(audioBuffer + (i == 0 ? 0 : decoder->Buffsize()));
+			waveBuf[i].data_vaddr = audioBuffer + (i == 0 ? 0 : decoder->Buffsize());
 			ndspChnWaveBufAdd(0, &waveBuf[i]);
 		}
 		
@@ -100,7 +99,7 @@ void Player::Play(const std::string& filename) {
 		 * to the while loop. So we ensure that music has started here.
 		 */
 		for(int i = 0; ndspChnIsPlaying(0) == false; i++) {
-			if(i > 1000) {
+			if(i > 90000) {
 				DEBUG("player.cpp: Chnn wait imeout.");
 				stop = true;
 				App::Error = DECODER_INIT_TIMEOUT;
@@ -120,7 +119,7 @@ void Player::Play(const std::string& filename) {
 			while (ndspChnIsPaused(0) == true || lastbuf == true)
 				continue;
 
-			for(int i = 0; i < decoder->Channels(); i++) {
+			for(int i = 0; i < 2; i++) {
 				if(waveBuf[i].status == NDSP_WBUF_DONE)
 				{
 					size_t read = decoder->Decode(waveBuf[i].data_pcm16);
@@ -138,8 +137,7 @@ void Player::Play(const std::string& filename) {
 				DSP_FlushDataCache(waveBuf[i].data_pcm16, decoder->Buffsize() * sizeof(int16_t));
 			}
 		}
-		linearFree(buffer1);
-		linearFree(buffer2);
+		linearFree(audioBuffer);
 		ndspChnWaveBufClear(0);
 		DEBUG("player.cpp: Playback complete.");
 		if (!App::Error)

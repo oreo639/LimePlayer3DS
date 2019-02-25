@@ -240,7 +240,7 @@ void Gui::drawBaseGui(void) {
 	guiprintColor(string_minutes, 380, 1, 0.5f, 0.5f, 0xFFFFFFFF);
 	
 	char string_volume[4] = {0};
-	sprintf(string_volume, "%d", (int)(curVol/60.0f)*100);
+	sprintf(string_volume, "%d", (int)((curVol/63.0f)*100));
 	guiprintColor(string_volume, 1, 1, 0.5f, 0.5f, 0xFFFFFFFF);
 	if(curVol != preVol) {
 		trigeredTime = osGetTime();	
