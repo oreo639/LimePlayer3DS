@@ -53,8 +53,8 @@ bool OpusDecoder::IsInit(void) {
 	return LibInit;
 }
 
-void OpusDecoder::Info(std::string& copyright) {
-	copyright.assign("(No Author-Opus)", strlen("(No Author-Opus)"));
+void OpusDecoder::Info(musinfo_t* Meta) {
+	Meta->authorCpright.assign("(No Author-Opus)", strlen("(No Author-Opus)"));
 }
 
 uint32_t OpusDecoder::Position(void) {

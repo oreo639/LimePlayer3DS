@@ -77,7 +77,7 @@ bool Mp3Decoder::IsInit(void) {
 	return LibInit;
 }
 
-void Mp3Decoder::Info(std::string& copyright) {
+void Mp3Decoder::Info(musinfo_t* Meta) {
 	mpg123_id3v1* v1;
 	mpg123_id3v2* v2;
 	mpg123_id3(mh, &v1, &v2);
@@ -87,10 +87,10 @@ void Mp3Decoder::Info(std::string& copyright) {
 	//infoOut->fileMeta->authorCpright = strdup(v1->artist);
 	//}
 	if (mpg123_strlen(v2->artist, true)) {
-	copyright.assign(v2->artist->p, strlen(v2->artist->p));
+		Meta->authorCpright.assign(v2->artist->p, strlen(v2->artist->p));
 	}
 	else {
-	copyright.assign("(No Author-Mp3)", strlen("(No Author-Mp3)"));
+		Meta->authorCpright.assign("(No Author-Mp3)", strlen("(No Author-Mp3)"));
 	}
 }
 

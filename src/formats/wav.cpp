@@ -42,8 +42,8 @@ bool WavDecoder::IsInit(void) {
 	return LibInit;
 }
 
-void WavDecoder::Info(std::string& copyright) {
-	copyright.assign("(No Author-Wav)", strlen("(No Author-Wav)"));
+void WavDecoder::Info(musinfo_t* Meta) {
+	Meta->authorCpright.assign("(No Author-Wav)", strlen("(No Author-Wav)"));
 }
 
 uint32_t WavDecoder::Position(void) {

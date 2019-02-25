@@ -48,8 +48,8 @@ bool FlacDecoder::IsInit(void) {
 	return LibInit;
 }
 
-void FlacDecoder::Info(std::string& copyright) {
-	copyright.assign("(No Author-Flac)", strlen("(No Author-Flac)"));
+void FlacDecoder::Info(musinfo_t* Meta) {
+	Meta->authorCpright.assign("(No Author-Flac)", strlen("(No Author-Flac)"));
 }
 
 uint32_t FlacDecoder::Position(void) {

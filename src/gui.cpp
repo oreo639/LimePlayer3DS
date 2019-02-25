@@ -66,11 +66,15 @@ void Gui::fblist(int rows, int startpoint)
 }
 
 
-void Gui::Drawui(void)
+void Gui::Drawui(playbackInfo_t* playbackInfo)
 {
 	startframe();
 	if (App::appState == App::MENU) {
 		drawBaseGui();
+		if (PlayerInterface::IsPlaying()) {
+			drawBrowserPlayer(playbackInfo);
+		}
+		C2D_SceneBegin(bot);
 		menuList(cursor, seloffs, 15, 32.5f, App::dirList.total);
 		C2D_DrawRectSolid(0, 0, 0.5f, SCREEN_WIDTH, 15, C2D_Color32(119, 131, 147, 255));
 		guilist(App::dirList.currentDir.c_str(), 0);
@@ -265,7 +269,21 @@ void Gui::drawBaseGui(void) {
 		volumeIndicator(curVol);
 	}
 	preVol = curVol;
-	C2D_SceneBegin(bot);
+}
+
+void Gui::drawBrowserPlayer(playbackInfo_t* info) {
+	drawImage(PLAYING_ICON, 20, 15);
+	if (!info->filename.empty()) {
+		guiprint(info->filename.c_str(), 150.0f, 20.0f, 0.5f, 0.5f);
+	} else {
+		guiprint("Loading...", 150.0f, 20.0f, 0.5f, 0.5f);
+	}
+	
+	if (!info->fileMeta.authorCpright.empty()) {
+		guiprint(info->fileMeta.authorCpright.c_str(), 150.0f, 40.0f, 0.5f, 0.5f);
+	} else {
+		guiprint("Loading...", 150.0f, 40.0f, 0.5f, 0.5f);
+	}
 }
 
 void Gui::drawError(void) {

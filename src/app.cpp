@@ -33,6 +33,7 @@ Gui *gui;
 App::AppState App::appState = INIT;
 dirList_t App::dirList;
 int App::Error = 0;
+playbackInfo_t App::pInfo;
 
 Thread thread = NULL;
 
@@ -43,7 +44,7 @@ Thread thread = NULL;
  * \param	playbackInfo	Information that the playback thread requires to
  *							play file.
  */
-static int changeFile(const std::string* filename)
+static int changeFile(const std::string* filename, playbackInfo_t* playbackInfo)
 {
 	s32 prio;
 
@@ -61,17 +62,13 @@ static int changeFile(const std::string* filename)
 		thread = NULL;
 	}
 
-	if(filename == NULL)
+	if(filename == NULL || playbackInfo == NULL)
 		return 0;
-	
-	if(!File::GetFileType(filename->c_str()))
-	{
-		App::Error = errno;
-		return -1;
-	}
+
+	playbackInfo->filename = *filename;
 
 	svcGetThreadPriority(&prio, CUR_THREAD_HANDLE);
-	thread = threadCreate(PlayerInterface::ThreadMainFunct, (void *)filename->c_str(), 32 * 1024, prio - 1, -2, false);
+	thread = threadCreate(PlayerInterface::ThreadMainFunct, (void *)playbackInfo, 32 * 1024, prio - 1, -2, false);
 
 	return 0;
 }
@@ -136,7 +133,7 @@ void App::LibInit(void) {
 }
 
 void App::LibExit(void) {
-	changeFile(nullptr);
+	changeFile(NULL, NULL);
 	ndspExit();
 	romfsExit();
 	gfxExit();
@@ -173,7 +170,7 @@ void App::Update() {
 			chdir(dirList.directories[cursor].c_str());
 			gui->GuiCursorReset();
 		} else {
-			changeFile(&dirList.files[cursor-dirList.dirnum]);
+			changeFile(&dirList.files[cursor-dirList.dirnum], &App::pInfo);
 		} 
 		Explorer::getDir(&dirList);
 	}
@@ -197,7 +194,7 @@ void App::Update() {
 		if(kDown & KEY_B)
 		{
 			PlayerInterface::ExitPlayback();
-			changeFile(NULL);
+			changeFile(NULL, NULL);
 			/* If the playback thread is currently playing, it will now
 			 * stop and tell the Watchdog thread to display "Stopped".
 			 */
@@ -235,5 +232,5 @@ void App::Update() {
 }
 
 void App::Draw() {
-	gui->Drawui();
+	gui->Drawui(&App::pInfo);
 }

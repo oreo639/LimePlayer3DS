@@ -56,12 +56,12 @@ bool MidiDecoder::IsInit(void) {
 	return LibInit;
 }
 
-void MidiDecoder::Info(std::string& copyright) {
+void MidiDecoder::Info(musinfo_t* Meta) {
 	midiInfo = WildMidi_GetInfo(wMidi);	
 	if(midiInfo->copyright)
-		copyright.assign(midiInfo->copyright, strlen(midiInfo->copyright));
+		Meta->authorCpright.assign(midiInfo->copyright, strlen(midiInfo->copyright));
 	else
-		copyright.assign("(No Author-Midi)", strlen("(No Author-Midi)"));
+		Meta->authorCpright.assign("(No Author-Midi)", strlen("(No Author-Midi)"));
 }
 
 uint32_t MidiDecoder::Position(void) {

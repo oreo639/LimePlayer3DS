@@ -53,8 +53,8 @@ bool VorbisDecoder::IsInit(void) {
 	return LibInit;
 }
 
-void VorbisDecoder::Info(std::string& copyright) {
-	copyright.assign("(No Author-Vorbis)", strlen("(No Author-Vorbis)"));
+void VorbisDecoder::Info(musinfo_t* Meta) {
+	Meta->authorCpright.assign("(No Author-Vorbis)", strlen("(No Author-Vorbis)"));
 }
 
 uint32_t VorbisDecoder::Position(void) {
