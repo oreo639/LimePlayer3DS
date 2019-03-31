@@ -1,3 +1,19 @@
+/*   LimePlayer3DS FOSS graphcal music player for the Nintendo 3DS.
+*    Copyright (C) 2018-2019  LimePlayer Team
+*
+*    This program is free software: you can redistribute it and/or modify
+*    it under the terms of the GNU General Public License as published by
+*    the Free Software Foundation, either version 3 of the License, or
+*    (at your option) any later version.
+*
+*    This program is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*    GNU General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 #include <stdio.h>
 #include <time.h>
 
@@ -50,11 +66,15 @@ void Gui::fblist(int rows, int startpoint)
 }
 
 
-void Gui::Drawui(void)
+void Gui::Drawui(playbackInfo_t* playbackInfo)
 {
 	startframe();
 	if (App::appState == App::MENU) {
 		drawBaseGui();
+		if (PlayerInterface::IsPlaying()) {
+			drawBrowserPlayer(playbackInfo);
+		}
+		C2D_SceneBegin(bot);
 		menuList(cursor, seloffs, 15, 32.5f, App::dirList.total);
 		C2D_DrawRectSolid(0, 0, 0.5f, SCREEN_WIDTH, 15, C2D_Color32(119, 131, 147, 255));
 		guilist(App::dirList.currentDir.c_str(), 0);
@@ -249,7 +269,21 @@ void Gui::drawBaseGui(void) {
 		volumeIndicator(curVol);
 	}
 	preVol = curVol;
-	C2D_SceneBegin(bot);
+}
+
+void Gui::drawBrowserPlayer(playbackInfo_t* info) {
+	drawImage(PLAYING_ICON, 20, 15);
+	if (!info->filename.empty()) {
+		guiprint(info->filename.c_str(), 150.0f, 20.0f, 0.5f, 0.5f);
+	} else {
+		guiprint("Loading...", 150.0f, 20.0f, 0.5f, 0.5f);
+	}
+
+	if (!info->fileMeta.authorCpright.empty()) {
+		guiprint(info->fileMeta.authorCpright.c_str(), 150.0f, 40.0f, 0.5f, 0.5f);
+	} else {
+		guiprint("Loading...", 150.0f, 40.0f, 0.5f, 0.5f);
+	}
 }
 
 void Gui::drawError(void) {

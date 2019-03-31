@@ -22,7 +22,7 @@ Make sure that your issue is descriptive and consise. Also please include the cr
 
 ## Building
 ### Prerequsites:
-dkp-pacman, 3ds-dev, 3ds-mpg123, 3ds-libvorbisidec, 3ds-opusfile, 3ds-jansson, and 3ds-wildmidi (if wildmidi isn't avliable just run buildlibs.sh). You will also need [makerom](https://github.com/profi200/Project_CTR) and [bannertool](https://github.com/Steveice10/bannertool/) for cia building (optional).
+dkp-pacman, 3ds-dev, 3ds-mpg123, 3ds-libvorbisidec, 3ds-opusfile, 3ds-jansson, and 3ds-wildmidi. You will also need [makerom](https://github.com/profi200/Project_CTR) and [bannertool](https://github.com/Steveice10/bannertool/) for cia building (optional).
 
 ### Compiling:
 You should be able to build it by just runing make. (after installing all the prerequsites)
@@ -56,6 +56,10 @@ These are the contrubuters and maintainers, both big and small (will be updated 
 + Others: If I forgot to mention someone important (as in their code is used without credit), please let me know.
 
 + Most of the icons under gfx are from the site [icons8.com](https://icons8.com) and are licensed under the [CC-BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/3.0/)
+
+## Copyright
+
+The application is licensed under GPLv3-or-later.
 
 ## Special Thanks
 Nintendo Homebrew: A nice discord that is always giving help with homebrew and development.

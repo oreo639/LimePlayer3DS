@@ -1,5 +1,5 @@
-/*   LimePlayer3DS FOSS graphcal music player for the 3ds.
-*    Copyright (C) 2018  LimePlayer Team
+/*   LimePlayer3DS FOSS graphcal music player for the Nintendo 3DS.
+*    Copyright (C) 2018-2019  LimePlayer Team
 *
 *    This program is free software: you can redistribute it and/or modify
 *    it under the terms of the GNU General Public License as published by

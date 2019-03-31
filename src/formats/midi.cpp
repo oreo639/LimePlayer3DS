@@ -1,3 +1,19 @@
+/*   LimePlayer3DS FOSS graphcal music player for the Nintendo 3DS.
+*    Copyright (C) 2018-2019  LimePlayer Team
+*
+*    This program is free software: you can redistribute it and/or modify
+*    it under the terms of the GNU General Public License as published by
+*    the Free Software Foundation, either version 3 of the License, or
+*    (at your option) any later version.
+*
+*    This program is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*    GNU General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 #include <wildmidi_lib.h>
 
 #include <memory>
@@ -40,12 +56,12 @@ bool MidiDecoder::IsInit(void) {
 	return LibInit;
 }
 
-void MidiDecoder::Info(std::string& copyright) {
+void MidiDecoder::Info(musinfo_t* Meta) {
 	midiInfo = WildMidi_GetInfo(wMidi);	
 	if(midiInfo->copyright)
-		copyright.assign(midiInfo->copyright, strlen(midiInfo->copyright));
+		Meta->authorCpright.assign(midiInfo->copyright, strlen(midiInfo->copyright));
 	else
-		copyright.assign("(No Author-Midi)", strlen("(No Author-Midi)"));
+		Meta->authorCpright.assign("(No Author-Midi)", strlen("(No Author-Midi)"));
 }
 
 uint32_t MidiDecoder::Position(void) {

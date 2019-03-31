@@ -1,3 +1,20 @@
+/*   LimePlayer3DS OSS graphcal music player for the Nintendo 3DS.
+*    Copyright (C) 2018-2019  LimePlayer Team
+*
+*    This program is free software: you can redistribute it and/or modify
+*    it under the terms of the GNU General Public License as published by
+*    the Free Software Foundation, either version 2 of the License, or
+*    (at your option) any later version.
+*
+*    This program is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*    GNU General Public License for more details.
+*
+*    YoYou should have received a copy of the GNU General Public License along
+*    with this program; if not, write to the Free Software Foundation, Inc.,
+*    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
 #include <mpg123.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -60,7 +77,7 @@ bool Mp3Decoder::IsInit(void) {
 	return LibInit;
 }
 
-void Mp3Decoder::Info(std::string& copyright) {
+void Mp3Decoder::Info(musinfo_t* Meta) {
 	mpg123_id3v1* v1;
 	mpg123_id3v2* v2;
 	mpg123_id3(mh, &v1, &v2);
@@ -70,10 +87,10 @@ void Mp3Decoder::Info(std::string& copyright) {
 	//infoOut->fileMeta->authorCpright = strdup(v1->artist);
 	//}
 	if (mpg123_strlen(v2->artist, true)) {
-	copyright.assign(v2->artist->p, strlen(v2->artist->p));
+		Meta->authorCpright.assign(v2->artist->p, strlen(v2->artist->p));
 	}
 	else {
-	copyright.assign("(No Author-Mp3)", strlen("(No Author-Mp3)"));
+		Meta->authorCpright.assign("(No Author-Mp3)", strlen("(No Author-Mp3)"));
 	}
 }
 

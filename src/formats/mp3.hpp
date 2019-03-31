@@ -11,7 +11,7 @@ class Mp3Decoder : public Decoder {
 		
 		bool IsInit(void) override;
 		
-		void Info(std::string& copyright) override;
+		void Info(musinfo_t* Meta) override;
 		
 		uint32_t Position(void) override;
 		

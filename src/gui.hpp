@@ -4,6 +4,8 @@
 #include <citro3d.h>
 #include <citro2d.h>
 
+#include "player.hpp"
+
 #define SCREEN_WIDTH  400
 #define SCREEN_HEIGHT 240
 #define MAX_LIST 7
@@ -36,7 +38,7 @@ class Gui
 	
 	~Gui(void);
 	
-	void Drawui(void);
+	void Drawui(playbackInfo_t* musInfo);
 	
 	int InitlimeGFX(void);
 
@@ -62,6 +64,8 @@ class Gui
 	void guilist(const char* text, int row);
 
 	void drawBaseGui(void);
+
+	void drawBrowserPlayer(playbackInfo_t* info);
 	
 	void drawError(void);
 	

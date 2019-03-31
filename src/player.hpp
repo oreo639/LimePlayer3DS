@@ -16,7 +16,7 @@ typedef struct
 
 typedef struct
 {
-	std::string	file;
+	std::string	filename;
 	settings_t	settings;
 	musinfo_t	fileMeta;
 } playbackInfo_t;
@@ -32,7 +32,7 @@ class Decoder {
 		// Decoder interface
 		virtual bool IsInit(void);
 		
-		virtual void Info(std::string& copyright);
+		virtual void Info(musinfo_t* Meta);
 		
 		virtual uint32_t Position(void);
 		
@@ -57,10 +57,12 @@ class Player
 		Player() {};
 		~Player() {};
 		
-		void Play(const std::string& filename);
+		void Play(playbackInfo_t* playbackInfo);
+
+		void ClearMetadata(musinfo_t* fileMeta);
 		
 	private:
-		std::unique_ptr<Decoder> GetFormat(const std::string& filename, int filetype);
+		std::unique_ptr<Decoder> GetFormat(const playbackInfo_t* playbackInfo, int filetype);
 };
 
 namespace PlayerInterface {

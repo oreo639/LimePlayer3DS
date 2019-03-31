@@ -2,6 +2,7 @@
 #define __APP_LIME_HPP__
 
 #include "explorer.hpp"
+#include "player.hpp"
 
 class App {
 	public:
@@ -24,6 +25,7 @@ class App {
 		static void Update();
 		static void Draw();
 	private:
+		static playbackInfo_t pInfo;
 		static void LibInit();
 		static void LibExit();
 };
