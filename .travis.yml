@@ -2,27 +2,21 @@ language: c
 
 sudo: true
 
+os: linux
+dist: xenial
+sudo: required
+
+services: docker
+
 notifications:
   email: false
-
-before_install:
-  - wget https://github.com/devkitPro/pacman/releases/download/devkitpro-pacman-1.0.1/devkitpro-pacman.deb
-  - sudo dpkg -i devkitpro-pacman.deb
-
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - libstdc++-4.9-dev
 
 cache:
     directories:
      - ~/.local/bin
 
 install:
-  - source ./.travis/prepare.sh
+  - docker pull devkitpro/devkitarm
 
 script:
-  - cd $TRAVIS_BUILD_DIR
-  - make clean && make
+  - docker run -e ENABLE_COMPATIBILITY_REPORTING -v $TRAVIS_BUILD_DIR:/LimePlayer3DS devkitpro/devkitarm /bin/bash -ex /LimePlayer3DS/.travis/build.sh
