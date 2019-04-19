@@ -11,10 +11,6 @@ services: docker
 notifications:
   email: false
 
-cache:
-    directories:
-     - ~/.local/bin
-
 install:
   - docker pull devkitpro/devkitarm
 
