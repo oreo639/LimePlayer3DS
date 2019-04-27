@@ -21,6 +21,9 @@
 #include "app.hpp"
 #include "error.hpp"
 
+// Generated at build time
+#include "sprites.h"
+
 #define MENU_ICON_HORIZONTAL 100
 
 C3D_RenderTarget* top;
@@ -211,9 +214,9 @@ static void drawImageLayered(int image_id, float x, float y, float layer)
 }
 
 static void volumeIndicator(u8 volume){
-	int indicator = (volume/15)+2;
-	drawImageLayered(7, 120, 30, 0.7f);
-	drawImageLayered(indicator, 120, 30, 0.7f);
+	int indicator = (volume/15);
+	drawImageLayered(sprites_popup_vol_bkg_idx, 120, 30, 0.7f);
+	drawImageLayered(indicator + sprites_popup_vol0_idx, 120, 30, 0.7f);
 }
 
 static void menuList(int cur, int from, float startpoint, float size, int rows) {
@@ -272,7 +275,7 @@ void Gui::drawBaseGui(void) {
 }
 
 void Gui::drawBrowserPlayer(playbackInfo_t* info) {
-	drawImage(PLAYING_ICON, 20, 15);
+	drawImage(sprites_player_interface_idx, 20, 15);
 	if (!info->filename.empty()) {
 		guiprint(info->filename.c_str(), 150.0f, 20.0f, 0.5f, 0.5f);
 	} else {
