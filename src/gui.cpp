@@ -274,7 +274,7 @@ void Gui::drawBaseGui(void) {
 }
 
 void Gui::drawBrowserPlayer(playbackInfo_t* info) {
-	drawImage(sprites_player_interface_idx, 20, 15);
+	drawImage(sprites_player_playlist_idx, 20, 15);
 	if (!info->filename.empty()) {
 		guiprint(info->filename.c_str(), 150.0f, 20.0f, 0.5f, 0.5f);
 	} else {
