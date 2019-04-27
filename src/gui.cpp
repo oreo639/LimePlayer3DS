@@ -41,7 +41,6 @@ int cursor = 0;
 int seloffs = 0;
 
 static void menuList(int cur, int from, float startpoint, float size, int rows);
-static void filelist(int cur, int from, dirList_t dirList);
 
 Gui::Gui(void) {
 	InitlimeGFX();
