@@ -6,11 +6,12 @@
 typedef enum
 {
 	FILE_WAV = 1,		///< Microsoft WAVE
-	FILE_FLAC = 2,		///< Free Lossless Audio Codec
-	FILE_VORBIS = 3,	///< Ogg Vorbis
-	FILE_OPUS = 4,  	///< Ogg Opus
-	FILE_MP3 = 5,  		///< Mp3
-	FILE_MIDI = 6,  	///< Midi and midilike
+	FILE_FLAC,		///< Free Lossless Audio Codec
+	FILE_VORBIS,		///< Ogg Vorbis
+	FILE_OPUS,  		///< Ogg Opus
+	FILE_MP3,  		///< Mp3
+	FILE_MIDI,  		///< Midi and midilike
+	FMT_NETWORK,  		///< Network http stream
 } FILE_audioformat;
 
 namespace File {

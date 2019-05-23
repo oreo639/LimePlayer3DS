@@ -30,7 +30,7 @@ class Decoder {
 	public:
 		virtual ~Decoder() {}
 		// Decoder interface
-		virtual bool IsInit(void);
+		virtual bool IsInit(void) {return false;};
 		
 		virtual void Info(musinfo_t* Meta);
 		
@@ -50,6 +50,32 @@ class Decoder {
 		
 		virtual int Channels(void);
 };
+
+class StreamDecoder {
+	public:
+		virtual ~StreamDecoder() {}
+		// Decoder interface
+		virtual bool IsInit(void) {return false;};
+		
+		virtual void Info(musinfo_t* Meta);
+		
+		virtual uint32_t Position(void);
+		
+		virtual uint32_t Length(void);
+		
+		virtual void Seek(uint32_t location);
+		
+		virtual uint32_t Decode(uint8_t* inbuffer, uint32_t inbuffsize, void* outbuffer);
+		
+		virtual uint32_t Samplerate(void);
+
+		virtual uint32_t Spf(uint8_t* inbuffer, uint32_t inbuffsize, void* outbuffer);
+		
+		virtual uint32_t Buffsize(void);
+		
+		virtual int Channels(void);
+};
+
 
 class Player
 {
