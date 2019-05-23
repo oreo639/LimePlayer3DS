@@ -55,7 +55,7 @@ The application is licensed under GPLv3-or-later. Additional terms 7c apply.
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## Special Thanks
-+ Smealum, WinterMute, Fincs, and the Devkitpro team: For making/maintaining documentation and libraries for libctru and citro2d/3d which were very helpfull when making this project.
++ Smealum, WinterMute, fincs, and the devkitPro team: For making/maintaining documentation and libraries for libctru and citro2d/3d which were very helpfull when making this project.
 
 + The Easyrpg Team: For inspiring this application with their work porting wildmidi to the 3ds and the switch (the reason I started working on this was because I wondered if there was a midi player for the 3ds).
 
