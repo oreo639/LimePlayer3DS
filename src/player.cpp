@@ -89,11 +89,11 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 		App::Error = FILE_NOT_SUPPORTED;
 		return;
 	}
-	std::unique_ptr<Decoder> decoder = GetFormat(playbackInfo, filetype);
-
-	decoder->Info(&playbackInfo->fileMeta);
+	Decoder* decoder = GetFormat(playbackInfo, filetype);
 	
 	if (decoder != nullptr) {
+		decoder->Info(&playbackInfo->fileMeta);
+
 		int16_t* audioBuffer = (int16_t*)linearAlloc((decoder->Buffsize() * sizeof(int16_t)) * 2);
 
 		ndspChnReset(0);
@@ -157,6 +157,7 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 		ndspChnWaveBufClear(0);
 		ClearMetadata(&playbackInfo->fileMeta);
 		DEBUG("player.cpp: Playback complete.");
+		delete decoder;
 	} else {
 		App::Error = DECODER_INIT_FAIL;
 		DEBUG("player.cpp: Decoder could not be initalized.");
@@ -167,34 +168,34 @@ void Player::ClearMetadata(musinfo_t* fileMeta) {
 	fileMeta->authorCpright.clear();
 }
 
-std::unique_ptr<Decoder> Player::GetFormat(const playbackInfo_t* playbackInfo, int filetype) {
+Decoder* Player::GetFormat(const playbackInfo_t* playbackInfo, int filetype) {
 	if (filetype == FILE_WAV) {
-		auto wavdec = std::unique_ptr<Decoder>(new WavDecoder(playbackInfo->filename.c_str()));
+		auto wavdec = (new WavDecoder(playbackInfo->filename.c_str()));
 		if (wavdec->IsInit())
 			return wavdec;
 	}
 	else if (filetype == FILE_FLAC) {
-		auto flacdec = std::unique_ptr<Decoder>(new FlacDecoder(playbackInfo->filename.c_str()));
+		auto flacdec = (new FlacDecoder(playbackInfo->filename.c_str()));
 		if (flacdec->IsInit())
 			return flacdec;
 	}
 	else if (filetype == FILE_MP3) {
-		auto mp3dec = std::unique_ptr<Decoder>(new Mp3Decoder(playbackInfo->filename.c_str()));
+		auto mp3dec = (new Mp3Decoder(playbackInfo->filename.c_str()));
 		if (mp3dec->IsInit())
 			return mp3dec;
 	}
 	else if (filetype == FILE_VORBIS) {
-		auto vorbisdec = std::unique_ptr<Decoder>(new VorbisDecoder(playbackInfo->filename.c_str()));
+		auto vorbisdec = (new VorbisDecoder(playbackInfo->filename.c_str()));
 		if (vorbisdec->IsInit())
 			return vorbisdec;
 	}
 	else if (filetype == FILE_OPUS) {
-		auto opusdec = std::unique_ptr<Decoder>(new OpusDecoder(playbackInfo->filename.c_str()));
+		auto opusdec = (new OpusDecoder(playbackInfo->filename.c_str()));
 		if (opusdec->IsInit())
 			return opusdec;
 	}	
 	else if (filetype == FILE_MIDI) {
-		auto mididec = std::unique_ptr<Decoder>(new MidiDecoder(playbackInfo->filename.c_str(), "sdmc:/3ds/limeplayer3ds/dgguspat/wildmidi.cfg"));
+		auto mididec = (new MidiDecoder(playbackInfo->filename.c_str(), "sdmc:/3ds/limeplayer3ds/dgguspat/wildmidi.cfg"));
 		if (mididec->IsInit())
 			return mididec;	
 	}

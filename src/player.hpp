@@ -62,7 +62,7 @@ class Player
 		void ClearMetadata(musinfo_t* fileMeta);
 		
 	private:
-		std::unique_ptr<Decoder> GetFormat(const playbackInfo_t* playbackInfo, int filetype);
+		Decoder* GetFormat(const playbackInfo_t* playbackInfo, int filetype);
 };
 
 namespace PlayerInterface {
