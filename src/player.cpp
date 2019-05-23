@@ -34,6 +34,7 @@
 #include "formats/opus.hpp"
 #include "formats/vorbis.hpp"
 #include "formats/wav.hpp"
+#include "network/netfmt.hpp"
 
 Player audioplayer;
 
@@ -116,7 +117,7 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 		 */
 		for(int i = 0; ndspChnIsPlaying(0) == false; i++) {
 			if(i > 90000) {
-				DEBUG("player.cpp: Chnn wait imeout.");
+				DEBUG("player.cpp: Chnn wait imeout.\n");
 				stop = true;
 				App::Error = DECODER_INIT_TIMEOUT;
 				break;
@@ -156,11 +157,11 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 		linearFree(audioBuffer);
 		ndspChnWaveBufClear(0);
 		ClearMetadata(&playbackInfo->fileMeta);
-		DEBUG("player.cpp: Playback complete.");
+		DEBUG("player.cpp: Playback complete.\n");
 		delete decoder;
 	} else {
 		App::Error = DECODER_INIT_FAIL;
-		DEBUG("player.cpp: Decoder could not be initalized.");
+		DEBUG("player.cpp: Decoder could not be initalized.\n");
 	}
 }
 
@@ -197,7 +198,12 @@ Decoder* Player::GetFormat(const playbackInfo_t* playbackInfo, int filetype) {
 	else if (filetype == FILE_MIDI) {
 		auto mididec = (new MidiDecoder(playbackInfo->filename.c_str(), "sdmc:/3ds/limeplayer3ds/dgguspat/wildmidi.cfg"));
 		if (mididec->IsInit())
-			return mididec;	
+			return mididec;
+	}
+	else if (filetype == FMT_NETWORK) {
+		auto netdec = (new NetfmtDecoder(playbackInfo->filename.c_str()));
+		if (netdec->IsInit())
+			return netdec;
 	}
 	return nullptr;
 }

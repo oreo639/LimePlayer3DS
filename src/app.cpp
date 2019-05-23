@@ -126,6 +126,7 @@ void noDspFirmExit(void) {
 void App::LibInit(void) {
 	romfsInit();
 	gfxInitDefault();
+	httpcInit(0);
 	if(ndspInit()) {
 		noDspFirmExit();
 	}
@@ -134,6 +135,7 @@ void App::LibInit(void) {
 
 void App::LibExit(void) {
 	changeFile(NULL, NULL);
+	httpcExit();
 	ndspExit();
 	romfsExit();
 	gfxExit();
@@ -173,6 +175,14 @@ void App::Update() {
 			changeFile(&dirList.files[cursor-dirList.dirnum], &App::pInfo);
 		} 
 		Explorer::getDir(&dirList);
+	}
+
+	if (kDown & KEY_X) {
+		// KUSC http://16643.live.streamtheworld.com/KUSCMP128.mp3
+		// RadioSega http://content.radiosega.net:8006/rs-mpeg.mp3
+		// RadioNintendo http://play.radionintendo.com/stream
+		std::string s("http://play.radionintendo.com/stream");
+		changeFile(&s, &App::pInfo);
 	}
 	
 	if(kHeld & KEY_L)

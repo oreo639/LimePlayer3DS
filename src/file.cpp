@@ -24,11 +24,11 @@
 
 int readmagic(FILE* file, const char* filename){
 	char magic[4];
-	
+
 	fseek(file, 0, SEEK_SET);
 	fread(magic, 1, 4, file);
 	fseek(file, 0, SEEK_SET);
-	
+
 	/*Wave*/
 	if (!strncmp(magic, "RIFF", 4))
 	{
@@ -77,15 +77,17 @@ int readmagic(FILE* file, const char* filename){
 	{
 		return FILE_MIDI;
 	}
-	
+
 	return -1; //Negetive means that the file is not officaly supported.
 }
 
 int File::GetFileType(const char* file) {
 	FILE* fp = fopen(file, "r");
 	int filetype = 0; //If the file does not exist it return 0.
-	
-	if(fp != NULL) {
+
+	if (!strncmp(file, "http://", 7)) {
+		return FMT_NETWORK;
+	}else if(fp != NULL) {
 		filetype = readmagic(fp, file);
 		fclose(fp);
 	}
