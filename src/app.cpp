@@ -104,17 +104,22 @@ App::~App(void) {
 
 void noDspFirmExit(void) {
 	consoleInit(GFX_TOP, NULL);
-	printf("\x1b[01;00H/////////////FATAL///ERROR////////////////////////");
-	printf("\x1b[03;00HFatal error: Ndsp could not be Initalized.");
-	printf("\x1b[05;00HThis is probably because your dspfirm is missing.");
-	printf("\x1b[07;00HYou can correct this by running dsp1.");
-	printf("\x1b[30;00H//////////////////////////////////////////////////");
+	std::printf("\x1b[01;00H/////////////FATAL///ERROR////////////////////////");
+	std::printf("\x1b[03;00HFatal error: Ndsp could not be Initalized.");
+	std::printf("\x1b[05;00HThis is probably because your dspfirm is missing.");
+	std::printf("\x1b[07;00HYou can correct this by running dsp1.");
+	std::printf("\x1b[09;00HPress start to exit.");
+	std::printf("\x1b[30;00H//////////////////////////////////////////////////");
 	while (aptMainLoop()) {
+		gspWaitForVBlank();
 		hidScanInput();
 		
 		u32 kDown = hidKeysDown();
 		if (kDown & KEY_START)
 			break;
+
+		gfxSwapBuffers();
+		gfxFlushBuffers();
 	}
 	
 	gfxExit();
@@ -158,86 +163,93 @@ void App::Update() {
 	int cursor;
 	
 	cursor = gui->GuiGetCursorPos();
-	
+
 	if (kDown & KEY_START) {
 		appState = EXITING;
 	}
-	
-	if (kDown & KEY_A && App::Error != 0) {
-		App::Error = 0;
-	} else if (kDown & KEY_A && appState == LOGO) {
-		appState = MENU;
-	} else if (kDown & KEY_A) {
-		if (cursor < dirList.dirnum) {
-			chdir(dirList.directories[cursor].c_str());
-			gui->GuiCursorReset();
-		} else {
-			changeFile(&dirList.files[cursor-dirList.dirnum], &App::pInfo);
-		} 
-		Explorer::getDir(&dirList);
-	}
 
-	if (kDown & KEY_X) {
-		// KUSC http://16643.live.streamtheworld.com/KUSCMP128.mp3
-		// RadioSega http://content.radiosega.net:8006/rs-mpeg.mp3
-		// RadioNintendo http://play.radionintendo.com/stream
-		std::string s("http://play.radionintendo.com/stream");
-		changeFile(&s, &App::pInfo);
+	if (App::Error) {
+		if (kDown & KEY_A) {
+			App::Error = 0;
+		}
+	} else if (appState == LOGO) {
+		if (kDown & KEY_A) {
+			appState = MENU;
+		}
 	}
-	
-	if(kHeld & KEY_L)
-	{
-		/* Pause/Play */
-		if(kDown & (KEY_R | KEY_UP))
+	else if (appState == MENU) {
+		if (kDown & KEY_A) {
+			if (cursor < dirList.dirnum) {
+				chdir(dirList.directories[cursor].c_str());
+				gui->GuiCursorReset();
+			} else {
+				changeFile(&dirList.files[cursor-dirList.dirnum], &App::pInfo);
+			}
+			Explorer::getDir(&dirList);
+		}
+
+		if (kDown & KEY_X) {
+			// KUSC http://16643.live.streamtheworld.com/KUSCMP128.mp3
+			// RadioSega http://content.radiosega.net:8006/rs-mpeg.mp3
+			// RadioNintendo http://play.radionintendo.com/stream
+			std::string s("http://play.radionintendo.com/stream");
+			changeFile(&s, &App::pInfo);
+		}
+
+		if(kHeld & KEY_L)
 		{
-			if(PlayerInterface::IsPlaying() == false)
+			/* Pause/Play */
+			if(kDown & (KEY_R | KEY_UP))
+			{
+				if(PlayerInterface::IsPlaying() == false)
+					return;
+
+				if(PlayerInterface::TogglePlayback() == true)
+					puts("Paused");
+				else
+					puts("Playing");
 				return;
-	
-			if(PlayerInterface::TogglePlayback() == true)
-				puts("Paused");
-			else
-				puts("Playing");
-			return;
+			}
+
+			/* Stop */
+			if(kDown & KEY_B)
+			{
+				PlayerInterface::ExitPlayback();
+				changeFile(NULL, NULL);
+				/* If the playback thread is currently playing, it will now
+				 * stop and tell the Watchdog thread to display "Stopped".
+				 */
+				return;
+			}
 		}
-	
-		/* Stop */
-		if(kDown & KEY_B)
+
+		if (kDown & KEY_B) {
+			chdir("../");
+			gui->GuiCursorReset();
+			Explorer::getDir(&dirList);
+		}
+
+		if ((kDown & KEY_UP || ((kHeld & KEY_UP) && (osGetTime() - mill > 500))) && cursor > 0) {
+			gui->GuiCursorMove(-1);
+		}
+
+		if ((kDown & KEY_DOWN || ((kHeld & KEY_DOWN) && (osGetTime() - mill > 500))) && cursor < dirList.total-1) {
+			gui->GuiCursorMove(1);
+		}
+
+		if((kDown & KEY_RIGHT || ((kHeld & KEY_RIGHT) && (osGetTime() - mill > 500))) && cursor < dirList.total-1)
 		{
-			PlayerInterface::ExitPlayback();
-			changeFile(NULL, NULL);
-			/* If the playback thread is currently playing, it will now
-			 * stop and tell the Watchdog thread to display "Stopped".
-			 */
-			return;
+			gui->GuiCursorMove(-5);
 		}
-	}
-	
-	if (kDown & KEY_B) {
-		chdir("../");
-		gui->GuiCursorReset();
-		Explorer::getDir(&dirList);
-	}
-	
-	if ((kDown & KEY_UP || ((kHeld & KEY_UP) && (osGetTime() - mill > 500))) && cursor > 0) {
-		gui->GuiCursorMove(-1);
-	}
-	
-	if ((kDown & KEY_DOWN || ((kHeld & KEY_DOWN) && (osGetTime() - mill > 500))) && cursor < dirList.total-1) {
-		gui->GuiCursorMove(1);
-	}
-	
-	if((kDown & KEY_RIGHT || ((kHeld & KEY_RIGHT) && (osGetTime() - mill > 500))) && cursor < dirList.total-1)
-	{
-		gui->GuiCursorMove(-5);
-	}
-			
-	if((kDown & KEY_LEFT || ((kHeld & KEY_LEFT) && (osGetTime() - mill > 500))) && cursor > 0)
-	{
-		gui->GuiCursorMove(5);
-	}
-			
-	if(kDown) {
-		mill = osGetTime();
+
+		if((kDown & KEY_LEFT || ((kHeld & KEY_LEFT) && (osGetTime() - mill > 500))) && cursor > 0)
+		{
+			gui->GuiCursorMove(5);
+		}
+
+		if(kDown) {
+			mill = osGetTime();
+		}
 	}
 }
 
