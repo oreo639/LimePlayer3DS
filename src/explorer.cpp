@@ -109,7 +109,6 @@ int Explorer::getDir(dirList_t* dirList)
 	dirList->filenum = fileNum;
 	dirList->dirnum = dirNum;
 	dirList->total = fileNum + dirNum;
-	
 
 	closedir(dp);
 	free(wd);

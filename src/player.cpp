@@ -196,7 +196,7 @@ Decoder* Player::GetFormat(const playbackInfo_t* playbackInfo, int filetype) {
 			return opusdec;
 	}	
 	else if (filetype == FILE_MIDI) {
-		auto mididec = (new MidiDecoder(playbackInfo->filename.c_str(), "sdmc:/3ds/limeplayer3ds/dgguspat/wildmidi.cfg"));
+		auto mididec = (new MidiDecoder(playbackInfo->filename.c_str(), playbackInfo->settings.wildMidiConfig.c_str()));
 		if (mididec->IsInit())
 			return mididec;
 	}
