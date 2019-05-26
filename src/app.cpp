@@ -27,6 +27,7 @@
 #include "explorer.hpp"
 #include "player.hpp"
 #include "file.hpp"
+#include "config.hpp"
 
 Gui *gui;
 
@@ -89,7 +90,7 @@ App::App(void) {
 		std::ofstream  dst("/3ds/limeplayer3ds/config.json",   std::ios::binary);
 		dst << src.rdbuf();
 	}
-	//CFG_parse("/3ds/limeplayer3ds/config.json", &fileSettings);
+	CFG_parse("/3ds/limeplayer3ds/config.json", &App::pInfo.settings);
 	
 	chdir("sdmc:/");
 	chdir("MUSIC");
@@ -98,6 +99,7 @@ App::App(void) {
 
 App::~App(void) {
 	delete gui;
+	CFG_clean(&App::pInfo.settings);
 	osSetSpeedupEnable(false);
 	LibExit();
 }

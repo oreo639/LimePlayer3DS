@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "settings.h"
+#include "settings.hpp"
 #include "error.hpp"
 
 ///https://github.com/FlagBrew/PKSM/blob/PKSM.cpp/source/gui/gui.cpp#L281-L297
