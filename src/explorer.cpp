@@ -73,14 +73,10 @@ int Explorer::getDir(dirList_t* dirList)
 	dirList->files.clear();
 	dirList->files.clear();
 	
-	dirList->directories.clear();	
+	dirList->directories.clear();
 	dirList->directories.clear();
 
 	dirList->currentDir.assign(wd, strlen(wd));
-
-
-	//std::cout << std::endl;
-
 
 	if((dp = opendir(dirList->currentDir.c_str())) == NULL) {
 		closedir(dp);
@@ -109,7 +105,6 @@ int Explorer::getDir(dirList_t* dirList)
 	dirList->filenum = fileNum;
 	dirList->dirnum = dirNum;
 	dirList->total = fileNum + dirNum;
-	
 
 	closedir(dp);
 	free(wd);
