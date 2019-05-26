@@ -49,6 +49,7 @@ NetfmtDecoder::NetfmtDecoder(const char* url) {
 NetfmtDecoder::~NetfmtDecoder(void) {
 	http_close(&this->httpc);
 	free(this->dbuf);
+	delete streamdec;
 	LibInit = false;
 }
 
