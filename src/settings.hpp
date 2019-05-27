@@ -16,7 +16,6 @@ typedef struct
 	uint32_t		theme;
 	int			textLang;
 	playvec			playlist;
-	int			playlistLen;
 } settings_t;
 
 #endif

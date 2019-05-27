@@ -38,21 +38,14 @@ playbackInfo_t App::pInfo;
 
 Thread thread = NULL;
 
-/**
- * Stop the currently playing file (if there is one) and play another file.
- *
- * \param	ep_file			File to play.
- * \param	playbackInfo	Information that the playback thread requires to
- *							play file.
- */
 static int changeFile(const std::string* filename, playbackInfo_t* playbackInfo)
 {
 	s32 prio;
 
 	/**
-	 * If music is playing, stop it. Only one playback thread should be playing
-	 * at any time.
-	 */
+	* If music is playing, stop it. Only one playback thread should be playing
+	* at any time.
+	*/
 	if(thread != NULL)
 	{
 		/* Tell the thread to stop playback before we join it */
@@ -66,7 +59,13 @@ static int changeFile(const std::string* filename, playbackInfo_t* playbackInfo)
 	if(filename == NULL || playbackInfo == NULL)
 		return 0;
 
-	playbackInfo->filename = *filename;
+	std::string url;
+	if (!strncmp(filename->substr(filename->find_last_of('.') + 1).c_str(), "json", 4)) {
+		std::string url;
+		CFG_parseNC(filename->c_str(), &url);
+		playbackInfo->filename = url;
+	} else
+		playbackInfo->filename = *filename;
 
 	svcGetThreadPriority(&prio, CUR_THREAD_HANDLE);
 	thread = threadCreate(PlayerInterface::ThreadMainFunct, (void *)playbackInfo, 32 * 1024, prio - 1, -2, false);
@@ -90,7 +89,7 @@ App::App(void) {
 		std::ofstream  dst("/3ds/limeplayer3ds/config.json",   std::ios::binary);
 		dst << src.rdbuf();
 	}
-	CFG_parse("/3ds/limeplayer3ds/config.json", &App::pInfo.settings);
+	CFG_parseSettings("/3ds/limeplayer3ds/config.json", &App::pInfo.settings);
 	
 	chdir("sdmc:/");
 	chdir("MUSIC");
@@ -99,7 +98,7 @@ App::App(void) {
 
 App::~App(void) {
 	delete gui;
-	CFG_clean(&App::pInfo.settings);
+	CFG_cleanSettings(&App::pInfo.settings);
 	osSetSpeedupEnable(false);
 	LibExit();
 }
