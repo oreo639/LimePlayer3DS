@@ -7,6 +7,7 @@
 
 #define CONFIG_STRING "settings"
 #define ENTRIES_STRING "playlists"
+#define RADIO_STRING "station"
 
 #define NAME_STRING "name"
 #define FILE_STRING "file"
@@ -83,7 +84,27 @@ void parse_options(json_t* entries_elem, settings_t* todo_config)
 	free(iter);
 }
 
-int CFG_parse(const char* filepath, settings_t* settings) {
+void parse_station(json_t* entries_elem, std::string* url)
+{
+	const char *key;
+	json_t *value;
+
+	void *iter = json_object_iter(entries_elem);
+	while(iter)
+	{
+		key = json_object_iter_key(iter);
+		value = json_object_iter_value(iter);
+		if(!strcmp(key, "url"))
+		{
+			url->assign(json_string_value(value));
+		}
+		iter = json_object_iter_next(entries_elem, iter);
+		free(value);
+	}
+	free(iter);
+}
+
+int CFG_parseSettings(const char* filepath, settings_t* settings) {
 	json_error_t *pjsonError = NULL;
 	json_t *pJson = json_load_file(filepath, 0, pjsonError);
 
@@ -98,7 +119,7 @@ int CFG_parse(const char* filepath, settings_t* settings) {
 		json_object_foreach(pJson, key, value) {
 			if (!strcmp(key, ENTRIES_STRING))
 			{
-				//parse_entries(value, settings);
+				parse_entries(value, settings);
 			}
 			if (!strcmp(key, CONFIG_STRING))
 			{
@@ -114,8 +135,35 @@ int CFG_parse(const char* filepath, settings_t* settings) {
 	return 0;
 }
 
+int CFG_parseNC(const char* filepath, std::string* url) {
+	json_error_t *pjsonError = NULL;
+	json_t *pJson = json_load_file(filepath, 0, pjsonError);
 
-void CFG_clean(settings_t* parsed_config)
+	if (pJson == 0) {
+		return 1;
+	}
+
+	const char *key;
+	json_t *value;
+
+	if (json_is_object(pJson)) {
+		json_object_foreach(pJson, key, value) {
+			if (!strcmp(key, RADIO_STRING))
+			{
+				parse_station(value, url);
+			}
+		}
+	}
+	else
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
+
+void CFG_cleanSettings(settings_t* parsed_config)
 {
 	parsed_config->wildMidiConfig.clear();
 	parsed_config->playlist.clear();

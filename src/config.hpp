@@ -10,8 +10,10 @@
 #define UPDATE_DONE 2
 #define STATE_MARKED 4
 
-int CFG_parse(const char* filepath, settings_t* parsed_config);
+int CFG_parseSettings(const char* filepath, settings_t* parsed_config);
 
-void CFG_clean(settings_t* parsed_config);
+int CFG_parseNC(const char* filepath, std::string* url);
+
+void CFG_cleanSettings(settings_t* parsed_config);
 
 #endif
