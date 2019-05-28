@@ -162,7 +162,6 @@ int CFG_parseNC(const char* filepath, std::string* url) {
 	return 0;
 }
 
-
 void CFG_cleanSettings(settings_t* parsed_config)
 {
 	parsed_config->wildMidiConfig.clear();

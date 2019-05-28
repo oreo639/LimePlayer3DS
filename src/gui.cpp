@@ -14,12 +14,15 @@
 *    You should have received a copy of the GNU General Public License
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include <vector>
+
 #include <stdio.h>
 #include <time.h>
 
 #include "gui.hpp"
 #include "app.hpp"
 #include "error.hpp"
+#include "lang.hpp"
 
 // Generated at build time
 #include "sprites.h"
@@ -32,7 +35,9 @@ C2D_SpriteSheet spriteSheet;
 C2D_Sprite* sprite;
 C2D_TextBuf g_staticBuf, g_dynamicBuf;
 
-//C2D_Text staticText[TEXT_MAX];
+std::vector<std::string> array;
+int error;
+//C2D_Text staticText[20];
 
 static u8 preVol;
 static u64 trigeredTime = 0;
@@ -84,6 +89,7 @@ void Gui::Drawui(playbackInfo_t* playbackInfo)
 	}
 	else if (App::appState == App::LOGO) {
 		C2D_SceneBegin(top);
+		guiprint((array[0]+std::to_string(error)).c_str(), 15, 15, 0.5f, 0.5f);
 		C2D_SceneBegin(bot);
 	}
 	
@@ -171,9 +177,11 @@ void Gui::textinit(void)
 	// dynamic text - the latter will be cleared at each frame.
 	g_staticBuf = C2D_TextBufNew(4096); // support up to 4096 glyphs in the buffer
 	g_dynamicBuf = C2D_TextBufNew(4096); // support up to 4096 glyphs in the buffer
-	//textload(TEXT_LOADING_GENERIC);
-	//textload(TEXT_LOADING_INFO);
-	//textload(TEXT_MENU_SETTINGS);
+	error = getTranslation(LANG_EN, "lang.json", &array);
+	array.push_back("Didn't work");
+	//textload(0);
+	//textload(1);
+	//textload(2);
 	//textload(TEXT_MENU_MODE);
 	//textload(TEXT_MENU_INTERNET);
 	//textload(TEXT_MENU_CREDITS);
@@ -198,7 +206,7 @@ void Gui::guiprint(const char* text, float xloc, float yloc, float scaleX, float
 	guiprintColor(text, xloc, yloc, scaleX, scaleY, 0xFFFFFFFF);
 }
 
-/*static void guiprintStatic(Text_id id, float xloc, float yloc, float scaleX, float scaleY)
+/*static void guiprintStatic(uint8_t id, float xloc, float yloc, float scaleX, float scaleY)
 {
 	C2D_DrawText(&staticText[id], C2D_WithColor, xloc, yloc, 0.5f, scaleX, scaleY, 0xFFFFFFFF);
 }*/

@@ -1,21 +1,26 @@
 #ifndef __LIME_LANG_i18n__
 #define __LIME_LANG_i18n__
-#include <3ds.h>
 
-//Custom language defines here.
-#define CFG_LANGUAGE_DEFAULT 12
+// Internal language values
+typedef enum
+{
+	LANG_SYSTEM = 0,  ///< System Language
+	LANG_JP,          ///< Japanese
+	LANG_EN,          ///< English
+	LANG_FR,          ///< French
+	LANG_DE,          ///< German
+	LANG_IT,          ///< Italian
+	LANG_ES,          ///< Spanish
+	LANG_ZH,          ///< Simplified Chinese
+	LANG_KO,          ///< Korean
+	LANG_NL,          ///< Dutch
+	LANG_PT,          ///< Portugese
+	LANG_RU,          ///< Russian
+	LANG_TW,          ///< Traditional Chinese
+} Language;
 
-typedef enum {
-	// InstallType text
-	TEXT_LOADING_GENERIC = 0,
-	TEXT_LOADING_INFO,
-	TEXT_MENU_SETTINGS,
-	TEXT_MENU_MODE,
-	TEXT_MENU_INTERNET,
-	TEXT_MENU_CREDITS,
-	TEXT_CREDITS_MAIN,
-	TEXT_MAX
-} Text_id;
+int getTranslation(Language lang, std::string file, std::vector<std::string>* array);
 
-extern const char* const g_strings[TEXT_MAX][16];
+std::string getLanguageString(Language lang);
+
 #endif

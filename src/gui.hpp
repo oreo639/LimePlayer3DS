@@ -13,41 +13,41 @@
 class Gui
 {
 	public:
-	Gui(void);
+		Gui(void);
 	
-	~Gui(void);
+		~Gui(void);
 	
-	void Drawui(playbackInfo_t* musInfo);
+		void Drawui(playbackInfo_t* musInfo);
 	
-	int InitlimeGFX(void);
+		int InitlimeGFX(void);
 
-	void CloselimeGFX(void);
+		void CloselimeGFX(void);
 	
-	void GuiCursorMove(int move);
+		void GuiCursorMove(int move);
 	
-	void GuiCursorReset(void);
+		void GuiCursorReset(void);
 	
-	int GuiGetCursorPos(void);
+		int GuiGetCursorPos(void);
 
 	private:
-	void textinit(void);
+		void textinit(void);
 
-	void startframe(void);
+		void startframe(void);
 
-	void endframe(void);
+		void endframe(void);
 
-	void guiprint(const char* text, float xloc, float yloc, float scaleX, float scaleY);
+		void guiprint(const char* text, float xloc, float yloc, float scaleX, float scaleY);
 
-	void guiprintColor(const char* text, float xloc, float yloc, float scaleX, float scaleY, u32 color);
+		void guiprintColor(const char* text, float xloc, float yloc, float scaleX, float scaleY, u32 color);
 
-	void guilist(const char* text, int row);
+		void guilist(const char* text, int row);
 
-	void drawBaseGui(void);
+		void drawBaseGui(void);
 
-	void drawBrowserPlayer(playbackInfo_t* info);
+		void drawBrowserPlayer(playbackInfo_t* info);
 	
-	void drawError(void);
+		void drawError(void);
 	
-	void fblist(int rows, int startpoint);
+		void fblist(int rows, int startpoint);
 };
 #endif
