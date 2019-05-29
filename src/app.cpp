@@ -78,7 +78,6 @@ App::App(void) {
 	LibInit();
 	osSetSpeedupEnable(true);
 	appState = LOGO;
-	gui = new Gui();
 	
 	struct stat buf;
 	if (stat("/3ds/limeplayer3ds/config.json", &buf)) {
@@ -90,6 +89,8 @@ App::App(void) {
 		dst << src.rdbuf();
 	}
 	CFG_parseSettings("/3ds/limeplayer3ds/config.json", &App::pInfo.settings);
+
+	gui = new Gui(&App::pInfo.settings);
 	
 	chdir("sdmc:/");
 	chdir("MUSIC");
