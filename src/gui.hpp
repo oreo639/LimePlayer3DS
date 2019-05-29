@@ -13,7 +13,7 @@
 class Gui
 {
 	public:
-		Gui(void);
+		Gui(settings_t* settings);
 	
 		~Gui(void);
 	
@@ -30,13 +30,15 @@ class Gui
 		int GuiGetCursorPos(void);
 
 	private:
-		void textinit(void);
+		void textinit(settings_t* settings);
 
 		void startframe(void);
 
 		void endframe(void);
 
 		void guiprint(const char* text, float xloc, float yloc, float scaleX, float scaleY);
+
+		void guiprintStatic(uint8_t id, float xloc, float yloc, float scaleX, float scaleY);
 
 		void guiprintColor(const char* text, float xloc, float yloc, float scaleX, float scaleY, u32 color);
 

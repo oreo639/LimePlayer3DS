@@ -5,6 +5,7 @@
 #include <jansson.h>
 
 #include "lang.hpp"
+#include "error.hpp"
 
 std::string getSystemLanguageString(void) {
 	u8 language = 0;
@@ -41,7 +42,7 @@ std::string getSystemLanguageString(void) {
 	return "en";	
 }
 
-std::string getLanguageString(Language lang) {
+std::string getLanguageString(int lang) {
 	switch (lang) {
 		case LANG_SYSTEM:
 			return getSystemLanguageString();
@@ -75,14 +76,18 @@ std::string getLanguageString(Language lang) {
 	return "en";
 }
 
-int getTranslation(Language lang, std::string file, std::vector<std::string>* array) {
+int getTranslation(int lang, std::string file, std::vector<std::string>* array) {
 	json_error_t *pjsonError = NULL;
 	json_t *pJson = json_load_file(("romfs:/i18n/"+getLanguageString(lang)+"/"+file).c_str(), 0, pjsonError);
 
 	std::string tmp;
 
-	if (pJson == 0) {
-		return 1;
+	if (!pJson) {
+		pJson = json_load_file(("romfs:/i18n/en/"+file).c_str(), 0, pjsonError);
+		if (!pJson) {
+			DEBUG("Json string loading failed, please check that file exists and follows the json spec.");
+			return 1;
+		}
 	}
 
 	const char *key;

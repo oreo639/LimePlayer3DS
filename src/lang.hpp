@@ -19,7 +19,18 @@ typedef enum
 	LANG_TW,          ///< Traditional Chinese
 } Language;
 
-int getTranslation(Language lang, std::string file, std::vector<std::string>* array);
+// Enums for strings used in lang.json
+// Must be in the correct order as in lang.json
+// All lang.json files must follow this order.
+typedef enum
+{
+	TEXT_LOADING_GENERIC = 0,
+	TEXT_WELCOME,
+	TEXT_MENU_SETTINGS,
+	TEXT_LIMEPLAYER
+} JsonStrings;
+
+int getTranslation(int lang, std::string file, std::vector<std::string>* array);
 
 std::string getLanguageString(Language lang);
 
