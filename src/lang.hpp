@@ -30,8 +30,7 @@ typedef enum
 	TEXT_LIMEPLAYER
 } JsonStrings;
 
-int getTranslation(int lang, std::string file, std::vector<std::string>* array);
-
-std::string getLanguageString(Language lang);
-
+namespace Lang {
+	int ReadTranslationStrings(int lang, std::string file, std::vector<std::string>* array);
+};
 #endif

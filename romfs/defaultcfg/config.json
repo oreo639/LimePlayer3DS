@@ -4,7 +4,7 @@
 		"theme_inputs_comment": "N/A",
 		"WildMidiCFG": "/3ds/limeplayer3ds/8mbgmpat/timidity.cfg",
 		"WildMidiCFG_inputs_comment": "<path to (wildmidi/timidity).cfg>",
-		"lang": 1,
+		"lang": 0,
 		"lang_inputs_comment": "You can use an int that corrisponds with a language here https://github.com/Oreo639/LimePlayer3DS/blob/translation/src/lang.hpp#L7-L19"
 	},
 	"playlists": [
