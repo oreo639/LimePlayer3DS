@@ -76,7 +76,7 @@ std::string getLanguageString(int lang) {
 	return "en";
 }
 
-int getTranslation(int lang, std::string file, std::vector<std::string>* array) {
+int Lang::ReadTranslationStrings(int lang, std::string file, std::vector<std::string>* array) {
 	json_error_t *pjsonError = NULL;
 	json_t *pJson = json_load_file(("romfs:/i18n/"+getLanguageString(lang)+"/"+file).c_str(), 0, pjsonError);
 
@@ -84,6 +84,7 @@ int getTranslation(int lang, std::string file, std::vector<std::string>* array) 
 
 	if (!pJson) {
 		pJson = json_load_file(("romfs:/i18n/en/"+file).c_str(), 0, pjsonError);
+		DEBUG("Locale %s not implemented.\n Using en as fallback", getLanguageString(lang).c_str());
 		if (!pJson) {
 			DEBUG("Json string loading failed, please check that file exists and follows the json spec.");
 			return 1;

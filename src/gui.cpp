@@ -184,18 +184,10 @@ void Gui::textinit(settings_t* settings)
 	// dynamic text - the latter will be cleared at each frame.
 	g_staticBuf = C2D_TextBufNew(4096); // support up to 4096 glyphs in the buffer
 	g_dynamicBuf = C2D_TextBufNew(4096); // support up to 4096 glyphs in the buffer
-	if (!getTranslation(settings->textLang, "lang.json", &strArray)) {
+	if (!Lang::ReadTranslationStrings(settings->textLang, "lang.json", &strArray)) {
 		for (uint32_t i = 0; i < strArray.size(); i++)
 			staticText.push_back(staticTextGen(&strArray[i]));
 	}
-	//textload(0);
-	//textload(1);
-	//textload(2);
-	//textload(TEXT_MENU_MODE);
-	//textload(TEXT_MENU_INTERNET);
-	//textload(TEXT_MENU_CREDITS);
-	//textload(TEXT_CREDITS_MAIN);
-		
 }
 
 void Gui::guiprintColor(const char* text, float xloc, float yloc, float scaleX, float scaleY, u32 color)
@@ -219,6 +211,8 @@ void Gui::guiprintStatic(uint8_t id, float xloc, float yloc, float scaleX, float
 {
 	if (id < staticText.size())
 		C2D_DrawText(&staticText[id], C2D_WithColor, xloc, yloc, 0.5f, scaleX, scaleY, 0xFFFFFFFF);
+	else
+		guiprint("GuiPrintStatic: Invalid string.", xloc, yloc, scaleX, scaleY);
 }
 
 static void drawImage(int image_id, float x, float y)
@@ -230,7 +224,7 @@ static void drawImageLayered(int image_id, float x, float y, float layer)
 	C2D_DrawImageAt(C2D_SpriteSheetGetImage(spriteSheet, image_id), x, y, layer, NULL, 1.0f, 1.0f);
 }
 
-static void volumeIndicator(u8 volume){
+static void volumeIndicator(u8 volume) {
 	int indicator = (volume/15);
 	drawImageLayered(sprites_popup_vol_bkg_idx, 120, 30, 0.7f);
 	drawImageLayered(indicator + sprites_popup_vol0_idx, 120, 30, 0.7f);
