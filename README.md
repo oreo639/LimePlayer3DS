@@ -6,7 +6,10 @@ It checks for music in the `sdmc:/music` folder. If it doesn't exist then it jus
 
 The default path for midi patchsets is `/3ds/limeplayer3ds/dgguspat`.
 
-This path be changed in the config file located at `/3ds/limeplayer3ds/config.json` which should be created (if it doesn't already exist) upon launching the application. (Reading of the config file will be reimplemented soon)
+This path be changed in the config file located at `/3ds/limeplayer3ds/config.json` which should be created (if it doesn't already exist) upon launching the application.
+
+More info about LimePlayer3DS's config.json can be found here: <br/>
+https://github.com/Oreo639/LimePlayer3DS/wiki/config.json
 
 (Improved GUI, TBD. Loading cover pictures. All of the menus (although every one except setting's and copyright's use is TBD).)
 
