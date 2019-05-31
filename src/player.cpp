@@ -123,7 +123,8 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 				break;
 			}
 		}
-		//playerget_FileInfo(info);
+
+
 		bool lastbuf = false;
 		while(stop == false)
 		{

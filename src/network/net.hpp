@@ -3,9 +3,20 @@
 
 #include <3ds.h>
 
-Result http_open(httpcContext *httpc, const char* url);
+typedef struct {
+	httpcContext httpc;
+	uint32_t content_type;
+	bool isShoutcastSupported;
+	uint32_t icy_byteinterval;
+	char *stream_title;
+	uint8_t *dbuf;
+	uint32_t dbufSize;
+	uint32_t readsize;
+} http_context;
 
-Result http_download(httpcContext *httpc, u8 *buf, u32 size, u32 *readsize);
+Result http_open(http_context* httpctx, const char* url);
 
-Result http_close(httpcContext *httpc);
+Result http_download(http_context* httpctx);
+
+Result http_close(http_context* httpctx);
 #endif

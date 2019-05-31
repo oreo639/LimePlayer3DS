@@ -18,37 +18,39 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "net.hpp"
 #include "netfmt.hpp"
+#include "content.hpp"
 #include "error.hpp"
 #include "formats/mp3stream.hpp"
 
 Mp3StreamDecoder *streamdec;
+musinfo_t* MetaPtr = NULL;
 
 static int LibInit = false;
+static uint32_t bytesread = 0;
 
 NetfmtDecoder::NetfmtDecoder(const char* url) {
-	if (R_FAILED(http_open(&this->httpc, url))) {
+	if (R_FAILED(http_open(&this->httpctx, url))) {
 		DEBUG("Netfmt: Http_open failed.\n");
 		return;
 	}
-	this->dbuf = (uint8_t*)malloc(0x1000);
-	if(!this->dbuf){
-		DEBUG("Netfmt: Malloc Failed.\n");
-		return;
+
+	http_download(&this->httpctx);
+
+	if (this->httpctx.content_type == CONTENT_MPEG3) {
+		streamdec = (new Mp3StreamDecoder(this->httpctx.dbuf, this->httpctx.readsize));
+		DEBUG("Using mpg123.\n");
+	} else {
+		DEBUG("Unsupported format.");
 	}
-
-	http_download(&this->httpc, this->dbuf, 0x1000, &this->readsize);
-
-	streamdec = (new Mp3StreamDecoder(this->dbuf, this->readsize));
 
 	if (streamdec->IsInit())
 		LibInit = true;
 }
 
 NetfmtDecoder::~NetfmtDecoder(void) {
-	http_close(&this->httpc);
-	free(this->dbuf);
+	MetaPtr = NULL;
+	http_close(&this->httpctx);
 	delete streamdec;
 	LibInit = false;
 }
@@ -58,7 +60,7 @@ bool NetfmtDecoder::IsInit(void) {
 }
 
 void NetfmtDecoder::Info(musinfo_t* Meta) {
-	return;
+	MetaPtr = Meta;
 }
 
 uint32_t NetfmtDecoder::Position(void) {
@@ -74,9 +76,14 @@ void NetfmtDecoder::Seek(uint32_t location) {
 }
 
 uint32_t NetfmtDecoder::Decode(void* buffer) {
-	if (http_download(&this->httpc, this->dbuf, 0x1000, &this->readsize) != (s32)HTTPC_RESULTCODE_DOWNLOADPENDING)
+	if (http_download(&this->httpctx) != (s32)HTTPC_RESULTCODE_DOWNLOADPENDING)
 		return 0;
-	return streamdec->Decode(this->dbuf, this->readsize, buffer);
+
+	if (this->httpctx.isShoutcastSupported) {
+		// Do byte interval calculations here.
+	}
+
+	return streamdec->Decode(this->httpctx.dbuf, this->httpctx.readsize, buffer);
 }
 
 uint32_t NetfmtDecoder::Samplerate(void) {
@@ -84,9 +91,9 @@ uint32_t NetfmtDecoder::Samplerate(void) {
 }
 
 uint32_t NetfmtDecoder::Spf(void* buffer) {
-	if (http_download(&this->httpc, this->dbuf, 0x1000, &this->readsize) != (s32)HTTPC_RESULTCODE_DOWNLOADPENDING)
+	if (http_download(&this->httpctx) != (s32)HTTPC_RESULTCODE_DOWNLOADPENDING)
 		return 0;
-	return streamdec->Spf(this->dbuf, this->readsize, buffer);
+	return streamdec->Spf(this->httpctx.dbuf, this->httpctx.readsize, buffer);
 }
 
 uint32_t NetfmtDecoder::Buffsize(void) {

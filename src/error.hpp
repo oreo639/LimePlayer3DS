@@ -8,7 +8,11 @@
 #define DECODER_INIT_TIMEOUT		1003
 #define UNSUPPORTED_CHANNELS		1004
 
+#ifndef NODEBUGSTR
 #define DEBUG(...) fprintf(stderr, __VA_ARGS__)
-
+#else
+#pragma message("Note: Debug strings are disabled.")
+#define DEBUG(...)
+#endif
 
 #endif //ifndef __ERROR_H__

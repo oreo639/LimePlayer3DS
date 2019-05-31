@@ -42,7 +42,7 @@ Mp3StreamDecoder::Mp3StreamDecoder(uint8_t* inbuffer, uint32_t inbufsize) {
 	}
 
 	if (mpg123_open_feed(mh) != MPG123_OK ||
-		mpg123_feed(mh, static_cast<unsigned char*>(inbuffer), inbufsize) != MPG123_OK ||
+		mpg123_feed(mh, (const unsigned char*) inbuffer, inbufsize) != MPG123_OK ||
 		mpg123_getformat(mh, (long *) &rate, (int *) &channels, &encoding) != MPG123_OK)
 	{
 		printf("Trouble with mpg123: %s\n", mpg123_strerror(mh));
@@ -77,20 +77,33 @@ bool Mp3StreamDecoder::IsInit(void) {
 }
 
 void Mp3StreamDecoder::Info(musinfo_t* Meta) {
-	return;
+	mpg123_id3v1* v1;
+	mpg123_id3v2* v2;
+	mpg123_id3(mh, &v1, &v2);
+
+	/*Not going to deal with this bs. For now ofc.*/
+	//if (v1->artist) {
+	//infoOut->fileMeta->authorCpright = strdup(v1->artist);
+	//}
+	if (mpg123_strlen(v2->artist, true)) {
+		Meta->authorCpright.assign(v2->artist->p, strlen(v2->artist->p));
+	}
+	else {
+		Meta->authorCpright.assign("(No Author-Mp3)", strlen("(No Author-Mp3)"));
+	}
 }
 
 uint32_t Mp3StreamDecoder::Position(void) {
-	return 0;
+	return mpg123_tell(mh);
 }
 
 uint32_t Mp3StreamDecoder::Length(void) {
-	return 0;
+	return mpg123_length(mh);
 }
 
 void Mp3StreamDecoder::Seek(uint32_t location)
 {
-	return;
+	return; // Cannot seek in a stream.
 }
 
 uint32_t Mp3StreamDecoder::Decode(uint8_t* inbuffer, uint32_t inbuffsize, void* outbuffer)

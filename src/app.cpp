@@ -200,20 +200,15 @@ void App::Update() {
 
 		if(kHeld & KEY_L)
 		{
-			/* Pause/Play */
 			if(kDown & (KEY_R | KEY_UP))
 			{
 				if(PlayerInterface::IsPlaying() == false)
 					return;
 
 				if(PlayerInterface::TogglePlayback() == true)
-					puts("Paused");
-				else
-					puts("Playing");
-				return;
+					return;
 			}
 
-			/* Stop */
 			if(kDown & KEY_B)
 			{
 				PlayerInterface::ExitPlayback();

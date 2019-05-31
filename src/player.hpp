@@ -22,8 +22,9 @@ typedef struct
 } playbackInfo_t;
 
 enum Format {
-	FORMAT_U8,
-	FORMAT_U16,
+	FORMAT_16,
+	FORMAT_8,
+	FORMAT_ADPCM
 };
 
 class Decoder {

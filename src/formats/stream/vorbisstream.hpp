@@ -1,14 +1,13 @@
-#ifndef __LIME_NETFMT_H__
-#define __LIME_NETFMT_H__
+#ifndef DECODER_MP3_H
+#define DECODER_MP3_H
 
 #include "player.hpp"
-#include "net.hpp"
 
-class NetfmtDecoder : public Decoder {
+class Mp3StreamDecoder : public StreamDecoder {
 	public:
-		NetfmtDecoder(const char* url);
+		Mp3StreamDecoder(uint8_t* inbuffer, uint32_t inbufsize);
 		
-		~NetfmtDecoder(void);
+		~Mp3StreamDecoder(void);
 		
 		bool IsInit(void) override;
 		
@@ -20,17 +19,15 @@ class NetfmtDecoder : public Decoder {
 		
 		void Seek(uint32_t location) override;
 		
-		uint32_t Decode(void* buffer) override;
+		uint32_t Decode(uint8_t* inbuffer, uint32_t inbuffsize, void* outbuffer) override;
 		
 		uint32_t Samplerate(void) override;
 
-		uint32_t Spf(void* buffer) override;
+		uint32_t Spf(uint8_t* inbuffer, uint32_t inbuffsize, void* outbuffer) override;
 		
 		uint32_t Buffsize(void) override;
 		
 		int Channels(void) override;
-	private:
-		http_context httpctx;
 };
 
 #endif

@@ -226,8 +226,12 @@ static void drawImageLayered(int image_id, float x, float y, float layer)
 
 static void volumeIndicator(u8 volume) {
 	int indicator = (volume/15);
-	drawImageLayered(sprites_popup_vol_bkg_idx, 120, 30, 0.7f);
-	drawImageLayered(indicator + sprites_popup_vol0_idx, 120, 30, 0.7f);
+	if (indicator < 6) {
+		drawImageLayered(sprites_popup_vol_bkg_idx, 120, 30, 0.7f);
+		drawImageLayered(indicator + sprites_popup_vol0_idx, 120, 30, 0.7f);
+	} else {
+		DEBUG("Err: Got volume indicator of %d", indicator);
+	}
 }
 
 static void menuList(int cur, int from, float startpoint, float size, int rows) {
