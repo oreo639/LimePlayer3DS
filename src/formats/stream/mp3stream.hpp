@@ -1,5 +1,5 @@
-#ifndef DECODER_MP3_H
-#define DECODER_MP3_H
+#ifndef __LIME_STREAM_MP3_H___
+#define __LIME_STREAM_MP3_H___
 
 #include "player.hpp"
 

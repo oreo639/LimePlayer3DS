@@ -21,9 +21,11 @@
 #include "netfmt.hpp"
 #include "content.hpp"
 #include "error.hpp"
-#include "formats/mp3stream.hpp"
+#include "formats/stream/mp3stream.hpp"
+#include "formats/stream/opusstream.hpp"
+#include "formats/stream/vorbisstream.hpp"
 
-Mp3StreamDecoder *streamdec;
+StreamDecoder *streamdec = nullptr;
 musinfo_t* MetaPtr = NULL;
 
 static int LibInit = false;
@@ -40,12 +42,27 @@ NetfmtDecoder::NetfmtDecoder(const char* url) {
 	if (this->httpctx.content_type == CONTENT_MPEG3) {
 		streamdec = (new Mp3StreamDecoder(this->httpctx.dbuf, this->httpctx.readsize));
 		DEBUG("Using mpg123.\n");
+	} else if (this->httpctx.content_type == CONTENT_OGG) {
+		if (isOpusStream(this->httpctx.dbuf, this->httpctx.readsize) == 0) {
+			streamdec = (new OpusStreamDecoder(this->httpctx.dbuf, this->httpctx.readsize));
+			DEBUG("Using opusfile.\n");
+
+		} else if (isVorbisStream(this->httpctx.dbuf, this->httpctx.readsize) == 0) {
+			DEBUG("Vorbis support is not implemented.\n");
+			streamdec = nullptr;
+
+		} else {
+			DEBUG("Unsupported format using ogg container.\n");
+			streamdec = nullptr;
+		}
 	} else {
+		streamdec = nullptr;
 		DEBUG("Unsupported format.");
 	}
 
-	if (streamdec->IsInit())
-		LibInit = true;
+	if (streamdec != nullptr)
+		if (streamdec->IsInit())
+			LibInit = true;
 }
 
 NetfmtDecoder::~NetfmtDecoder(void) {

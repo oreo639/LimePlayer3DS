@@ -17,10 +17,6 @@ static const char* mime_mpeg3[] = {
 static const char* mime_ogg[] = {
 	"audio/ogg", "audio/x-ogg",
 	"application/ogg", "application/x-ogg",
-	NULL
-};
-
-static const char* mime_vorbis[] = {
 	"audio/vorbis", "audio/x-vorbis",
 	"application/vorbis", "application/x-vorbis",
 	NULL
@@ -36,7 +32,7 @@ static const char* mime_pls[] = {
 	"application/pls", NULL
 };
 
-static const char** mimes[] = { mime_mpeg3, mime_ogg, mime_vorbis, mime_m3u, mime_pls, NULL };
+static const char** mimes[] = { mime_mpeg3, mime_ogg, mime_m3u, mime_pls, NULL };
 
 int debunk_mime(const char* content_type)
 {
@@ -69,9 +65,6 @@ debunk_result:
 				break;
 			case M_OGG:
 				r = CONTENT_OGG;
-				break;
-			case M_VORBIS:
-				r = CONTENT_VORBIS;
 				break;
 			case M_M3U:
 				r = LIST_M3U;

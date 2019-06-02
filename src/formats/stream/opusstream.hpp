@@ -1,5 +1,5 @@
-#ifndef DECODER_MP3_H
-#define DECODER_MP3_H
+#ifndef __LIME_STREAM_OPUS_H__
+#define __LIME_STREAM_OPUS_H__
 
 #include "player.hpp"
 
@@ -29,5 +29,7 @@ class OpusStreamDecoder : public StreamDecoder {
 		
 		int Channels(void) override;
 };
+
+int isOpusStream(uint8_t* inbuffer, uint32_t inbufsize);
 
 #endif

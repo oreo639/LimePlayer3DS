@@ -1,35 +1,62 @@
+/*   LimePlayer3DS FOSS graphcal music player for the Nintendo 3DS.
+*    Copyright (C) 2018-2019  LimePlayer Team
+*
+*    This program is free software: you can redistribute it and/or modify
+*    it under the terms of the GNU General Public License as published by
+*    the Free Software Foundation, either version 3 of the License, or
+*    (at your option) any later version.
+*
+*    This program is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*    GNU General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 #include <stdlib.h>
 #include <string.h>
 
 #include <opusfile.h>
 
-#include "opus.hpp"
+#include "opusstream.hpp"
 
-static OggOpusFile*		opusFile;
-static const OpusHead*	opusHead;
+#include "error.hpp"
+
+static bool isSeekable;
+static OpusDecoder*		opusDecoder;
+static const OpusHead*		opusHead;
 static const size_t		buffSize = 32 * 1024;
 
 static int LibInit = false;
 
-uint64_t fillOpusBuffer(int16_t* bufferOut);
+uint64_t fillOpusBuffer(uint8_t* inbuffer, uint32_t inbuffsize, int16_t* bufferOut);
 
 
 OpusStreamDecoder::OpusStreamDecoder(uint8_t* inbuffer, uint32_t inbufsize) {
 	int err = 0;
 
-	if((opusFile = op_open_memory(static_cast<unsigned char*>(inbuffer), inbufsize, &err)) == NULL)
+	if ((opusDecoder = opus_decoder_create(48000, 2, &err))) {
+		DEBUG("opus decoder initalization failed.");
 		return;
+	}
 
-	if((err = op_current_link(opusFile)) < 0)
+	/*if ((op_open_memory(inbuffer, inbufsize, &err)) == NULL) {
+		DEBUG("Open_memory failed with %d.\n", err);
 		return;
+	}*/
 
-	opusHead = op_head(opusFile, err);
+	DEBUG("OpusDec initalized.\n");
+
+	//if ((isSeekable = op_seekable(opusFile)) != 0)
+		//if((err = op_current_link(opusFile)) < 0)
+			//return;
 	
 	LibInit = true;
 }
 
 OpusStreamDecoder::~OpusStreamDecoder(void) {
-	op_free(opusFile);
+	opus_decoder_destroy(opusDecoder);
 	LibInit = false;
 }
 
@@ -64,9 +91,9 @@ uint32_t OpusStreamDecoder::Samplerate(void)
 	return 48000;
 }
 
-uint32_t OpusStreamDecoder::Spf(void* buffer)
+uint32_t OpusStreamDecoder::Spf(uint8_t* inbuffer, uint32_t inbuffsize, void* outbuffer)
 {
-	return Decode(buffer)/Channels();
+	return Decode(inbuffer, inbuffsize, outbuffer)/Channels();
 }
 
 uint32_t OpusStreamDecoder::Buffsize(void)
@@ -79,24 +106,22 @@ int OpusStreamDecoder::Channels(void)
 	return 2;
 }
 
-int isOpus(uint8_t* inbuffer, uint32_t inbufsize)
+int isOpusStream(uint8_t* inbuffer, uint32_t inbufsize)
 {
 	int err = 0;
-	OggOpusFile* opusTest = op_test_file(in, &err);
-
-	op_free(opusTest);
+	err = op_test(NULL, inbuffer, inbufsize);
 	return err;
 }
 
-uint64_t fillOpusBuffer(int16_t* bufferOut)
+uint64_t fillOpusBuffer(uint8_t* inbuffer, uint32_t inbuffsize, int16_t* bufferOut)
 {
 	uint64_t samplesRead = 0;
 	int samplesToRead = buffSize;
 
 	while(samplesToRead > 0)
 	{
-		int samplesJustRead = op_read_stereo(opusFile, bufferOut,
-				samplesToRead > 120*48*2 ? 120*48*2 : samplesToRead);
+		int samplesJustRead = opus_decode(opusDecoder, inbuffer, inbuffsize, bufferOut,
+						samplesToRead > 120*48*2 ? 120*48*2 : samplesToRead, 48000);
 
 		if(samplesJustRead < 0)
 			return samplesJustRead;

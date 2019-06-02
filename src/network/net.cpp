@@ -13,6 +13,9 @@
 
 #define R_APP_OUT_OF_MEMORY MAKERESULT(RL_FATAL, RS_OUTOFRESOURCE, RM_APPLICATION, RD_OUT_OF_MEMORY)
 
+#define HTTP_TIMEOUT_SEC 20
+#define HTTP_TIMEOUT_NS ((u64) HTTP_TIMEOUT_SEC * 1000000000)
+
 /*
 Note::https://github.com/dreamerc/mpg123/blob/master/src/httpget.c#L73
 */
@@ -41,13 +44,13 @@ Result http_open(http_context* httpctx, const char* url) {
 
 		// Set a User-Agent header so websites can identify your application
 		ret = httpcAddRequestHeaderField(&httpctx->httpc, "User-Agent", HTTP_USER_AGENT);
-		DEBUG("return from httpcAddRequestHeaderField: %" PRId32 "\n",ret);
+		DEBUG("return from httpcAddRequestHeaderField (user-agent): %" PRId32 "\n",ret);
 
 		// Tell the server we can support Keep-Alive connections.
 		// This will delay connection teardown momentarily (typically 5s)
 		// in case there is another request made to the same server.
 		ret = httpcAddRequestHeaderField(&httpctx->httpc, "Connection", "Keep-Alive");
-		DEBUG("return from httpcAddRequestHeaderField: %" PRId32 "\n",ret);
+		DEBUG("return from httpcAddRequestHeaderField (connection): %" PRId32 "\n",ret);
 
 		// Tell the server that we support ICYcast/SHOUTcast metadata.
 		//ret = httpcAddRequestHeaderField(&httpctx->httpc, "Icy-MetaData", "1");
@@ -57,8 +60,9 @@ Result http_open(http_context* httpctx, const char* url) {
 			httpcCloseContext(&httpctx->httpc);
 			return ret;
 		}
+		DEBUG("return from httpcBeginRequest: %" PRId32 "\n",ret);
 
-		ret = httpcGetResponseStatusCode(&httpctx->httpc, &statuscode);
+		ret = httpcGetResponseStatusCodeTimeout(&httpctx->httpc, &statuscode, HTTP_TIMEOUT_NS);
 		if(ret!=0){
 			httpcCloseContext(&httpctx->httpc);
 			return ret;

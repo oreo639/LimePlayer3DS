@@ -1,13 +1,13 @@
-#ifndef DECODER_MP3_H
-#define DECODER_MP3_H
+#ifndef __LIME_STREAM_VORBIS_H__
+#define __LIME_STREAM_VORBIS_H__
 
 #include "player.hpp"
 
-class Mp3StreamDecoder : public StreamDecoder {
+/*class VorbisStreamDecoder : public StreamDecoder {
 	public:
-		Mp3StreamDecoder(uint8_t* inbuffer, uint32_t inbufsize);
+		VorbisStreamDecoder(uint8_t* inbuffer, uint32_t inbufsize);
 		
-		~Mp3StreamDecoder(void);
+		~VorbisStreamDecoder(void);
 		
 		bool IsInit(void) override;
 		
@@ -28,6 +28,8 @@ class Mp3StreamDecoder : public StreamDecoder {
 		uint32_t Buffsize(void) override;
 		
 		int Channels(void) override;
-};
+};*/
+
+int isVorbisStream(uint8_t* inbuffer, uint32_t inbufsize);
 
 #endif
