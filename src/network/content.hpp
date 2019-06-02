@@ -16,6 +16,6 @@ enum {
 	LIST_PLS
 };
 
-int debunk_mime(const char* content_type);
+int getContentType(const char* content_type);
 
 #endif

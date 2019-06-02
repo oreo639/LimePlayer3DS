@@ -32,7 +32,7 @@ static int LibInit = false;
 static uint32_t bytesread = 0;
 
 NetfmtDecoder::NetfmtDecoder(const char* url) {
-	if (R_FAILED(http_open(&this->httpctx, url))) {
+	if (R_FAILED(http_open(&this->httpctx, url, false))) {
 		DEBUG("Netfmt: Http_open failed.\n");
 		return;
 	}

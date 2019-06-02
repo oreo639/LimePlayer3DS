@@ -34,7 +34,7 @@ static const char* mime_pls[] = {
 
 static const char** mimes[] = { mime_mpeg3, mime_ogg, mime_m3u, mime_pls, NULL };
 
-int debunk_mime(const char* content_type)
+int getContentType(const char* content_type)
 {
 	int i,j;
 	size_t len;
@@ -51,9 +51,10 @@ int debunk_mime(const char* content_type)
 	else 
 		len = mimestr.size();
 
-	for(i=0; mimes[i]    != NULL; ++i)
-	for(j=0; mimes[i][j] != NULL; ++j)
-	if(!strncasecmp(mimes[i][j], aux.c_str(), len)) goto debunk_result;
+	for(i=0; mimes[i] != NULL; ++i)
+		for(j=0; mimes[i][j] != NULL; ++j)
+			if(!strncasecmp(mimes[i][j], aux.c_str(), len))
+				goto debunk_result;
 
 debunk_result:
 	if(mimes[i] != NULL)

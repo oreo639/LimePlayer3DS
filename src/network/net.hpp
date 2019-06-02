@@ -14,7 +14,7 @@ typedef struct {
 	uint32_t readsize;
 } http_context;
 
-Result http_open(http_context* httpctx, const char* url);
+Result http_open(http_context* httpctx, const char* url, bool allowIcyCast);
 
 Result http_download(http_context* httpctx);
 

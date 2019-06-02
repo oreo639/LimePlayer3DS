@@ -20,7 +20,7 @@
 Note::https://github.com/dreamerc/mpg123/blob/master/src/httpget.c#L73
 */
 
-Result http_open(http_context* httpctx, const char* url) {
+Result http_open(http_context* httpctx, const char* url, bool allowIcyCast) {
 	Result ret = 0;
 	u32 statuscode;
 	char currUrl[1024];
@@ -53,7 +53,8 @@ Result http_open(http_context* httpctx, const char* url) {
 		DEBUG("return from httpcAddRequestHeaderField (connection): %" PRId32 "\n",ret);
 
 		// Tell the server that we support ICYcast/SHOUTcast metadata.
-		//ret = httpcAddRequestHeaderField(&httpctx->httpc, "Icy-MetaData", "1");
+		if (allowIcyCast)
+			ret = httpcAddRequestHeaderField(&httpctx->httpc, "Icy-MetaData", "1");
 
 		ret = httpcBeginRequest(&httpctx->httpc);
 		if(ret!=0){
@@ -86,14 +87,14 @@ Result http_open(http_context* httpctx, const char* url) {
 	char content_type[255];
 	if (!httpcGetResponseHeader(&httpctx->httpc, "Content-Type", content_type, 255)) {
 		DEBUG("Process recieved content-type.\n");
-		httpctx->content_type = debunk_mime(content_type);
+		httpctx->content_type = getContentType(content_type);
 		DEBUG("Content-Type processed.\n");
 	} else
 		httpctx->content_type = CONTENT_UNKNOWN;
 
 	httpctx->isShoutcastSupported = false;
 
-	/*if (httpctx->content_type == CONTENT_MPEG3) {
+	if (allowIcyCast && httpctx->content_type == CONTENT_MPEG3) {
 		// Neither MP3 nor AAC support metadata in streams, so ICYcast/SHOUTcast
 		// must be used instead.
 		char icy_byteinterval[8];
@@ -103,7 +104,7 @@ Result http_open(http_context* httpctx, const char* url) {
 			if (httpctx->icy_byteinterval)
 				httpctx->isShoutcastSupported = true;
 		}
-	}*/
+	}
 
 	httpctx->dbuf = (uint8_t*)malloc(4096);
 	if (!httpctx->dbuf) {

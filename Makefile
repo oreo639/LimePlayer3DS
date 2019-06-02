@@ -82,16 +82,13 @@ CFLAGS	:=	-Wall -mword-relocations \
 			$(ARCH)
 
 CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS -I$(PORTLIBS)/include/opus \
-		-DLIMEPLAYER_VERSION="$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_BUILD)"
+		-DLIMEPLAYER_VERSION="$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_BUILD)" \
+		$(CUSTOMFLAGS)
 
 ifdef $(RELEASE)
 	CFLAGS += -O3 -g
 else
 	CFLAGS += -Og -ggdb
-endif
-
-ifeq ($(NODEBUGSTR),1)
-	CFLAGS += -DNODEBUGSTR
 endif
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
