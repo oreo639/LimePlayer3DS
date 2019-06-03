@@ -28,12 +28,12 @@
 #include "player.hpp"
 #include "file.hpp"
 #include "config.hpp"
+#include "parsecfg/plsparse.hpp"
 
 Gui *gui;
 
 App::AppState App::appState = INIT;
 dirList_t App::dirList;
-int App::Error = 0;
 playbackInfo_t App::pInfo;
 
 Thread thread = NULL;
@@ -59,11 +59,16 @@ static int changeFile(const std::string* filename, playbackInfo_t* playbackInfo)
 	if(filename == NULL || playbackInfo == NULL)
 		return 0;
 
-	std::string url;
-	if (!strncmp(filename->substr(filename->find_last_of('.') + 1).c_str(), "json", 4)) {
+	playbackInfo->usePlaylist = 0;
+
+	std::string extension = filename->substr(filename->find_last_of('.') + 1);
+	if (!strncmp(extension.c_str(), "json", 4)) {
 		std::string url;
 		CFG_parseNC(filename->c_str(), &url);
 		playbackInfo->filename = url;
+	} else if (!strncmp(extension.c_str(), "pls", 3)) {
+		Pls::Parse(*filename, &playbackInfo->playlistfile);
+		playbackInfo->usePlaylist = 1;
 	} else
 		playbackInfo->filename = *filename;
 
@@ -170,9 +175,9 @@ void App::Update() {
 		appState = EXITING;
 	}
 
-	if (App::Error) {
+	if (Error::IsQuered()) {
 		if (kDown & KEY_A) {
-			App::Error = 0;
+			Error::Remove();
 		}
 	} else if (appState == LOGO) {
 		if (kDown & KEY_A) {

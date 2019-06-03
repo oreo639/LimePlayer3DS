@@ -37,7 +37,8 @@ void parse_entries(json_t* entries_elem, settings_t* todo_config)
 						}
 						else if(!strcmp(key, FILE_STRING))
 						{
-							tmp_playlist.filepath.assign(json_string_value(value));
+							std::string tmp_filepath(json_string_value(value));
+							tmp_playlist.filepath.push_back(tmp_filepath);
 						}
 					}
 					todo_config->playlist.push_back(tmp_playlist);

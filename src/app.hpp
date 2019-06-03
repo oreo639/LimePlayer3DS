@@ -18,7 +18,6 @@ class App {
 		};
 		static AppState appState;
 		static dirList_t dirList;
-		static int Error;
 		App();
 		~App();
 		static int MainLoop();

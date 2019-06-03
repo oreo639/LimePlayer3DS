@@ -4,8 +4,8 @@
 
 typedef struct
 {
-	std::string		name;
-	std::string		filepath;
+	std::string		 name;
+	std::vector<std::string> filepath;
 } playlist_t;
 
 typedef std::vector<playlist_t> playvec;

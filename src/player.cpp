@@ -43,7 +43,17 @@ static ndspWaveBuf	waveBuf[2];
 
 void PlayerInterface::ThreadMainFunct(void *input) {
 	playbackInfo_t* info = static_cast<playbackInfo_t*>(input);
-	audioplayer.Play(info);
+	stop = false;
+
+	if (info->usePlaylist == 1) {
+		for (uint32_t i = 0; i < info->playlistfile.filepath.size() && !stop; i++) {
+			info->filename = info->playlistfile.filepath[i];
+			audioplayer.Play(info);
+		}
+	} else {
+		audioplayer.Play(info);
+	}
+	info->usePlaylist = 0;
 	stop = true;
 	threadExit(0);
 	return;
@@ -84,10 +94,9 @@ bool PlayerInterface::IsPaused(void) {
 }
 
 void Player::Play(playbackInfo_t* playbackInfo) {
-	stop = false;
 	int filetype = File::GetFileType(playbackInfo->filename.c_str());
 	if (!filetype) {
-		App::Error = FILE_NOT_SUPPORTED;
+		Error::Add(FILE_NOT_SUPPORTED);
 		return;
 	}
 	Decoder* decoder = GetFormat(playbackInfo, filetype);
@@ -119,7 +128,7 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 			if(i > 90000) {
 				DEBUG("player.cpp: Chnn wait imeout.\n");
 				stop = true;
-				App::Error = DECODER_INIT_TIMEOUT;
+				Error::Add(DECODER_INIT_TIMEOUT);
 				break;
 			}
 		}
@@ -161,7 +170,7 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 		DEBUG("player.cpp: Playback complete.\n");
 		delete decoder;
 	} else {
-		App::Error = DECODER_INIT_FAIL;
+		Error::Add(DECODER_INIT_FAIL);
 		DEBUG("player.cpp: Decoder could not be initalized.\n");
 	}
 }

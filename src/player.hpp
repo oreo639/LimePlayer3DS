@@ -17,8 +17,11 @@ typedef struct
 typedef struct
 {
 	std::string	filename;
-	settings_t	settings;
 	musinfo_t	fileMeta;
+	settings_t	settings;
+	playlist_t	playlistfile;
+	int		usePlaylist; // 0 do not use playlist, 1 use playlistfile, 2 use playlist from settings
+	uint32_t	selectPlaylistOffset;
 } playbackInfo_t;
 
 enum Format {

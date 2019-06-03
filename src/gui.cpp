@@ -92,7 +92,7 @@ void Gui::Drawui(playbackInfo_t* playbackInfo)
 		C2D_SceneBegin(bot);
 	}
 	
-	if (App::Error != 0) {
+	if (Error::IsQuered()) {
 		drawError();
 	}
 	endframe();
@@ -305,17 +305,19 @@ void Gui::drawBrowserPlayer(playbackInfo_t* info) {
 }
 
 void Gui::drawError(void) {
+	int errorcode = Error::Get();
+
 	C2D_DrawRectSolid(10, 10, 0.5f, 300, SCREEN_HEIGHT-20, C2D_Color32(0, 0, 0, 255));
 	
-	if (App::Error == FILE_NOT_SUPPORTED) {
+	if (errorcode == FILE_NOT_SUPPORTED) {
 		guiprint("ERR: Unrecognized filetype.", 20.0f, 20.0f, 0.5f, 0.5f);
 	}
-	else if (App::Error == DECODER_INIT_FAIL){
+	else if (errorcode == DECODER_INIT_FAIL){
 		guiprint("ERR: Failed to initalize decoder.", 20.0f, 20.0f, 0.5f, 0.5f);
 	}
 	else {
 		char errstr[30];
-		snprintf(errstr, 30, "ERR: Undefined error (%d)", App::Error);
+		snprintf(errstr, 30, "ERR: Undefined error (%d)", errorcode);
 		guiprint(errstr, 20.0f, 20.0f, 0.5f, 0.5f);
 	}
 }
