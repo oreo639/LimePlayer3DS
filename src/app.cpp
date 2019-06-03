@@ -67,6 +67,8 @@ static int changeFile(const std::string* filename, playbackInfo_t* playbackInfo)
 		CFG_parseNC(filename->c_str(), &url);
 		playbackInfo->filename = url;
 	} else if (!strncmp(extension.c_str(), "pls", 3)) {
+		// Note to future me.
+		// Add pls support to netfmt and add m3u support as well.
 		Pls::Parse(*filename, &playbackInfo->playlistfile);
 		playbackInfo->usePlaylist = 1;
 	} else
@@ -185,6 +187,31 @@ void App::Update() {
 		}
 	}
 	else if (appState == MENU) {
+		if(kHeld & KEY_L)
+		{
+			if(kDown & (KEY_R | KEY_UP))
+			{
+				if(PlayerInterface::IsPlaying() == false)
+					return;
+
+				if(PlayerInterface::TogglePlayback() == true)
+					return;
+			}
+
+			if(kDown & KEY_B)
+			{
+				PlayerInterface::ExitPlayback();
+				changeFile(NULL, NULL);
+				return;
+			}
+
+			if(kDown & KEY_X)
+			{
+				PlayerInterface::SkipPlayback();
+				return;
+			}
+		}
+
 		if (kDown & KEY_A) {
 			if (cursor < dirList.dirnum) {
 				chdir(dirList.directories[cursor].c_str());
@@ -203,50 +230,28 @@ void App::Update() {
 			changeFile(&s, &App::pInfo);
 		}
 
-		if(kHeld & KEY_L)
-		{
-			if(kDown & (KEY_R | KEY_UP))
-			{
-				if(PlayerInterface::IsPlaying() == false)
-					return;
-
-				if(PlayerInterface::TogglePlayback() == true)
-					return;
-			}
-
-			if(kDown & KEY_B)
-			{
-				PlayerInterface::ExitPlayback();
-				changeFile(NULL, NULL);
-				/* If the playback thread is currently playing, it will now
-				 * stop and tell the Watchdog thread to display "Stopped".
-				 */
-				return;
-			}
-		}
-
 		if (kDown & KEY_B) {
 			chdir("../");
 			gui->GuiCursorReset();
 			Explorer::getDir(&dirList);
 		}
 
-		if ((kDown & KEY_UP || ((kHeld & KEY_UP) && (osGetTime() - mill > 500))) && cursor > 0) {
-			gui->GuiCursorMove(-1);
-		}
-
-		if ((kDown & KEY_DOWN || ((kHeld & KEY_DOWN) && (osGetTime() - mill > 500))) && cursor < dirList.total-1) {
+		if ((kDown & KEY_DOWN || ((kHeld & KEY_DOWN) && (osGetTime() - mill > 500))) && cursor < dirList.total) {
 			gui->GuiCursorMove(1);
 		}
 
-		if((kDown & KEY_RIGHT || ((kHeld & KEY_RIGHT) && (osGetTime() - mill > 500))) && cursor < dirList.total-1)
-		{
-			gui->GuiCursorMove(-5);
+		if ((kDown & KEY_UP || ((kHeld & KEY_UP) && (osGetTime() - mill > 500))) && cursor >= 0) {
+			gui->GuiCursorMove(-1);
 		}
 
-		if((kDown & KEY_LEFT || ((kHeld & KEY_LEFT) && (osGetTime() - mill > 500))) && cursor > 0)
+		if((kDown & KEY_RIGHT || ((kHeld & KEY_RIGHT) && (osGetTime() - mill > 500))) && cursor < dirList.total)
 		{
 			gui->GuiCursorMove(5);
+		}
+
+		if((kDown & KEY_LEFT || ((kHeld & KEY_LEFT) && (osGetTime() - mill > 500))) && cursor >= 0)
+		{
+			gui->GuiCursorMove(-5);
 		}
 
 		if(kDown) {

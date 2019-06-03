@@ -6,7 +6,6 @@
 #include "settings.hpp"
 #include "error.hpp"
 
-///https://github.com/FlagBrew/PKSM/blob/PKSM.cpp/source/gui/gui.cpp#L281-L297
 typedef struct
 {
 	std::string	songName;
@@ -58,7 +57,7 @@ class Decoder {
 class StreamDecoder {
 	public:
 		virtual ~StreamDecoder() {}
-		// Decoder interface
+		// Stream Decoder interface
 		virtual bool IsInit(void) {return false;};
 		
 		virtual void Info(musinfo_t* Meta);
@@ -101,6 +100,8 @@ namespace PlayerInterface {
 	bool TogglePlayback(void);
 		
 	void ExitPlayback(void);
+
+	void SkipPlayback(void);
 		
 	bool IsPlaying(void);
 		

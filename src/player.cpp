@@ -38,6 +38,7 @@
 
 Player audioplayer;
 
+static volatile bool	skip = false;
 static volatile bool	stop = true;
 static ndspWaveBuf	waveBuf[2];
 
@@ -78,6 +79,13 @@ void PlayerInterface::ExitPlayback(void) {
 }
 
 /**
+ * Skips to the next song if playlist. Otherwise, the music will exit.
+ */
+void PlayerInterface::SkipPlayback(void) {
+	skip = true;
+}
+
+/**
  * Returns whether music is playing or stoped.
  * \return	True if not stoped.
  */
@@ -94,6 +102,8 @@ bool PlayerInterface::IsPaused(void) {
 }
 
 void Player::Play(playbackInfo_t* playbackInfo) {
+	skip = false;
+
 	int filetype = File::GetFileType(playbackInfo->filename.c_str());
 	if (!filetype) {
 		Error::Add(FILE_NOT_SUPPORTED);
@@ -135,7 +145,7 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 
 
 		bool lastbuf = false;
-		while(stop == false)
+		while(!stop && !skip)
 		{
 			svcSleepThread(100 * 1000);
 	
