@@ -10,8 +10,6 @@ class NetfmtDecoder : public Decoder {
 		
 		~NetfmtDecoder(void);
 		
-		bool IsInit(void) override;
-		
 		void Info(musinfo_t* Meta) override;
 		
 		uint32_t Position(void) override;
@@ -23,8 +21,6 @@ class NetfmtDecoder : public Decoder {
 		uint32_t Decode(void* buffer) override;
 		
 		uint32_t Samplerate(void) override;
-
-		uint32_t Spf(void* buffer) override;
 		
 		uint32_t Buffsize(void) override;
 		

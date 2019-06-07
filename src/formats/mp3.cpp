@@ -26,8 +26,6 @@ static mpg123_handle*			mh;
 static uint32_t			rate;
 static uint8_t			channels;
 
-static int LibInit = false;
-
 Mp3Decoder::Mp3Decoder(const char* filename) {
 	int err = 0;
 	int encoding = 0;
@@ -62,18 +60,14 @@ Mp3Decoder::Mp3Decoder(const char* filename) {
 	buffSize = mpg123_outblock(mh) * 16;
 
 	
-	LibInit = true;
+	this->IsInit = true;
 }
 
 Mp3Decoder::~Mp3Decoder(void) {
 	mpg123_close(mh);
 	mpg123_delete(mh);
 	mpg123_exit();
-	LibInit = false;
-}
-
-bool Mp3Decoder::IsInit(void) {
-	return LibInit;
+	this->IsInit = false;
 }
 
 void Mp3Decoder::Info(musinfo_t* Meta) {
@@ -119,11 +113,6 @@ uint32_t Mp3Decoder::Decode(void* buffer)
 uint32_t Mp3Decoder::Samplerate(void)
 {
 	return rate;
-}
-
-uint32_t Mp3Decoder::Spf(void* buffer)
-{
-	return Decode(buffer)/Channels();
 }
 
 uint32_t Mp3Decoder::Buffsize(void)

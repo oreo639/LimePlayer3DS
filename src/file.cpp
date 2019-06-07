@@ -85,9 +85,9 @@ int File::GetFileType(const char* file) {
 	FILE* fp = fopen(file, "r");
 	int filetype = 0; //If the file does not exist it return 0.
 
-	if (!strncmp(file, "http://", 7)) {
+	if (!strncmp(file, "http://", 7) || !strncmp(file, "https://", 8)) {
 		return FMT_NETWORK;
-	}else if(fp != NULL) {
+	} else if(fp != NULL) {
 		filetype = readmagic(fp, file);
 		fclose(fp);
 	}

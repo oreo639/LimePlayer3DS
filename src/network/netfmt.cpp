@@ -28,7 +28,6 @@
 StreamDecoder *streamdec = nullptr;
 musinfo_t* MetaPtr = NULL;
 
-static int LibInit = false;
 static uint32_t bytesread = 0;
 
 NetfmtDecoder::NetfmtDecoder(const char* url) {
@@ -61,19 +60,15 @@ NetfmtDecoder::NetfmtDecoder(const char* url) {
 	}
 
 	if (streamdec != nullptr)
-		if (streamdec->IsInit())
-			LibInit = true;
+		if (streamdec->GetIsInit())
+			this->IsInit = true;
 }
 
 NetfmtDecoder::~NetfmtDecoder(void) {
 	MetaPtr = NULL;
 	http_close(&this->httpctx);
 	delete streamdec;
-	LibInit = false;
-}
-
-bool NetfmtDecoder::IsInit(void) {
-	return LibInit;
+	this->IsInit = false;
 }
 
 void NetfmtDecoder::Info(musinfo_t* Meta) {
@@ -105,12 +100,6 @@ uint32_t NetfmtDecoder::Decode(void* buffer) {
 
 uint32_t NetfmtDecoder::Samplerate(void) {
 	return streamdec->Samplerate();
-}
-
-uint32_t NetfmtDecoder::Spf(void* buffer) {
-	if (http_download(&this->httpctx) != (s32)HTTPC_RESULTCODE_DOWNLOADPENDING)
-		return 0;
-	return streamdec->Spf(this->httpctx.dbuf, this->httpctx.readsize, buffer);
 }
 
 uint32_t NetfmtDecoder::Buffsize(void) {

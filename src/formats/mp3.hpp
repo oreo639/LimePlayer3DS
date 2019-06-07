@@ -9,8 +9,6 @@ class Mp3Decoder : public Decoder {
 		
 		~Mp3Decoder(void);
 		
-		bool IsInit(void) override;
-		
 		void Info(musinfo_t* Meta) override;
 		
 		uint32_t Position(void) override;
@@ -22,8 +20,6 @@ class Mp3Decoder : public Decoder {
 		uint32_t Decode(void* buffer) override;
 		
 		uint32_t Samplerate(void) override;
-
-		uint32_t Spf(void* buffer) override;
 		
 		uint32_t Buffsize(void) override;
 		

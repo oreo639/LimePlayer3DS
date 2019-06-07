@@ -27,7 +27,7 @@ int isVorbisStream(uint8_t* inbuffer, uint32_t inbufsize)
 	OggVorbis_File testvf;
 	int err = 0;
 
-	err = ov_test(NULL, &testvf, reinterpret_cast<char*>(inbuffer), inbufsize);
+	err = ov_test(NULL, &testvf, (char *)inbuffer, inbufsize);
 
 	ov_clear(&testvf);
 	return err;

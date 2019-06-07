@@ -26,8 +26,6 @@ static mpg123_handle*			mh;
 static uint32_t			rate;
 static uint8_t			channels;
 
-static int LibInit = false;
-
 Mp3StreamDecoder::Mp3StreamDecoder(uint8_t* inbuffer, uint32_t inbufsize) {
 	int err = 0;
 	int encoding = 0;
@@ -62,18 +60,14 @@ Mp3StreamDecoder::Mp3StreamDecoder(uint8_t* inbuffer, uint32_t inbufsize) {
 	 */
 	buffSize = mpg123_outblock(mh) * 16;
 
-	LibInit = true;
+	this->IsInit = true;
 }
 
 Mp3StreamDecoder::~Mp3StreamDecoder(void) {
 	mpg123_close(mh);
 	mpg123_delete(mh);
 	mpg123_exit();
-	LibInit = false;
-}
-
-bool Mp3StreamDecoder::IsInit(void) {
-	return LibInit;
+	this->IsInit = false;
 }
 
 void Mp3StreamDecoder::Info(musinfo_t* Meta) {
@@ -104,11 +98,6 @@ uint32_t Mp3StreamDecoder::Decode(uint8_t* inbuffer, uint32_t inbuffsize, void* 
 uint32_t Mp3StreamDecoder::Samplerate(void)
 {
 	return rate;
-}
-
-uint32_t Mp3StreamDecoder::Spf(uint8_t* inbuffer, uint32_t inbuffsize, void* outbuffer)
-{
-	return Decode(inbuffer, inbuffsize, outbuffer)/Channels();
 }
 
 uint32_t Mp3StreamDecoder::Buffsize(void)

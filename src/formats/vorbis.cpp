@@ -27,7 +27,6 @@ static vorbis_info		*vi;
 static FILE			*f;
 static const size_t		buffSize = 8 * 4096;
 
-static int LibInit = false;
 uint64_t fillVorbisBuffer(char* bufferOut);
 
 VorbisDecoder::VorbisDecoder(const char* filename) {
@@ -40,17 +39,13 @@ VorbisDecoder::VorbisDecoder(const char* filename) {
 	if((vi = ov_info(&vorbisFile, -1)) == NULL)
 		return;
 	
-	LibInit = true;
+	this->IsInit = true;
 }
 
 VorbisDecoder::~VorbisDecoder(void) {
 	ov_clear(&vorbisFile);
 	fclose(f);
-	LibInit = false;
-}
-
-bool VorbisDecoder::IsInit(void) {
-	return LibInit;
+	this->IsInit = false;
 }
 
 void VorbisDecoder::Info(musinfo_t* Meta) {
@@ -82,12 +77,6 @@ uint32_t VorbisDecoder::Samplerate(void)
 {
 	return vi->rate;
 }
-
-uint32_t VorbisDecoder::Spf(void* buffer)
-{
-	return Decode(buffer)/Channels();
-}
-
 
 uint32_t VorbisDecoder::Buffsize(void)
 {

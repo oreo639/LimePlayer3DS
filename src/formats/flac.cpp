@@ -19,7 +19,6 @@
 
 #include "flac.hpp"
 
-static int LibInit = false;
 static drflac*		pFlac;
 static const size_t	buffSize = 16 * 1024;
 uint32_t flacprogress; //Credit Tangerine.
@@ -28,18 +27,14 @@ FlacDecoder::FlacDecoder(const char* filename) {
 	pFlac = drflac_open_file(filename);
 	flacprogress = 0;
 	if (pFlac == NULL)
-		LibInit = false;
-	else
-		LibInit = true;
+		return;
+
+	this->IsInit = true;
 }
 
 FlacDecoder::~FlacDecoder(void) {
 	drflac_close(pFlac);
-	LibInit = false;
-}
-
-bool FlacDecoder::IsInit(void) {
-	return LibInit;
+	this->IsInit = false;
 }
 
 void FlacDecoder::Info(musinfo_t* Meta) {
@@ -80,12 +75,6 @@ uint32_t FlacDecoder::Buffsize(void)
 {
 	return buffSize;
 }
-
-uint32_t FlacDecoder::Spf(void* buffer)
-{
-	return Decode(buffer)/Channels();
-}
-
 
 int FlacDecoder::Channels(void)
 {

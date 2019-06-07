@@ -24,11 +24,9 @@
 #include "error.hpp"
 
 static bool isSeekable;
-static OpusDecoder*		opusDecoder;
+static OggOpusFile*		opusFile;
 static const OpusHead*		opusHead;
 static const size_t		buffSize = 32 * 1024;
-
-static int LibInit = false;
 
 uint64_t fillOpusBuffer(uint8_t* inbuffer, uint32_t inbuffsize, int16_t* bufferOut);
 
@@ -36,32 +34,23 @@ uint64_t fillOpusBuffer(uint8_t* inbuffer, uint32_t inbuffsize, int16_t* bufferO
 OpusStreamDecoder::OpusStreamDecoder(uint8_t* inbuffer, uint32_t inbufsize) {
 	int err = 0;
 
-	if ((opusDecoder = opus_decoder_create(48000, 2, &err))) {
-		DEBUG("opus decoder initalization failed.");
+	//if ((opusFile = op_open_url(url, &err))) {
+		DEBUG("opus decoder initalization failed with error %d.\n", err);
 		return;
-	}
-
-	/*if ((op_open_memory(inbuffer, inbufsize, &err)) == NULL) {
-		DEBUG("Open_memory failed with %d.\n", err);
-		return;
-	}*/
+	//}
 
 	DEBUG("OpusDec initalized.\n");
 
-	//if ((isSeekable = op_seekable(opusFile)) != 0)
-		//if((err = op_current_link(opusFile)) < 0)
-			//return;
+	if ((isSeekable = op_seekable(opusFile)) != 0)
+		if((err = op_current_link(opusFile)) < 0)
+			return;
 	
-	LibInit = true;
+	this->IsInit = true;
 }
 
 OpusStreamDecoder::~OpusStreamDecoder(void) {
-	opus_decoder_destroy(opusDecoder);
-	LibInit = false;
-}
-
-bool OpusStreamDecoder::IsInit(void) {
-	return LibInit;
+	op_free(opusFile);
+	this->IsInit = false;
 }
 
 void OpusStreamDecoder::Info(musinfo_t* Meta) {
@@ -91,11 +80,6 @@ uint32_t OpusStreamDecoder::Samplerate(void)
 	return 48000;
 }
 
-uint32_t OpusStreamDecoder::Spf(uint8_t* inbuffer, uint32_t inbuffsize, void* outbuffer)
-{
-	return Decode(inbuffer, inbuffsize, outbuffer)/Channels();
-}
-
 uint32_t OpusStreamDecoder::Buffsize(void)
 {
 	return buffSize;
@@ -120,8 +104,10 @@ uint64_t fillOpusBuffer(uint8_t* inbuffer, uint32_t inbuffsize, int16_t* bufferO
 
 	while(samplesToRead > 0)
 	{
-		int samplesJustRead = opus_decode(opusDecoder, inbuffer, inbuffsize, bufferOut,
-						samplesToRead > 120*48*2 ? 120*48*2 : samplesToRead, 48000);
+		int samplesJustRead = op_read_stereo(opusFile, bufferOut,
+						samplesToRead > 120*48*2 ? 120*48*2 : samplesToRead);
+
+		DEBUG("Output of samplesJustRead: %d", samplesJustRead);
 
 		if(samplesJustRead < 0)
 			return samplesJustRead;

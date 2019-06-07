@@ -25,8 +25,6 @@ static OggOpusFile*		opusFile;
 static const OpusHead*	opusHead;
 static const size_t		buffSize = 32 * 1024;
 
-static int LibInit = false;
-
 uint64_t fillOpusBuffer(int16_t* bufferOut);
 
 
@@ -41,16 +39,12 @@ OpusDecoder::OpusDecoder(const char* filename) {
 
 	opusHead = op_head(opusFile, err);
 	
-	LibInit = true;
+	this->IsInit = true;
 }
 
 OpusDecoder::~OpusDecoder(void) {
 	op_free(opusFile);
-	LibInit = false;
-}
-
-bool OpusDecoder::IsInit(void) {
-	return LibInit;
+	this->IsInit = false;
 }
 
 void OpusDecoder::Info(musinfo_t* Meta) {
@@ -81,11 +75,6 @@ uint32_t OpusDecoder::Decode(void* buffer)
 uint32_t OpusDecoder::Samplerate(void)
 {
 	return 48000;
-}
-
-uint32_t OpusDecoder::Spf(void* buffer)
-{
-	return Decode(buffer)/Channels();
 }
 
 uint32_t OpusDecoder::Buffsize(void)

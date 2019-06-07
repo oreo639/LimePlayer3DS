@@ -29,6 +29,7 @@
 #include "file.hpp"
 #include "config.hpp"
 #include "parsecfg/plsparse.hpp"
+#include "parsecfg/m3uparse.hpp"
 
 Gui *gui;
 
@@ -38,7 +39,7 @@ playbackInfo_t App::pInfo;
 
 Thread thread = NULL;
 
-static int changeFile(const std::string* filename, playbackInfo_t* playbackInfo)
+static int changeFile(const std::string& filename, playbackInfo_t* playbackInfo)
 {
 	s32 prio;
 
@@ -56,23 +57,26 @@ static int changeFile(const std::string* filename, playbackInfo_t* playbackInfo)
 		thread = NULL;
 	}
 
-	if(filename == NULL || playbackInfo == NULL)
+	if(filename.empty() || playbackInfo == NULL)
 		return 0;
 
 	playbackInfo->usePlaylist = 0;
 
-	std::string extension = filename->substr(filename->find_last_of('.') + 1);
+	std::string extension = filename.substr(filename.find_last_of('.') + 1);
 	if (!strncmp(extension.c_str(), "json", 4)) {
 		std::string url;
-		CFG_parseNC(filename->c_str(), &url);
+		CFG_parseNC(filename.c_str(), &url);
 		playbackInfo->filename = url;
 	} else if (!strncmp(extension.c_str(), "pls", 3)) {
 		// Note to future me.
-		// Add pls support to netfmt and add m3u support as well.
-		Pls::Parse(*filename, &playbackInfo->playlistfile);
+		// Add pls support to netfmt.
+		Pls::Parse(filename, &playbackInfo->playlistfile);
+		playbackInfo->usePlaylist = 1;
+	} else if (!strncmp(extension.c_str(), "m3u", 3)) {
+		M3u::Parse(filename, &playbackInfo->playlistfile);
 		playbackInfo->usePlaylist = 1;
 	} else
-		playbackInfo->filename = *filename;
+		playbackInfo->filename = filename;
 
 	svcGetThreadPriority(&prio, CUR_THREAD_HANDLE);
 	thread = threadCreate(PlayerInterface::ThreadMainFunct, (void *)playbackInfo, 32 * 1024, prio - 1, -2, false);
@@ -201,7 +205,7 @@ void App::Update() {
 			if(kDown & KEY_B)
 			{
 				PlayerInterface::ExitPlayback();
-				changeFile(NULL, NULL);
+				changeFile("", NULL);
 				return;
 			}
 
@@ -217,7 +221,7 @@ void App::Update() {
 				chdir(dirList.directories[cursor].c_str());
 				gui->GuiCursorReset();
 			} else {
-				changeFile(&dirList.files[cursor-dirList.dirnum], &App::pInfo);
+				changeFile(dirList.files[cursor-dirList.dirnum], &App::pInfo);
 			}
 			Explorer::getDir(&dirList);
 		}
@@ -226,8 +230,7 @@ void App::Update() {
 			// KUSC http://16643.live.streamtheworld.com/KUSCMP128.mp3
 			// RadioSega http://content.radiosega.net:8006/rs-mpeg.mp3
 			// RadioNintendo http://play.radionintendo.com/stream
-			std::string s("http://play.radionintendo.com/stream");
-			changeFile(&s, &App::pInfo);
+			changeFile("http://play.radionintendo.com/stream", &App::pInfo);
 		}
 
 		if (kDown & KEY_B) {

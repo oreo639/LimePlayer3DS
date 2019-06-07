@@ -19,7 +19,6 @@
 
 #include "wav.hpp"
 
-static int LibInit = false;
 static const size_t	buffSize	= 16 * 1024;
 static drwav*		pWav		= NULL;
 static uint32_t		wavprogress; //credit tangerine
@@ -28,18 +27,14 @@ WavDecoder::WavDecoder(const char* filename) {
 	pWav = drwav_open_file(filename);
 	wavprogress = 0;
 	if (pWav == NULL)
-		LibInit = false;
-	else
-		LibInit = true;
+		return;
+	
+	this->IsInit = true;
 }
 
 WavDecoder::~WavDecoder(void) {
 	drwav_close(pWav);
-	LibInit = false;
-}
-
-bool WavDecoder::IsInit(void) {
-	return LibInit;
+	this->IsInit = false;
 }
 
 void WavDecoder::Info(musinfo_t* Meta) {
@@ -73,11 +68,6 @@ uint32_t WavDecoder::Decode(void* buffer)
 uint32_t WavDecoder::Samplerate(void)
 {
 	return pWav->sampleRate;
-}
-
-uint32_t WavDecoder::Spf(void* buffer)
-{
-	return Decode(buffer)/Channels();
 }
 
 uint32_t WavDecoder::Buffsize(void)

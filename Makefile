@@ -47,31 +47,20 @@ GRAPHICS	:=	gfx
 #GFXBUILD	:=	$(BUILD)
 ROMFS		:=	romfs
 GFXBUILD	:=	$(ROMFS)/gfx
+ICON		:=	meta/icon.png
 
-# Path to the files
-# If left blank, will try to use "icon.png", "$(TARGET).png", or the default ctrulib icon, in that order
-ICON                :=	meta/icon.png
-
-BANNER_AUDIO        :=	meta/audio.wav
-BANNER_IMAGE        :=	meta/banner.png
-
-RSF_PATH            :=	meta/app.rsf
-
-# If left blank, makerom will use the default Homebrew logo
-LOGO                :=
-
-
-# If left blank, makerom will use default values (0xff3ff and CTR-P-CTAP, respectively)
-# Be careful if UNIQUE_ID is the same as other apps: it will overwrite the previously installed one
+BANNER_AUDIO	:=	meta/audio.wav
+BANNER_IMAGE	:=	meta/banner.png
+RSF_PATH	:=	meta/app.rsf
+LOGO		:=
 UNIQUE_ID	:=	0xEDA06
 PRODUCT_CODE	:=	CTR-P-LIME
+ICON_FLAGS	:=	nosavebackups,visible
 
-# Don't really need to change this
-ICON_FLAGS	:= nosavebackups,visible
+VERSION_MAJOR	:=	0
+VERSION_MINOR	:=	0
+VERSION_BUILD	:=	8
 
-VERSION_MAJOR	:= 0
-VERSION_MINOR	:= 0
-VERSION_BUILD	:= 8
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
@@ -91,7 +80,7 @@ else
 	CFLAGS += -Og -ggdb
 endif
 
-CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11
+CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++17
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)

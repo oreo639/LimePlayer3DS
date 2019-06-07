@@ -124,10 +124,11 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 		ndspChnSetFormat(0, decoder->Channels() == 2 ? NDSP_FORMAT_STEREO_PCM16 : NDSP_FORMAT_MONO_PCM16);
 
 		memset(waveBuf, 0, sizeof(waveBuf));
-		for(int i = 0; i < 2; i++) {
-			waveBuf[i].nsamples = decoder->Spf(audioBuffer + (i == 0 ? 0 : decoder->Buffsize()));
-			waveBuf[i].data_vaddr = audioBuffer + (i == 0 ? 0 : decoder->Buffsize());
-			ndspChnWaveBufAdd(0, &waveBuf[i]);
+		waveBuf[0].data_vaddr = audioBuffer;
+		waveBuf[1].data_vaddr = audioBuffer + decoder->Buffsize();
+		for (auto& buf : waveBuf) {
+			buf.nsamples = decoder->Decode(buf.data_pcm16) / decoder->Channels();
+			ndspChnWaveBufAdd(0, &buf);
 		}
 		
 		/**
@@ -135,7 +136,8 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 		 * to the while loop. So we ensure that music has started here.
 		 */
 		for(int i = 0; ndspChnIsPlaying(0) == false; i++) {
-			if(i > 90000) {
+			svcSleepThread(1000000); // Wait one millisecond.
+			if(i > 5 * 1000) { // Wait 5 seconds
 				DEBUG("player.cpp: Chnn wait imeout.\n");
 				stop = true;
 				Error::Add(DECODER_INIT_TIMEOUT);
@@ -156,10 +158,10 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 			while (ndspChnIsPaused(0) == true || lastbuf == true)
 				continue;
 
-			for(int i = 0; i < 2; i++) {
-				if(waveBuf[i].status == NDSP_WBUF_DONE)
+			for (auto& buf : waveBuf) {
+				if(buf.status == NDSP_WBUF_DONE)
 				{
-					size_t read = decoder->Decode(waveBuf[i].data_pcm16);
+					size_t read = decoder->Decode(buf.data_pcm16);
 
 					if(read <= 0)
 					{
@@ -167,11 +169,11 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 						continue;
 					}
 					else if(read < decoder->Buffsize())
-						waveBuf[i].nsamples = read / decoder->Channels();
+						buf.nsamples = read / decoder->Channels();
 		
-					ndspChnWaveBufAdd(0, &waveBuf[i]);
+					ndspChnWaveBufAdd(0, &buf);
 				}
-				DSP_FlushDataCache(waveBuf[i].data_pcm16, decoder->Buffsize() * sizeof(int16_t));
+				DSP_FlushDataCache(buf.data_pcm16, decoder->Buffsize() * sizeof(int16_t));
 			}
 		}
 		linearFree(audioBuffer);
@@ -192,37 +194,37 @@ void Player::ClearMetadata(musinfo_t* fileMeta) {
 Decoder* Player::GetFormat(const playbackInfo_t* playbackInfo, int filetype) {
 	if (filetype == FILE_WAV) {
 		auto wavdec = (new WavDecoder(playbackInfo->filename.c_str()));
-		if (wavdec->IsInit())
+		if (wavdec->GetIsInit())
 			return wavdec;
 	}
 	else if (filetype == FILE_FLAC) {
 		auto flacdec = (new FlacDecoder(playbackInfo->filename.c_str()));
-		if (flacdec->IsInit())
+		if (flacdec->GetIsInit())
 			return flacdec;
 	}
 	else if (filetype == FILE_MP3) {
 		auto mp3dec = (new Mp3Decoder(playbackInfo->filename.c_str()));
-		if (mp3dec->IsInit())
+		if (mp3dec->GetIsInit())
 			return mp3dec;
 	}
 	else if (filetype == FILE_VORBIS) {
 		auto vorbisdec = (new VorbisDecoder(playbackInfo->filename.c_str()));
-		if (vorbisdec->IsInit())
+		if (vorbisdec->GetIsInit())
 			return vorbisdec;
 	}
 	else if (filetype == FILE_OPUS) {
 		auto opusdec = (new OpusDecoder(playbackInfo->filename.c_str()));
-		if (opusdec->IsInit())
+		if (opusdec->GetIsInit())
 			return opusdec;
 	}	
 	else if (filetype == FILE_MIDI) {
 		auto mididec = (new MidiDecoder(playbackInfo->filename.c_str(), playbackInfo->settings.wildMidiConfig.c_str()));
-		if (mididec->IsInit())
+		if (mididec->GetIsInit())
 			return mididec;
 	}
 	else if (filetype == FMT_NETWORK) {
 		auto netdec = (new NetfmtDecoder(playbackInfo->filename.c_str()));
-		if (netdec->IsInit())
+		if (netdec->GetIsInit())
 			return netdec;
 	}
 	return nullptr;
