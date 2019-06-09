@@ -22,12 +22,17 @@
 #include "formats/vorbis.hpp"
 #include "formats/opus.hpp"
 
-int readmagic(FILE* file, const char* filename){
+static int readmagic(const char* filename){
+	FILE* fp = fopen(filename, "r");
 	char magic[4];
 
-	fseek(file, 0, SEEK_SET);
-	fread(magic, 1, 4, file);
-	fseek(file, 0, SEEK_SET);
+	if (!fp)
+		return 0;
+
+	fseek(fp, 0, SEEK_SET);
+	fread(magic, 1, 4, fp);
+
+	fclose(fp);
 
 	/*Wave*/
 	if (!strncmp(magic, "RIFF", 4))
@@ -82,15 +87,30 @@ int readmagic(FILE* file, const char* filename){
 }
 
 int File::GetFileType(const char* file) {
-	FILE* fp = fopen(file, "r");
-	int filetype = 0; //If the file does not exist it return 0.
+	int filetype;
 
 	if (!strncmp(file, "http://", 7) || !strncmp(file, "https://", 8)) {
 		return FMT_NETWORK;
-	} else if(fp != NULL) {
-		filetype = readmagic(fp, file);
-		fclose(fp);
+	} else {
+		filetype = readmagic(file);
 	}
 	
 	return filetype;
+}
+
+int File::Copy(const char* filein, const char* fileout) {
+	FILE* fin = fopen(filein, "r");
+	FILE* fout = fopen(fileout, "w+");
+	int c;
+
+	if (!fin || !fout)
+		return 1;
+
+	while ((c = fgetc(fin)) && c != EOF) {
+		fputc(c, fout);
+	}
+
+	fclose(fin);
+	fclose(fout);
+	return 0;
 }

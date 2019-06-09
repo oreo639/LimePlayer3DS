@@ -14,10 +14,6 @@
 *    You should have received a copy of the GNU General Public License
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <iostream>
-#include <fstream>
-#include <filesystem>
-
 #include <sys/stat.h>
 #include <stdio.h>
 
@@ -39,7 +35,16 @@ playbackInfo_t App::pInfo;
 
 Thread thread = NULL;
 
-static int changeFile(const std::string& filename, playbackInfo_t* playbackInfo)
+static void exitPlayback(void)
+{
+	PlayerInterface::ExitPlayback();
+
+	threadJoin(thread, U64_MAX);
+	threadFree(thread);
+	thread = NULL;
+}
+
+static int changeFile(const std::string &filename, playbackInfo_t* playbackInfo)
 {
 	s32 prio;
 
@@ -49,15 +54,10 @@ static int changeFile(const std::string& filename, playbackInfo_t* playbackInfo)
 	*/
 	if(thread != NULL)
 	{
-		/* Tell the thread to stop playback before we join it */
-		PlayerInterface::ExitPlayback();
-
-		threadJoin(thread, U64_MAX);
-		threadFree(thread);
-		thread = NULL;
+		exitPlayback();
 	}
 
-	if(filename.empty() || playbackInfo == NULL)
+	if(!playbackInfo)
 		return 0;
 
 	playbackInfo->usePlaylist = 0;
@@ -94,17 +94,15 @@ App::App(void) {
 	if (stat("/3ds/limeplayer3ds/config.json", &buf)) {
 		mkdir("/3ds/", 0777);
 		mkdir("/3ds/limeplayer3ds/", 0777);
-		
-		std::ifstream  src("romfs:/defaultcfg/config.json", std::ios::binary);
-		std::ofstream  dst("/3ds/limeplayer3ds/config.json",   std::ios::binary);
-		dst << src.rdbuf();
+
+		File::Copy("romfs:/defaultcfg/config.json", "/3ds/limeplayer3ds/config.json");
 	}
 	CFG_parseSettings("/3ds/limeplayer3ds/config.json", &App::pInfo.settings);
 
 	gui = new Gui(&App::pInfo.settings);
 	
 	chdir("sdmc:/");
-	chdir("MUSIC");
+	chdir("music");
 	Explorer::getDir(&dirList);
 }
 
@@ -152,7 +150,7 @@ void App::LibInit(void) {
 }
 
 void App::LibExit(void) {
-	changeFile(NULL, NULL);
+	exitPlayback();
 	httpcExit();
 	ndspExit();
 	romfsExit();
@@ -204,8 +202,7 @@ void App::Update() {
 
 			if(kDown & KEY_B)
 			{
-				PlayerInterface::ExitPlayback();
-				changeFile("", NULL);
+				exitPlayback();
 				return;
 			}
 

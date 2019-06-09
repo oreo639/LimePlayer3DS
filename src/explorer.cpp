@@ -14,7 +14,6 @@
 *    You should have received a copy of the GNU General Public License
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <iostream>
 #include <algorithm>
 
 #include <assert.h>
@@ -22,7 +21,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <3ds.h>
 
 #include "explorer.hpp"
 

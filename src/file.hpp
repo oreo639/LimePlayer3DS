@@ -16,5 +16,6 @@ typedef enum
 
 namespace File {
 	int GetFileType(const char* file);
+	int Copy(const char* filein, const char* fileout);
 }
 #endif
