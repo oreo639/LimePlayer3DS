@@ -26,5 +26,5 @@ class FlacDecoder : public Decoder {
 		int Channels(void) override;
 };
 
-int isFlac(const char* in);
+//int isFlac(const char* in);
 #endif
