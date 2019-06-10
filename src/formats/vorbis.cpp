@@ -49,7 +49,13 @@ VorbisDecoder::~VorbisDecoder(void) {
 }
 
 void VorbisDecoder::Info(musinfo_t* Meta) {
-	Meta->authorCpright.assign("(No Author-Vorbis)", strlen("(No Author-Vorbis)"));
+	const char *ret = NULL;
+	vorbis_comment *comment = ov_comment(&vorbisFile, -1);
+
+	if ((ret = vorbis_comment_query(comment, const_cast<char*>("artist"), 0)))
+		Meta->authorCpright.assign(ret);
+	else
+		Meta->authorCpright.assign("(No Author-Vorbis)");
 }
 
 uint32_t VorbisDecoder::Position(void) {

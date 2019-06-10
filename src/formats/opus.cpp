@@ -22,7 +22,6 @@
 #include "opus.hpp"
 
 static OggOpusFile*		opusFile;
-static const OpusHead*	opusHead;
 static const size_t		buffSize = 32 * 1024;
 
 uint64_t fillOpusBuffer(int16_t* bufferOut);
@@ -36,8 +35,6 @@ OpusDecoder::OpusDecoder(const char* filename) {
 
 	if((err = op_current_link(opusFile)) < 0)
 		return;
-
-	opusHead = op_head(opusFile, err);
 	
 	this->IsInit = true;
 }
@@ -48,7 +45,13 @@ OpusDecoder::~OpusDecoder(void) {
 }
 
 void OpusDecoder::Info(musinfo_t* Meta) {
-	Meta->authorCpright.assign("(No Author-Opus)", strlen("(No Author-Opus)"));
+	const char *ret;
+	const OpusTags *comment = op_tags(opusFile, -1);
+
+	if ((ret = opus_tags_query(comment, const_cast<char*>("artist"), 0)))
+		Meta->authorCpright.assign(ret);
+	else
+		Meta->authorCpright.assign("(No Author-Opus)", strlen("(No Author-Opus)"));
 }
 
 uint32_t OpusDecoder::Position(void) {
