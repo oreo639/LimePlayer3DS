@@ -10,37 +10,22 @@
 
 typedef struct
 {
-    unsigned bits_per_sample = 0;
-    unsigned sample_rate = 0;
-    unsigned channels = 0;
-    unsigned long total_samples = 0;
-    unsigned max_blocksize = 0;
-    unsigned min_blocksize = 0;
+	unsigned bits_per_sample = 0;
+	unsigned sample_rate = 0;
+	unsigned channels = 0;
+	unsigned long total_samples = 0;
+	unsigned max_blocksize = 0;
+	unsigned min_blocksize = 0;
 
-    unsigned requested_samples = 0;
-    int16_t *outBuffer;
-    unsigned samples_used = 0;
-    FLAC__uint64 lastSample;
-    bool endOfStream = false;
+	int32_t output_buffer[BUFFER_SIZE];
+	int32_t *write_pointer = nullptr;
+	unsigned samples_used = 0;
 
-    struct {
-        int16_t bufData[BUFFER_SIZE];
-        int16_t *bufReadPos;
-        uint bufFill;
-    } sampleCache;
-
-    void clear()
-    {
-        outBuffer = NULL;
-        requested_samples = 0;
-        samples_used = 0;
-    }
-
-    void reset()
-    {
-        clear();
-        endOfStream = false;
-    }
+	void clear()
+	{
+		samples_used = 0;
+		write_pointer = &output_buffer[0];
+	}
 } callback_info;
 
 int FLAC_decode(FLAC__StreamDecoder* decoder, callback_info* cinfo, int16_t *buffer, int numSamples);

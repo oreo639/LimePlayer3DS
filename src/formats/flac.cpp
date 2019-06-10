@@ -15,9 +15,6 @@
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* Based on https://github.com/audacious-media-player/audacious-plugins/tree/master/src/flac
-   along with scummvm's flac.c */
-
 #include <string.h>
 
 #include <FLAC/stream_decoder.h>
