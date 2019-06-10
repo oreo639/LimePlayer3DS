@@ -23,14 +23,11 @@
 #include "flac_callbacks.hpp"
 #include "error.hpp"
 
-/* Although it is called squeeze_audio from audacious, this is actualy a modified version 
-   of convertBuffersGeneric from scummvm */
-static void squeeze_audio(int32_t* src, void* dst, unsigned count, unsigned res)
+/* This is a mix between squeeze_audio from audacious and convertBuffersGeneric from scummvm */
+static void convertBuffersGeneric(int32_t* src, int16_t* dst, unsigned count, unsigned res)
 {
 	int32_t* rp = src;
-	int8_t*  wp = (int8_t*) dst;
-	int16_t* wp2 = (int16_t*) dst;
-	int32_t* wp4 = (int32_t*) dst;
+	int16_t* wp2 = dst;
 
 	if (res < BUFTYPE_BITS) {
 		const uint8_t kPower = (uint8_t)(BUFTYPE_BITS - res);
@@ -64,7 +61,8 @@ int FLAC_decode(FLAC__StreamDecoder* decoder, callback_info* cinfo, int16_t *buf
 		return 0;
 	}
 
-	squeeze_audio(cinfo->output_buffer, buffer, cinfo->samples_used, cinfo->bits_per_sample);
+	/* Copy data to audio buffer and if necessary, convert the data */
+	convertBuffersGeneric(cinfo->output_buffer, buffer, cinfo->samples_used, cinfo->bits_per_sample);
 	return cinfo->samples_used;
 }
 
