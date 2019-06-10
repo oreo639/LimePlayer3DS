@@ -40,7 +40,9 @@ APP_AUTHOR          :=	LimePlayer Team
 TARGET		:=	$(notdir $(CURDIR))
 OUTDIR		:=	out
 BUILD		:=	build
-SOURCES		:=	src src/formats src/formats/stream src/network src/parsecfg src/parsecfg/INIReader src/parsecfg/INIReader/cpp
+SOURCES		:=	src src/formats src/formats/stream src/network src/parsecfg \
+			src/parsecfg/INIReader src/parsecfg/INIReader/cpp \
+			src/formats/flac_callbacks
 DATA		:=	data
 INCLUDES	:=	include src
 GRAPHICS	:=	gfx
@@ -85,7 +87,7 @@ CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++17
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS	:= -lcitro2d -lcitro3d -lmpg123 -lopusfile -lopus -lvorbisidec -logg -lWildMidi -ljansson -lctrud -lm
+LIBS	:= -lcitro2d -lcitro3d -lmpg123 -lopusfile -lopus -lvorbisidec -logg -lFLAC -lWildMidi -ljansson -lctrud -lm
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
 # include and lib

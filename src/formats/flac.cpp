@@ -14,26 +14,42 @@
 *    You should have received a copy of the GNU General Public License
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#define DR_FLAC_IMPLEMENTATION
-#include <dr_libs/dr_flac.h>
+
+#include <string.h>
+
+#include <FLAC/stream_decoder.h>
 
 #include "flac.hpp"
+#include "flac_callbacks/flac_callbacks.hpp"
 
-static drflac*		pFlac;
-static const size_t	buffSize = 16 * 1024;
-uint32_t flacprogress; //Credit Tangerine.
+static FLAC__StreamDecoder	*dFlac;
+static callback_info		*cFlac;
 
 FlacDecoder::FlacDecoder(const char* filename) {
-	pFlac = drflac_open_file(filename);
-	flacprogress = 0;
-	if (pFlac == NULL)
-		return;
+	dFlac = FLAC__stream_decoder_new();
+	cFlac = new callback_info;
+
+	FLAC__StreamDecoderInitStatus ret;	
+	if((ret = FLAC__stream_decoder_init_file(dFlac,
+		filename,
+		write_callback,
+		metadata_callback,
+		error_callback,
+		cFlac)) != FLAC__STREAM_DECODER_INIT_STATUS_OK) {
+			DEBUG("Could not initialize the main FLAC decoder: %s(%d)\n",
+				FLAC__StreamDecoderInitStatusString[ret], ret);
+			return;
+	}
+
+	FLAC__stream_decoder_process_until_end_of_metadata(dFlac);
 
 	this->IsInit = true;
 }
 
 FlacDecoder::~FlacDecoder(void) {
-	drflac_close(pFlac);
+	FLAC__stream_decoder_finish(dFlac);
+	FLAC__stream_decoder_delete(dFlac);
+	delete cFlac;
 	this->IsInit = false;
 }
 
@@ -42,46 +58,44 @@ void FlacDecoder::Info(musinfo_t* Meta) {
 }
 
 uint32_t FlacDecoder::Position(void) {
-	return flacprogress;
+	FLAC__uint64 pos = 0;
+	FLAC__stream_decoder_get_decode_position(dFlac, &pos);
+	return pos;
 }
 
 uint32_t FlacDecoder::Length(void) {
-	return pFlac->totalSampleCount;
+	return cFlac->total_samples;
 }
 
 void FlacDecoder::Seek(uint32_t location)
 {
-	if(location > pFlac->totalSampleCount) {
+	if(location > cFlac->total_samples) {
 		return;
 	}
-	drflac_seek_to_sample(pFlac, location);
-	flacprogress = location;
+	FLAC__stream_decoder_seek_absolute(dFlac, location);
 }
 
 uint32_t FlacDecoder::Decode(void* buffer)
 {
-	uint64_t out = drflac_read_s16(pFlac, buffSize, (int16_t*)buffer);
-	flacprogress += out;
-	return out;
+	return FLAC_decode(dFlac, cFlac, static_cast<int16_t*>(buffer), BUFFER_SIZE);
 }
 
 uint32_t FlacDecoder::Samplerate(void)
 {
-	return pFlac->sampleRate;
+	return cFlac->sample_rate;
 }
-
 
 uint32_t FlacDecoder::Buffsize(void)
 {
-	return buffSize;
+	return BUFFER_SIZE;
 }
 
 int FlacDecoder::Channels(void)
 {
-	return pFlac->channels;
+	return cFlac->channels;
 }
 
-int isFlac(const char* in)
+/*int isFlac(const char* in)
 {
 	int err = -1;
 	drflac* pFlac = drflac_open_file(in);
@@ -91,4 +105,4 @@ int isFlac(const char* in)
 
 	drflac_close(pFlac);
 	return err;
-}
+}*/
