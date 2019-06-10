@@ -24,6 +24,7 @@ typedef struct
 	void clear()
 	{
 		samples_used = 0;
+		memset(output_buffer, 0, sizeof(output_buffer));
 		write_pointer = &output_buffer[0];
 	}
 } callback_info;
