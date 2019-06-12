@@ -43,8 +43,8 @@ NetfmtDecoder::NetfmtDecoder(const char* url) {
 		DEBUG("Using mpg123.\n");
 	} else if (this->httpctx.content_type == CONTENT_OGG) {
 		if (isOpusStream(this->httpctx.dbuf, this->httpctx.readsize) == 0) {
-			streamdec = (new OpusStreamDecoder(this->httpctx.dbuf, this->httpctx.readsize));
-			DEBUG("Using opusfile.\n");
+			//streamdec = (new OpusStreamDecoder(this->httpctx.dbuf, this->httpctx.readsize));
+			DEBUG("Opus support is not implemented.\n");
 
 		} else if (isVorbisStream(this->httpctx.dbuf, this->httpctx.readsize) == 0) {
 			DEBUG("Vorbis support is not implemented.\n");

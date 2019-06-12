@@ -23,100 +23,10 @@
 
 #include "error.hpp"
 
-static bool isSeekable;
-static OpusDecoder*		opusDecoder;
-static const OpusHead*		opusHead;
-static const size_t		buffSize = 32 * 1024;
-
-uint64_t fillOpusBuffer(uint8_t* inbuffer, uint32_t inbuffsize, int16_t* bufferOut);
-
-
-OpusStreamDecoder::OpusStreamDecoder(uint8_t* inbuffer, uint32_t inbufsize) {
-	int err = 0;
-
-	if (!(opusDecoder = opus_decoder_create(48000, 2, &err))) {
-		DEBUG("opus decoder initalization failed with error %d.\n", err);
-		return;
-	}
-
-	DEBUG("OpusDec initalized.\n");
-	
-	this->IsInit = true;
-}
-
-OpusStreamDecoder::~OpusStreamDecoder(void) {
-	opus_decoder_destroy(opusDecoder);
-	this->IsInit = false;
-}
-
-void OpusStreamDecoder::Info(musinfo_t* Meta) {
-	return;
-}
-
-uint32_t OpusStreamDecoder::Position(void) {
-	return 0;
-}
-
-uint32_t OpusStreamDecoder::Length(void) {
-	return 0;
-}
-
-void OpusStreamDecoder::Seek(uint32_t location)
-{
-	return;
-}
-
-uint32_t OpusStreamDecoder::Decode(uint8_t* inbuffer, uint32_t inbuffsize, void* outbuffer)
-{
-	return fillOpusBuffer(inbuffer, inbuffsize, static_cast<int16_t*>(outbuffer));
-}
-
-uint32_t OpusStreamDecoder::Samplerate(void)
-{
-	return 48000;
-}
-
-uint32_t OpusStreamDecoder::Buffsize(void)
-{
-	return buffSize;
-}
-
-int OpusStreamDecoder::Channels(void)
-{
-	return 2;
-}
 
 int isOpusStream(uint8_t* inbuffer, uint32_t inbufsize)
 {
 	int err = 0;
 	err = op_test(NULL, inbuffer, inbufsize);
 	return err;
-}
-
-uint64_t fillOpusBuffer(uint8_t* inbuffer, uint32_t inbuffsize, int16_t* bufferOut)
-{
-	uint64_t samplesRead = 0;
-	int samplesToRead = buffSize;
-
-	while(samplesToRead > 0)
-	{
-		int samplesJustRead = opus_decode(opusDecoder, inbuffer, inbuffsize, bufferOut,
-						samplesToRead > 120*48*2 ? 120*48*2 : samplesToRead, 0);
-
-		DEBUG("Output of samplesJustRead: %d", samplesJustRead);
-
-		if(samplesJustRead < 0)
-			return samplesJustRead;
-		else if(samplesJustRead == 0)
-		{
-			/* End of file reached. */
-			break;
-		}
-
-		samplesRead += samplesJustRead * 2;
-		samplesToRead -= samplesJustRead * 2;
-		bufferOut += samplesJustRead * 2;
-	}
-
-	return samplesRead;
 }
