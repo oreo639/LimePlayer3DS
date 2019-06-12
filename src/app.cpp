@@ -193,24 +193,20 @@ void App::Update() {
 		{
 			if(kDown & (KEY_R | KEY_UP))
 			{
-				if(PlayerInterface::IsPlaying() == false)
-					return;
-
-				if(PlayerInterface::TogglePlayback() == true)
-					return;
+				if(PlayerInterface::IsPlaying())
+					PlayerInterface::TogglePlayback();
 			}
 
 			if(kDown & KEY_B)
 			{
 				exitPlayback();
-				return;
 			}
 
 			if(kDown & KEY_X)
 			{
 				PlayerInterface::SkipPlayback();
-				return;
 			}
+			return;
 		}
 
 		if (kDown & KEY_A) {
