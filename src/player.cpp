@@ -151,10 +151,10 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 			svcSleepThread(100 * 1000);
 	
 			/* When the last buffer has finished playing, break. */
-			if(lastbuf == true)
+			if (lastbuf == true)
 				break;
 
-			while (ndspChnIsPaused(0) == true || lastbuf == true)
+			if (ndspChnIsPaused(0) == true || lastbuf == true)
 				continue;
 
 			for (auto& buf : waveBuf) {

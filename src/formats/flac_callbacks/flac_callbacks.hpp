@@ -1,9 +1,6 @@
 #ifndef __FLAC_CALLBACKS_H__
 #define __FLAC_CALLBACKS_H__
 
-
-// Maximal buffer size. According to the FLAC format specification, the  block size is
-// a 16 bit value (in fact it seems the maximal block size is 32768, but we play it safe).
 #define BUFFER_SIZE 65536
 
 #define BUFTYPE_BITS 16

@@ -62,6 +62,15 @@ ICON_FLAGS	:=	nosavebackups,visible
 VERSION_MAJOR	:=	0
 VERSION_MINOR	:=	0
 VERSION_BUILD	:=	8
+ifndef RELEASE
+VERSION_HASH	:=	$(shell git rev-parse --short HEAD)
+endif
+
+ifneq ($(VERSION_HASH),)
+VERSION_ALL	:=	$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_BUILD)-$(VERSION_HASH)
+else
+VERSION_ALL	:=	$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_BUILD)
+endif
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -73,10 +82,10 @@ CFLAGS	:=	-Wall -mword-relocations \
 			$(ARCH)
 
 CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS `arm-none-eabi-pkg-config opusfile --cflags` \
-		-DLIMEPLAYER_VERSION="$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_BUILD)" \
+		-DLIMEPLAYER_VERSION="$(VERSION_ALL)" \
 		$(CUSTOMFLAGS)
 
-ifdef $(RELEASE)
+ifdef RELEASE
 	CFLAGS += -O3 -g
 else
 	CFLAGS += -Og -ggdb

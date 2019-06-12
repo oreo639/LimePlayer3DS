@@ -24,7 +24,7 @@
 #include "error.hpp"
 
 static bool isSeekable;
-static OggOpusFile*		opusFile;
+static OpusDecoder*		opusDecoder;
 static const OpusHead*		opusHead;
 static const size_t		buffSize = 32 * 1024;
 
@@ -34,22 +34,18 @@ uint64_t fillOpusBuffer(uint8_t* inbuffer, uint32_t inbuffsize, int16_t* bufferO
 OpusStreamDecoder::OpusStreamDecoder(uint8_t* inbuffer, uint32_t inbufsize) {
 	int err = 0;
 
-	//if ((opusFile = op_open_url(url, &err))) {
+	if (!(opusDecoder = opus_decoder_create(48000, 2, &err))) {
 		DEBUG("opus decoder initalization failed with error %d.\n", err);
 		return;
-	//}
+	}
 
 	DEBUG("OpusDec initalized.\n");
-
-	if ((isSeekable = op_seekable(opusFile)) != 0)
-		if((err = op_current_link(opusFile)) < 0)
-			return;
 	
 	this->IsInit = true;
 }
 
 OpusStreamDecoder::~OpusStreamDecoder(void) {
-	op_free(opusFile);
+	opus_decoder_destroy(opusDecoder);
 	this->IsInit = false;
 }
 
@@ -104,8 +100,8 @@ uint64_t fillOpusBuffer(uint8_t* inbuffer, uint32_t inbuffsize, int16_t* bufferO
 
 	while(samplesToRead > 0)
 	{
-		int samplesJustRead = op_read_stereo(opusFile, bufferOut,
-						samplesToRead > 120*48*2 ? 120*48*2 : samplesToRead);
+		int samplesJustRead = opus_decode(opusDecoder, inbuffer, inbuffsize, bufferOut,
+						samplesToRead > 120*48*2 ? 120*48*2 : samplesToRead, 0);
 
 		DEBUG("Output of samplesJustRead: %d", samplesJustRead);
 
