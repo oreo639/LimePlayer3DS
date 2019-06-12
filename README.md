@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.com/Oreo639/LimePlayer3DS.svg?branch=master)](https://travis-ci.com/Oreo639/LimePlayer3DS)
-# Limeplayer 3DS
-Limeplayer 3ds is a graphical music player for the 3ds with metadata parsing and software midi support.
+# LimePlayer3DS
+LimePlayer3DS is a graphical music player for the 3ds with metadata parsing and software midi support.
 
 It checks for music in the `sdmc:/music` folder. If it doesn't exist then it just goes to `sdmc:/`, just like ctrmus. 
 
@@ -11,10 +11,13 @@ This path be changed in the config file located at `/3ds/limeplayer3ds/config.js
 More info about LimePlayer3DS's config.json can be found here: <br/>
 https://github.com/Oreo639/LimePlayer3DS/wiki/config.json
 
-(Improved GUI, TBD. Loading cover pictures. All of the menus (although every one except setting's and copyright's use is TBD).)
+[For more information on usage of the various features LimePlayer offers, check here.](https://github.com/Oreo639/LimePlayer3DS/wiki)
+
+TODO:
+(GUI redesign and rewrite. Loading cover pictures. Reading of metadata.)
 
 ## Note
-Limeplayer3ds is currently undergoing a c++ rewrite (instead of just being in c). Alot of its functionality is not going to be avliable right now.
+Limeplayer3DS is currently undergoing a c++ rewrite (instead of just being in c). Alot of its functionality is not going to be avliable right now.
 
 ## Officaly Supported Formats
 Mp3, Wav, Flac, Midi, Xmi, Mus, Hmi, Hmp, Ogg, and Opus.
@@ -29,7 +32,7 @@ You will also need [makerom](https://github.com/profi200/Project_CTR) and [banne
 Once you complete Prerequsites, run `make` or `make <target>`. Replace `<target>` with one of the targets listed below
 
 ### Targets:
-+ 3dsx (3dsx only build).
++ 3dsx (3dsx only build)
 + cia (generate cia, 3dsx must be built first)
 + clean (clean compiled files)
 
@@ -51,15 +54,14 @@ These are the contrubuters and maintainers, both big and small (will be updated 
 
 + Most of the icons under gfx are from the site [icons8.com](https://icons8.com) and are licensed under the [CC-BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/3.0/)
 
-## Copyright
-
-The application is licensed under GPLv3-or-later. Additional terms 7c apply.
-
-You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 ## Special Thanks
 + Smealum, WinterMute, fincs, and the devkitPro team: For making/maintaining documentation and libraries for libctru and citro2d/3d which were very helpfull when making this project.
 
 + The Easyrpg Team: For inspiring this application with their work porting wildmidi to the 3ds and the switch (the reason I started working on this was because I wondered if there was a midi player for the 3ds).
 
 + Family: For providing me helpfull feedback, and testing pre-release versions.
+
+## Copyright
+The application is licensed under GPLv3-or-later. Additional terms 7c apply.
+
+You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
