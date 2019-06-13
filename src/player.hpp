@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "settings.hpp"
-#include "error.hpp"
+#include "debug.hpp"
 
 typedef struct
 {
@@ -31,10 +31,13 @@ enum Format {
 
 class Decoder {
 	public:
-		virtual ~Decoder() {}
 		// Decoder interface
 		bool GetIsInit(void) {return IsInit;};
-		
+
+		const char* GetErrInfo(void) {return ErrInfo;};
+
+		virtual ~Decoder() {}
+
 		virtual void Info(musinfo_t* Meta);
 		
 		virtual uint32_t Position(void);
@@ -53,6 +56,8 @@ class Decoder {
 
 	protected:
 		bool IsInit = 0;
+
+		const char* ErrInfo = NULL;
 };
 
 class StreamDecoder {
@@ -79,21 +84,6 @@ class StreamDecoder {
 
 	protected:
 		bool IsInit = 0;
-};
-
-
-class Player
-{
-	public:
-		Player() {};
-		~Player() {};
-		
-		void Play(playbackInfo_t* playbackInfo);
-
-		void ClearMetadata(musinfo_t* fileMeta);
-		
-	private:
-		Decoder* GetFormat(const playbackInfo_t* playbackInfo, int filetype);
 };
 
 namespace PlayerInterface {

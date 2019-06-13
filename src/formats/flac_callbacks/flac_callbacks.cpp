@@ -21,7 +21,7 @@
 #include <FLAC/all.h>
 
 #include "flac_callbacks.hpp"
-#include "error.hpp"
+#include "debug.hpp"
 
 /* This is a mix between squeeze_audio from audacious and convertBuffersGeneric from scummvm */
 static void convertBuffersGeneric(int32_t* src, int16_t* dst, unsigned count, unsigned res)

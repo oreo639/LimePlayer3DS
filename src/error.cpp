@@ -1,20 +1,31 @@
-#include <vector>
-
 #include "error.hpp"
 
-static std::vector<int> _err;
+static std::vector<LimeError_t> _err;
 
 void Error::Add(int err) {
 	// Error codes of 0 are not allowed
-	if (err != 0)
-		_err.push_back(err);
+	if (err != 0) {
+		LimeError_t tmperr;
+		tmperr.err_code = err;
+		_err.push_back(tmperr);
+	}
+}
+
+void Error::Add(int err, std::string& extraInfo) {
+	// Error codes of 0 are not allowed
+	if (err != 0) {
+		LimeError_t tmperr;
+		tmperr.err_code = err;
+		tmperr.extra_info = extraInfo;
+		_err.push_back(tmperr);
+	}
 }
 
 void Error::Remove(void) {
 	_err.pop_back();
 }
 
-int Error::Get(void) {
+LimeError_t Error::Get(void) {
 	return _err[_err.size()-1];
 }
 

@@ -5,7 +5,7 @@
 #include <jansson.h>
 
 #include "lang.hpp"
-#include "error.hpp"
+#include "debug.hpp"
 
 std::string getSystemLanguageString(void) {
 	u8 language = 0;

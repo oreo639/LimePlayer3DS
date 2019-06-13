@@ -22,6 +22,7 @@
 #include "gui.hpp"
 #include "app.hpp"
 #include "error.hpp"
+#include "debug.hpp"
 #include "lang.hpp"
 
 // Generated at build time
@@ -305,19 +306,27 @@ void Gui::drawBrowserPlayer(playbackInfo_t* info) {
 }
 
 void Gui::drawError(void) {
-	int errorcode = Error::Get();
+	LimeError_t error = Error::Get();
+	int errorcode = error.err_code;
+	char codestr[30];
 
 	C2D_DrawRectSolid(10, 10, 0.5f, 300, SCREEN_HEIGHT-20, C2D_Color32(0, 0, 0, 255));
+
+	snprintf(codestr, 30, "Error code: %d", errorcode);
+	guiprint(codestr, 20.0f, 20.0f, 0.5f, 0.5f);
 	
 	if (errorcode == FILE_NOT_SUPPORTED) {
-		guiprint("ERR: Unrecognized filetype.", 20.0f, 20.0f, 0.5f, 0.5f);
+		guiprint("ERR: Unrecognized filetype.", 20.0f, 40.0f, 0.5f, 0.5f);
 	}
 	else if (errorcode == DECODER_INIT_FAIL){
-		guiprint("ERR: Failed to initalize decoder.", 20.0f, 20.0f, 0.5f, 0.5f);
+		guiprint("ERR: Failed to initalize decoder.", 20.0f, 40.0f, 0.5f, 0.5f);
 	}
 	else {
 		char errstr[30];
-		snprintf(errstr, 30, "ERR: Undefined error (%d)", errorcode);
-		guiprint(errstr, 20.0f, 20.0f, 0.5f, 0.5f);
+		snprintf(errstr, 30, "ERR: Undefined error.");
+		guiprint(errstr, 20.0f, 40.0f, 0.5f, 0.5f);
 	}
+
+	if (error.extra_info.size())
+		guiprint(error.extra_info.c_str(), 20.0f, 60.0f, 0.5f, 0.5f);
 }

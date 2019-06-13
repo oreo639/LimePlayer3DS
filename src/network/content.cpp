@@ -4,7 +4,7 @@
 #include <3ds.h>
 
 #include "content.hpp"
-#include "error.hpp"
+#include "debug.hpp"
 
 static const char* mime_mpeg3[] = {
 	"audio/mpeg",  "audio/x-mpeg",

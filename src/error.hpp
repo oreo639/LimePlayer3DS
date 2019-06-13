@@ -8,18 +8,26 @@
 #define DECODER_INIT_TIMEOUT		1003
 #define UNSUPPORTED_CHANNELS		1004
 
-#ifndef NODEBUGSTR
-#define DEBUG(...) fprintf(stderr, __VA_ARGS__)
-#else
-#pragma message("Note: Debug strings are disabled.")
-#define DEBUG(...)
-#endif
+#include <vector>
+#include <string>
+
+typedef struct {
+	int err_type = 0;
+	int err_code;
+	std::string extra_info;
+} LimeError_t;
 
 namespace Error {
 	void Add(int err);
+
+	void Add(int err, std::string& extraInfo);
+
 	void Remove(void);
-	int Get(void);
+
+	LimeError_t Get(void);
+
 	bool IsQuered(void);
+
 	void Clear(void);
 }
 

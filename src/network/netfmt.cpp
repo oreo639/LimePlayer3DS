@@ -25,38 +25,44 @@
 #include "formats/stream/opusstream.hpp"
 #include "formats/stream/vorbisstream.hpp"
 
-StreamDecoder *streamdec = nullptr;
+std::unique_ptr<StreamDecoder> streamdec = nullptr;
 musinfo_t* MetaPtr = NULL;
 
 static uint32_t bytesread = 0;
 
 NetfmtDecoder::NetfmtDecoder(const char* url) {
-	if (R_FAILED(http_open(&this->httpctx, url, false))) {
+	if (http_open(&this->httpctx, url, false)) {
 		DEBUG("Netfmt: Http_open failed.\n");
+		this->ErrInfo = "Could not connect to url.";
 		return;
 	}
 
 	http_download(&this->httpctx);
 
 	if (this->httpctx.content_type == CONTENT_MPEG3) {
-		streamdec = (new Mp3StreamDecoder(this->httpctx.dbuf, this->httpctx.readsize));
+		streamdec = std::unique_ptr<StreamDecoder>(new Mp3StreamDecoder(this->httpctx.dbuf, this->httpctx.readsize));
 		DEBUG("Using mpg123.\n");
 	} else if (this->httpctx.content_type == CONTENT_OGG) {
 		if (isOpusStream(this->httpctx.dbuf, this->httpctx.readsize) == 0) {
 			//streamdec = (new OpusStreamDecoder(this->httpctx.dbuf, this->httpctx.readsize));
 			DEBUG("Opus support is not implemented.\n");
+			this->ErrInfo = "Opus support is not implemented.";
+			streamdec = nullptr;
 
 		} else if (isVorbisStream(this->httpctx.dbuf, this->httpctx.readsize) == 0) {
 			DEBUG("Vorbis support is not implemented.\n");
+			this->ErrInfo = "Vorbis support is not implemented.";
 			streamdec = nullptr;
 
 		} else {
 			DEBUG("Unsupported format using ogg container.\n");
+			this->ErrInfo = "Unsupported format using ogg container.";
 			streamdec = nullptr;
 		}
 	} else {
+		this->ErrInfo = "Unsupported content-type.";
 		streamdec = nullptr;
-		DEBUG("Unsupported format.");
+		DEBUG("Unsupported content-type.");
 	}
 
 	if (streamdec != nullptr)
@@ -67,7 +73,7 @@ NetfmtDecoder::NetfmtDecoder(const char* url) {
 NetfmtDecoder::~NetfmtDecoder(void) {
 	MetaPtr = NULL;
 	http_close(&this->httpctx);
-	delete streamdec;
+	streamdec = nullptr;
 	this->IsInit = false;
 }
 

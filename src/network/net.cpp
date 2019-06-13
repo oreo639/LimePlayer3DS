@@ -6,7 +6,7 @@
 #include <3ds.h>
 
 #include "net.hpp"
-#include "error.hpp"
+#include "debug.hpp"
 #include "content.hpp"
 
 #define HTTP_USER_AGENT "LimePlayer3DS (Nintendo 3DS; HOS ARMv6K) version/LIMEPLAYER_VERSION"
@@ -81,7 +81,7 @@ Result http_open(http_context* httpctx, const char* url, bool allowIcyCast) {
 	if (statuscode!=200) {
 		DEBUG("URL returned status: %" PRId32 "\n", statuscode);
 		httpcCloseContext(&httpctx->httpc);
-		return ret;
+		return statuscode;
 	}
 
 	char content_type[255];
@@ -121,8 +121,10 @@ Result http_download(http_context* httpctx) {
 	return httpcDownloadData(&httpctx->httpc, httpctx->dbuf, httpctx->dbufSize, &httpctx->readsize);
 }
 
-Result http_close(http_context* httpctx) {
-	if (httpctx->dbuf) free(httpctx->dbuf);
+void http_close(http_context* httpctx) {
+	if (httpctx->dbuf)
+		free(httpctx->dbuf);
 	httpctx->dbufSize = 0;
-	return httpcCloseContext(&httpctx->httpc);
+	httpcCloseContext(&httpctx->httpc);
+	return;
 }
