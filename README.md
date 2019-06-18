@@ -24,9 +24,11 @@ Mp3, Wav, Flac, Midi, Xmi, Mus, Hmi, Hmp, Ogg, and Opus.
 
 ## Building
 ### Prerequsites:
-[dkp-pacman](https://devkitpro.org/wiki/devkitPro_pacman), 3ds-dev, 3ds-mpg123, 3ds-libvorbisidec, 3ds-opusfile, 3ds-flac, 3ds-jansson, and 3ds-wildmidi.
+[dkp-pacman](https://devkitpro.org/wiki/devkitPro_pacman)
 
-You will also need [makerom](https://github.com/profi200/Project_CTR) and [bannertool](https://github.com/Steveice10/bannertool/) for cia building (optional).
+3ds-dev 3ds-mpg123 3ds-libvorbisidec 3ds-opusfile 3ds-flac 3ds-wildmidi 3ds-jansson 3ds-pkg-config
+
+You may also need [makerom](https://github.com/profi200/Project_CTR) and [bannertool](https://github.com/Steveice10/bannertool/) for cia building (optional).
 
 ### Compiling:
 Once you complete Prerequsites, run `make` or `make <target>`. Replace `<target>` with one of the targets listed below

@@ -1,6 +1,5 @@
 #!/bin/bash
-sudo dkp-pacman -Syu 3ds-dev --noconfirm --needed
-sudo dkp-pacman -Syu 3ds-mpg123 3ds-libvorbisidec 3ds-opusfile 3ds-jansson 3ds-wildmidi --noconfirm
+
 mkdir -p ~/.local/ && mkdir -p ~/.local/bin
 source /etc/profile.d/devkit-env.sh
 export PATH=$PATH:~/.local/bin
