@@ -32,5 +32,7 @@ typedef enum
 
 namespace Lang {
 	int ReadTranslationStrings(int lang, std::string file, std::vector<std::string>* array);
+
+	int Str2Int(const std::string& str);
 };
 #endif

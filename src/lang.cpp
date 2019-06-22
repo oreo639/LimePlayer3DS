@@ -1,11 +1,48 @@
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include <3ds.h>
+#include <string.h>
 #include <jansson.h>
 
 #include "lang.hpp"
 #include "debug.hpp"
+
+int getSystemLanguage(void) {
+	u8 language = 0;
+	cfguInit();
+	if (R_SUCCEEDED(CFGU_GetSystemLanguage(&language)))
+		switch (language) {
+			case CFG_LANGUAGE_JP:
+				return LANG_JP;
+			case CFG_LANGUAGE_EN:
+				return LANG_EN;
+			case CFG_LANGUAGE_FR:
+				return LANG_FR;
+			case CFG_LANGUAGE_DE:
+				return LANG_DE;
+			case CFG_LANGUAGE_IT:
+				return LANG_IT;
+			case CFG_LANGUAGE_ES:
+				return LANG_ES;
+			case CFG_LANGUAGE_ZH:
+				return LANG_ZH;
+			case CFG_LANGUAGE_KO:
+				return LANG_KO;
+			case CFG_LANGUAGE_NL:
+				return LANG_NL;
+			case CFG_LANGUAGE_PT:
+				return LANG_PT;
+			case CFG_LANGUAGE_RU:
+				return LANG_RU;
+			case CFG_LANGUAGE_TW:
+				return LANG_TW;
+			default:
+				return LANG_EN;
+		}
+	return LANG_EN;
+}
 
 std::string getSystemLanguageString(void) {
 	u8 language = 0;
@@ -108,4 +145,35 @@ int Lang::ReadTranslationStrings(int lang, std::string file, std::vector<std::st
 	}
 
 	return 0;
+}
+
+int Lang::Str2Int(const std::string& str) {
+	if (str == "sy")
+		return getSystemLanguage();
+	else if (str == "jp")
+		return LANG_JP;
+	else if (str == "en")
+		return LANG_EN;
+	else if (str == "fr")
+		return LANG_FR;
+	else if (str == "de")
+		return LANG_DE;
+	else if (str == "it")
+		return LANG_IT;
+	else if (str == "es")
+		return LANG_ES;
+	else if (str == "zh")
+		return LANG_ZH;
+	else if (str == "ko")
+		return LANG_KO;
+	else if (str == "nl")
+		return LANG_NL;
+	else if (str == "pt")
+		return LANG_PT;
+	else if (str  == "ru")
+		return LANG_RU;
+	else if (str == "tw")
+		return LANG_TW;
+
+	return LANG_EN;
 }

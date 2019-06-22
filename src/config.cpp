@@ -4,6 +4,7 @@
 #include <jansson.h>
 
 #include "config.hpp"
+#include "lang.hpp"
 
 #define CONFIG_STRING "settings"
 #define ENTRIES_STRING "playlists"
@@ -69,7 +70,9 @@ void parse_options(json_t* entries_elem, settings_t* todo_config)
 		value = json_object_iter_value(iter);
 		if(!strcmp(key, SETTING_MIDI))
 		{
-			todo_config->wildMidiConfig.assign(json_string_value(value));
+			if(json_is_string(value)) {
+				todo_config->wildMidiConfig.assign(json_string_value(value));
+			}
 		}
 		else if(!strcmp(key, SETTING_THEME))
 		{
@@ -77,7 +80,11 @@ void parse_options(json_t* entries_elem, settings_t* todo_config)
 		}
 		else if(!strcmp(key, SETTING_LANGUAGE))
 		{
-			todo_config->textLang = json_integer_value(value);
+			if(json_is_string(value)) {
+				todo_config->textLang = Lang::Str2Int(json_string_value(value));
+			} else {
+				todo_config->textLang = json_integer_value(value);
+			}
 		}
 		iter = json_object_iter_next(entries_elem, iter);
 		free(value);
