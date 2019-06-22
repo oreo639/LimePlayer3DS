@@ -46,57 +46,55 @@ int seloffs = 0;
 
 static void menuList(int cur, int from, float startpoint, float size, int rows);
 
-Gui::Gui(settings_t* settings) {
-	InitlimeGFX();
-	textinit(settings);
+void Gui::Init(settings_t* settings) {
+	Gui::InitlimeGFX();
+	Gui::TextInit(settings);
 }
 
-Gui::~Gui(void) {
-	CloselimeGFX();
+void Gui::Exit(void) {
+	Gui::TextExit();
+	Gui::CloselimeGFX();
 }
 
-void Gui::guilist(const char* text, int row)
+
+void Gui::startframe(void)
 {
-	guiprintColor(text, 8.0f, row*12, 0.4f, 0.4f, 0xFF000000);
+	C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
+	C2D_TargetClear(top, C2D_Color32(20, 29, 31, 255));
+	C2D_TargetClear(bot, C2D_Color32(20, 29, 31, 255));
 }
 
-void Gui::fblist(int rows, int startpoint)
+void Gui::endframe(void)
 {
-	for (int i = 0; rows-seloffs > i && i <= MAX_LIST; i++) {
-		if (seloffs+i < App::dirList.dirnum)
-			guiprintColor(App::dirList.directories[seloffs+i].c_str(), 8.0f, i*32.5f+startpoint, 0.4f, 0.4f, 0xFF000000);
-		else if (seloffs+i < App::dirList.total) {
-			guiprintColor(App::dirList.files[seloffs+i-App::dirList.dirnum].c_str(), 8.0f, i*32.5f+startpoint, 0.4f, 0.4f, 0xFF000000);
-		}
+	C3D_FrameEnd(0);
+	C2D_TextBufClear(g_dynamicBuf);
+}
+
+C2D_Text staticTextGen(std::string* str) {
+	C2D_Text tmpStaticText;
+	C2D_TextParse(&tmpStaticText, g_staticBuf, str->c_str());
+	C2D_TextOptimize(&tmpStaticText);
+	return tmpStaticText;
+}
+
+void Gui::TextInit(settings_t* settings)
+{
+	std::vector<std::string> strArray;
+	// Create two text buffers: one for static text, and another one for
+	// dynamic text - the latter will be cleared at each frame.
+	g_staticBuf = C2D_TextBufNew(4096); // support up to 4096 glyphs in the buffer
+	g_dynamicBuf = C2D_TextBufNew(4096); // support up to 4096 glyphs in the buffer
+	if (!Lang::ReadTranslationStrings(settings->textLang, "lang.json", &strArray)) {
+		for (uint32_t i = 0; i < strArray.size(); i++)
+			staticText.push_back(staticTextGen(&strArray[i]));
 	}
 }
 
-
-void Gui::Drawui(playbackInfo_t* playbackInfo)
+void Gui::TextExit(void)
 {
-	startframe();
-	if (App::appState == App::MENU) {
-		drawBaseGui();
-		if (PlayerInterface::IsPlaying()) {
-			drawBrowserPlayer(playbackInfo);
-		}
-		C2D_SceneBegin(bot);
-		menuList(cursor, seloffs, 15, 32.5f, App::dirList.total);
-		C2D_DrawRectSolid(0, 0, 0.5f, SCREEN_WIDTH, 15, C2D_Color32(119, 131, 147, 255));
-		guilist(App::dirList.currentDir.c_str(), 0);
-		fblist(App::dirList.total, 15);
-	}
-	else if (App::appState == App::LOGO) {
-		C2D_SceneBegin(top);
-		guiprintStatic(TEXT_WELCOME, 25, 25, 0.5f, 0.5f);
-		guiprint("Press the <A> button to continue.", 25, 35, 0.5f, 0.5f);
-		C2D_SceneBegin(bot);
-	}
-	
-	if (Error::IsQuered()) {
-		drawError();
-	}
-	endframe();
+	staticText.clear();
+	C2D_TextBufDelete(g_dynamicBuf);
+	C2D_TextBufDelete(g_staticBuf);
 }
 
 int Gui::InitlimeGFX(void)
@@ -113,11 +111,10 @@ int Gui::InitlimeGFX(void)
 	spriteSheet = C2D_SpriteSheetLoad("romfs:/gfx/sprites.t3x");
 	if (!spriteSheet) svcBreak(USERBREAK_PANIC);
 	
-	if (!top && !bot && !spriteSheet)
+	if (!top || !bot)
 		return 1;
-		
-	else 
-		return 0;
+
+	return 0;
 
 }
 
@@ -125,9 +122,6 @@ void Gui::CloselimeGFX(void)
 {
 	// Delete spritesheet
 	C2D_SpriteSheetFree(spriteSheet);
-	
-	C2D_TextBufDelete(g_dynamicBuf);
-	C2D_TextBufDelete(g_staticBuf);
 
 	// Deinit libs
 	C2D_Fini();
@@ -135,7 +129,51 @@ void Gui::CloselimeGFX(void)
 	gfxExit();
 }
 
-void Gui::GuiCursorMove(int move) {
+void Gui::List(const char* text, int row)
+{
+	Gui::PrintColor(text, 8.0f, row*12, 0.4f, 0.4f, 0xFF000000);
+}
+
+void Gui::fblist(int rows, int startpoint)
+{
+	for (int i = 0; rows-seloffs > i && i <= MAX_LIST; i++) {
+		if (seloffs+i < App::dirList.dirnum)
+			Gui::PrintColor(App::dirList.directories[seloffs+i].c_str(), 8.0f, i*32.5f+startpoint, 0.4f, 0.4f, 0xFF000000);
+		else if (seloffs+i < App::dirList.total) {
+			Gui::PrintColor(App::dirList.files[seloffs+i-App::dirList.dirnum].c_str(), 8.0f, i*32.5f+startpoint, 0.4f, 0.4f, 0xFF000000);
+		}
+	}
+}
+
+
+void Gui::Drawui(playbackInfo_t* playbackInfo)
+{
+	Gui::startframe();
+	if (App::appState == App::MENU) {
+		drawBaseGui();
+		if (PlayerInterface::IsPlaying()) {
+			drawBrowserPlayer(playbackInfo);
+		}
+		C2D_SceneBegin(bot);
+		menuList(cursor, seloffs, 15, 32.5f, App::dirList.total);
+		C2D_DrawRectSolid(0, 0, 0.5f, SCREEN_WIDTH, 15, C2D_Color32(119, 131, 147, 255));
+		Gui::List(App::dirList.currentDir.c_str(), 0);
+		fblist(App::dirList.total, 15);
+	}
+	else if (App::appState == App::LOGO) {
+		C2D_SceneBegin(top);
+		Gui::PrintStatic(TEXT_WELCOME, 25, 25, 0.5f, 0.5f);
+		Gui::Print("Press the <A> button to continue.", 25, 35, 0.5f, 0.5f);
+		C2D_SceneBegin(bot);
+	}
+
+	if (Error::IsQuered()) {
+		Gui::drawError();
+	}
+	Gui::endframe();
+}
+
+void Gui::CursorMove(int move) {
 	if(move < 0 && (App::dirList.total - cursor >= MAX_LIST && seloffs != 0))
 					seloffs = seloffs+move;
 	else if(move > 0 && (cursor >= MAX_LIST-1 && App::dirList.total - cursor > 0 && seloffs < App::dirList.total - MAX_LIST))
@@ -149,49 +187,16 @@ void Gui::GuiCursorMove(int move) {
 		cursor = cursor + move;
 }
 
-void Gui::GuiCursorReset(void) {
+void Gui::CursorReset(void) {
 	cursor = 0;
 	seloffs = 0;
 }
 
-int Gui::GuiGetCursorPos(void) {
+int Gui::GetCursorPos(void) {
 	return cursor;
 }
 
-void Gui::startframe(void)
-{
-	C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
-	C2D_TargetClear(top, C2D_Color32(20, 29, 31, 255));
-	C2D_TargetClear(bot, C2D_Color32(20, 29, 31, 255));
-}
-
-void Gui::endframe(void) 
-{
-	C3D_FrameEnd(0);
-	C2D_TextBufClear(g_dynamicBuf);
-}
-
-C2D_Text staticTextGen(std::string* str) {
-	C2D_Text tmpStaticText;
-	C2D_TextParse(&tmpStaticText, g_staticBuf, str->c_str());
-	C2D_TextOptimize(&tmpStaticText);
-	return tmpStaticText;
-}
-
-void Gui::textinit(settings_t* settings)
-{
-	std::vector<std::string> strArray;
-	// Create two text buffers: one for static text, and another one for
-	// dynamic text - the latter will be cleared at each frame.
-	g_staticBuf = C2D_TextBufNew(4096); // support up to 4096 glyphs in the buffer
-	g_dynamicBuf = C2D_TextBufNew(4096); // support up to 4096 glyphs in the buffer
-	if (!Lang::ReadTranslationStrings(settings->textLang, "lang.json", &strArray)) {
-		for (uint32_t i = 0; i < strArray.size(); i++)
-			staticText.push_back(staticTextGen(&strArray[i]));
-	}
-}
-
-void Gui::guiprintColor(const char* text, float xloc, float yloc, float scaleX, float scaleY, u32 color)
+void Gui::PrintColor(const char* text, float xloc, float yloc, float scaleX, float scaleY, u32 color)
 {
 	// Clear the dynamic text buffer
 	C2D_TextBufClear(g_dynamicBuf);
@@ -203,24 +208,24 @@ void Gui::guiprintColor(const char* text, float xloc, float yloc, float scaleX, 
 	C2D_DrawText(&dynText, C2D_WithColor, xloc, yloc, 0.5f, scaleX, scaleY, color);
 }
 
-void Gui::guiprint(const char* text, float xloc, float yloc, float scaleX, float scaleY)
+void Gui::Print(const char* text, float xloc, float yloc, float scaleX, float scaleY)
 {
-	guiprintColor(text, xloc, yloc, scaleX, scaleY, 0xFFFFFFFF);
+	Gui::PrintColor(text, xloc, yloc, scaleX, scaleY, 0xFFFFFFFF);
 }
 
-void Gui::guiprintStatic(uint8_t id, float xloc, float yloc, float scaleX, float scaleY)
+void Gui::PrintStatic(uint8_t id, float xloc, float yloc, float scaleX, float scaleY)
 {
 	if (id < staticText.size())
 		C2D_DrawText(&staticText[id], C2D_WithColor, xloc, yloc, 0.5f, scaleX, scaleY, 0xFFFFFFFF);
 	else
-		guiprint("GuiPrintStatic: Invalid string.", xloc, yloc, scaleX, scaleY);
+		Gui::Print("GuiPrintStatic: Invalid string.", xloc, yloc, scaleX, scaleY);
 }
 
-static void drawImage(int image_id, float x, float y)
+void Gui::drawImage(int image_id, float x, float y)
 {
 	C2D_DrawImageAt(C2D_SpriteSheetGetImage(spriteSheet, image_id), x, y, 0.6f, NULL, 1.0f, 1.0f);
 }
-static void drawImageLayered(int image_id, float x, float y, float layer)
+void Gui::drawImageLayered(int image_id, float x, float y, float layer)
 {
 	C2D_DrawImageAt(C2D_SpriteSheetGetImage(spriteSheet, image_id), x, y, layer, NULL, 1.0f, 1.0f);
 }
@@ -228,10 +233,8 @@ static void drawImageLayered(int image_id, float x, float y, float layer)
 static void volumeIndicator(u8 volume) {
 	int indicator = (volume/15);
 	if (indicator < 6) {
-		drawImageLayered(sprites_popup_vol_bkg_idx, 120, 30, 0.7f);
-		drawImageLayered(indicator + sprites_popup_vol0_idx, 120, 30, 0.7f);
-	} else {
-		DEBUG("Err: Got volume indicator of %d", indicator);
+		Gui::drawImageLayered(sprites_popup_vol_bkg_idx, 120, 30, 0.7f);
+		Gui::drawImageLayered(indicator + sprites_popup_vol0_idx, 120, 30, 0.7f);
 	}
 }
 
@@ -273,14 +276,14 @@ void Gui::drawBaseGui(void) {
 	char string_minutes[3] = {0};
 	sprintf(string_minutes, "%.2i", timeinfo->tm_min);
 
-	guiprintColor(string_hours, 358, 1, 0.5f, 0.5f, 0xFFFFFFFF);
+	Gui::PrintColor(string_hours, 358, 1, 0.5f, 0.5f, 0xFFFFFFFF);
 	if(timeinfo->tm_sec % 2 == 1)
-		guiprintColor(":", 375, 0, 0.5f, 0.5f, 0xFFFFFFFF);
-	guiprintColor(string_minutes, 380, 1, 0.5f, 0.5f, 0xFFFFFFFF);
+		Gui::PrintColor(":", 375, 0, 0.5f, 0.5f, 0xFFFFFFFF);
+	Gui::PrintColor(string_minutes, 380, 1, 0.5f, 0.5f, 0xFFFFFFFF);
 	
 	char string_volume[4] = {0};
 	sprintf(string_volume, "%d", (int)((curVol/63.0f)*100));
-	guiprintColor(string_volume, 1, 1, 0.5f, 0.5f, 0xFFFFFFFF);
+	Gui::PrintColor(string_volume, 1, 1, 0.5f, 0.5f, 0xFFFFFFFF);
 	if(curVol != preVol) {
 		trigeredTime = osGetTime();	
 	} 
@@ -291,17 +294,17 @@ void Gui::drawBaseGui(void) {
 }
 
 void Gui::drawBrowserPlayer(playbackInfo_t* info) {
-	drawImage(sprites_player_playlist_idx, 20, 15);
+	Gui::drawImage(sprites_player_playlist_idx, 20, 15);
 	if (!info->filename.empty()) {
-		guiprint(info->filename.c_str(), 150.0f, 20.0f, 0.5f, 0.5f);
+		Gui::Print(info->filename.c_str(), 150.0f, 20.0f, 0.5f, 0.5f);
 	} else {
-		guiprint("Loading...", 150.0f, 20.0f, 0.5f, 0.5f);
+		Gui::Print("Loading...", 150.0f, 20.0f, 0.5f, 0.5f);
 	}
 
 	if (!info->fileMeta.authorCpright.empty()) {
-		guiprint(info->fileMeta.authorCpright.c_str(), 150.0f, 40.0f, 0.5f, 0.5f);
+		Gui::Print(info->fileMeta.authorCpright.c_str(), 150.0f, 40.0f, 0.5f, 0.5f);
 	} else {
-		guiprint("Loading...", 150.0f, 40.0f, 0.5f, 0.5f);
+		Gui::Print("Loading...", 150.0f, 40.0f, 0.5f, 0.5f);
 	}
 }
 
@@ -313,20 +316,20 @@ void Gui::drawError(void) {
 	C2D_DrawRectSolid(10, 10, 0.5f, 300, SCREEN_HEIGHT-20, C2D_Color32(0, 0, 0, 255));
 
 	snprintf(codestr, 30, "Error code: %d", errorcode);
-	guiprint(codestr, 20.0f, 20.0f, 0.5f, 0.5f);
+	Gui::Print(codestr, 20.0f, 20.0f, 0.5f, 0.5f);
 	
 	if (errorcode == FILE_NOT_SUPPORTED) {
-		guiprint("ERR: Unrecognized filetype.", 20.0f, 40.0f, 0.5f, 0.5f);
+		Gui::Print("ERR: Unrecognized filetype.", 20.0f, 40.0f, 0.5f, 0.5f);
 	}
 	else if (errorcode == DECODER_INIT_FAIL){
-		guiprint("ERR: Failed to initalize decoder.", 20.0f, 40.0f, 0.5f, 0.5f);
+		Gui::Print("ERR: Failed to initalize decoder.", 20.0f, 40.0f, 0.5f, 0.5f);
 	}
 	else {
 		char errstr[30];
 		snprintf(errstr, 30, "ERR: Undefined error.");
-		guiprint(errstr, 20.0f, 40.0f, 0.5f, 0.5f);
+		Gui::Print(errstr, 20.0f, 40.0f, 0.5f, 0.5f);
 	}
 
 	if (error.extra_info.size())
-		guiprint(error.extra_info.c_str(), 20.0f, 60.0f, 0.5f, 0.5f);
+		Gui::Print(error.extra_info.c_str(), 20.0f, 60.0f, 0.5f, 0.5f);
 }

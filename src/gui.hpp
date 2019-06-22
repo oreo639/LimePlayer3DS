@@ -10,46 +10,49 @@
 #define SCREEN_HEIGHT 240
 #define MAX_LIST 7
 
-class Gui
-{
-	public:
-		Gui(settings_t* settings);
-	
-		~Gui(void);
-	
-		void Drawui(playbackInfo_t* musInfo);
-	
-		int InitlimeGFX(void);
+namespace Gui {
+	void Init(settings_t* settings);
 
-		void CloselimeGFX(void);
-	
-		void GuiCursorMove(int move);
-	
-		void GuiCursorReset(void);
-	
-		int GuiGetCursorPos(void);
+	void Exit(void);
 
-	private:
-		void textinit(settings_t* settings);
+	void TextInit(settings_t* settings);
 
-		void startframe(void);
+	void TextExit(void);
 
-		void endframe(void);
+	void Drawui(playbackInfo_t* musInfo);
 
-		void guiprint(const char* text, float xloc, float yloc, float scaleX, float scaleY);
+	int InitlimeGFX(void);
 
-		void guiprintStatic(uint8_t id, float xloc, float yloc, float scaleX, float scaleY);
+	void CloselimeGFX(void);
 
-		void guiprintColor(const char* text, float xloc, float yloc, float scaleX, float scaleY, u32 color);
+	void CursorMove(int move);
 
-		void guilist(const char* text, int row);
+	void CursorReset(void);
 
-		void drawBaseGui(void);
+	int GetCursorPos(void);
 
-		void drawBrowserPlayer(playbackInfo_t* info);
-	
-		void drawError(void);
-	
-		void fblist(int rows, int startpoint);
+	void startframe(void);
+
+	void endframe(void);
+
+	void Print(const char* text, float xloc, float yloc, float scaleX, float scaleY);
+
+	void PrintStatic(uint8_t id, float xloc, float yloc, float scaleX, float scaleY);
+
+	void drawImage(int image_id, float x, float y);
+
+	void drawImageLayered(int image_id, float x, float y, float layer);
+
+	void PrintColor(const char* text, float xloc, float yloc, float scaleX, float scaleY, u32 color);
+
+	void List(const char* text, int row);
+
+	void drawBaseGui(void);
+
+	void drawBrowserPlayer(playbackInfo_t* info);
+
+	void drawError(void);
+
+	void fblist(int rows, int startpoint);
 };
 #endif

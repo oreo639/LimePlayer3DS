@@ -27,8 +27,6 @@
 #include "parsecfg/plsparse.hpp"
 #include "parsecfg/m3uparse.hpp"
 
-Gui *gui;
-
 App::AppState App::appState = INIT;
 dirList_t App::dirList;
 playbackInfo_t App::pInfo;
@@ -65,7 +63,7 @@ static int changeFile(const std::string &filename, playbackInfo_t* playbackInfo)
 	std::string extension = filename.substr(filename.find_last_of('.') + 1);
 	if (!strncmp(extension.c_str(), "json", 4)) {
 		std::string url;
-		CFG_parseNC(filename.c_str(), &url);
+		Cfg::ParseNC(filename.c_str(), &url);
 		playbackInfo->filename = url;
 	} else if (!strncmp(extension.c_str(), "pls", 3)) {
 		// Note to future me.
@@ -90,16 +88,16 @@ App::App(void) {
 	osSetSpeedupEnable(true);
 	appState = LOGO;
 	
-	struct stat buf;
-	if (stat("/3ds/limeplayer3ds/config.json", &buf)) {
+	struct stat st;
+	if (stat("/3ds/limeplayer3ds/config.json", &st)) {
 		mkdir("/3ds/", 0777);
 		mkdir("/3ds/limeplayer3ds/", 0777);
 
 		File::Copy("romfs:/defaultcfg/config.json", "/3ds/limeplayer3ds/config.json");
 	}
-	CFG_parseSettings("/3ds/limeplayer3ds/config.json", &App::pInfo.settings);
+	Cfg::ParseSettings("/3ds/limeplayer3ds/config.json", &App::pInfo.settings);
 
-	gui = new Gui(&App::pInfo.settings);
+	Gui::Init(&App::pInfo.settings);
 	
 	chdir("sdmc:/");
 	chdir("music");
@@ -107,8 +105,8 @@ App::App(void) {
 }
 
 App::~App(void) {
-	delete gui;
-	CFG_cleanSettings(&App::pInfo.settings);
+	Gui::Exit();
+	Cfg::CleanSettings(&App::pInfo.settings);
 	osSetSpeedupEnable(false);
 	LibExit();
 }
@@ -173,7 +171,7 @@ void App::Update() {
 	static u64	mill = 0;
 	int cursor;
 	
-	cursor = gui->GuiGetCursorPos();
+	cursor = Gui::GetCursorPos();
 
 	if (kDown & KEY_START) {
 		appState = EXITING;
@@ -212,7 +210,7 @@ void App::Update() {
 		if (kDown & KEY_A) {
 			if (cursor < dirList.dirnum) {
 				chdir(dirList.directories[cursor].c_str());
-				gui->GuiCursorReset();
+				Gui::CursorReset();
 			} else {
 				changeFile(dirList.files[cursor-dirList.dirnum], &App::pInfo);
 			}
@@ -228,26 +226,26 @@ void App::Update() {
 
 		if (kDown & KEY_B) {
 			chdir("../");
-			gui->GuiCursorReset();
+			Gui::CursorReset();
 			Explorer::getDir(&dirList);
 		}
 
 		if ((kDown & KEY_DOWN || ((kHeld & KEY_DOWN) && (osGetTime() - mill > 500))) && cursor < dirList.total) {
-			gui->GuiCursorMove(1);
+			Gui::CursorMove(1);
 		}
 
 		if ((kDown & KEY_UP || ((kHeld & KEY_UP) && (osGetTime() - mill > 500))) && cursor >= 0) {
-			gui->GuiCursorMove(-1);
+			Gui::CursorMove(-1);
 		}
 
 		if((kDown & KEY_RIGHT || ((kHeld & KEY_RIGHT) && (osGetTime() - mill > 500))) && cursor < dirList.total)
 		{
-			gui->GuiCursorMove(5);
+			Gui::CursorMove(5);
 		}
 
 		if((kDown & KEY_LEFT || ((kHeld & KEY_LEFT) && (osGetTime() - mill > 500))) && cursor >= 0)
 		{
-			gui->GuiCursorMove(-5);
+			Gui::CursorMove(-5);
 		}
 
 		if(kDown) {
@@ -257,5 +255,5 @@ void App::Update() {
 }
 
 void App::Draw() {
-	gui->Drawui(&App::pInfo);
+	Gui::Drawui(&App::pInfo);
 }

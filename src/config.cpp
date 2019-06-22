@@ -105,7 +105,7 @@ void parse_station(json_t* entries_elem, std::string* url)
 	free(iter);
 }
 
-int CFG_parseSettings(const char* filepath, settings_t* settings) {
+int Cfg::ParseSettings(const char* filepath, settings_t* settings) {
 	json_error_t *pjsonError = NULL;
 	json_t *pJson = json_load_file(filepath, 0, pjsonError);
 
@@ -136,7 +136,7 @@ int CFG_parseSettings(const char* filepath, settings_t* settings) {
 	return 0;
 }
 
-int CFG_parseNC(const char* filepath, std::string* url) {
+int Cfg::ParseNC(const char* filepath, std::string* url) {
 	json_error_t *pjsonError = NULL;
 	json_t *pJson = json_load_file(filepath, 0, pjsonError);
 
@@ -163,7 +163,7 @@ int CFG_parseNC(const char* filepath, std::string* url) {
 	return 0;
 }
 
-void CFG_cleanSettings(settings_t* parsed_config)
+void Cfg::CleanSettings(settings_t* parsed_config)
 {
 	parsed_config->wildMidiConfig.clear();
 	parsed_config->playlist.clear();

@@ -9,10 +9,10 @@ class App {
 		enum AppState { 
 			INIT,
 			LOGO,
-			TITLE, 
-			PLAYING,
-			IDLE,
 			MENU,
+			BROWSER,
+			CONTROLS,
+			PLAYLISTS,
 			EXITING,
 			AppState_MAX,
 		};
