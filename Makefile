@@ -36,15 +36,19 @@ APP_TITLE           :=	LimePlayer3DS
 APP_DESCRIPTION     :=	A graphical music player for mp3, wav, midi, and more.
 APP_AUTHOR          :=	LimePlayer Team
 
+SOURCES		:=	src src/formats \
+			src/formats/stream \
+			src/network src/parsecfg \
+			src/parsecfg/INIReader \
+			src/parsecfg/INIReader/cpp \
+			src/formats/flac_callbacks
+
+INCLUDES	:=	include src
 
 TARGET		:=	$(notdir $(CURDIR))
 OUTDIR		:=	out
 BUILD		:=	build
-SOURCES		:=	src src/formats src/formats/stream src/network src/parsecfg \
-			src/parsecfg/INIReader src/parsecfg/INIReader/cpp \
-			src/formats/flac_callbacks
 DATA		:=	data
-INCLUDES	:=	include src
 GRAPHICS	:=	gfx
 #GFXBUILD	:=	$(BUILD)
 ROMFS		:=	romfs
@@ -86,7 +90,7 @@ CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS `arm-none-eabi-pkg-config opusfile --cflags`
 		$(CUSTOMFLAGS)
 
 ifdef RELEASE
-	CFLAGS += -O3 -g
+	CFLAGS += -O3 -g -DNODEBUGSTR=1
 else
 	CFLAGS += -Og -ggdb
 endif
@@ -217,7 +221,7 @@ else
 	BANNER_AUDIO_ARG := -a
 endif
 #---------------------------------------------------------------------------------
-all: 3dsx cia
+all: 3dsx
 #---------------------------------------------------------------------------------
 3dsx:
 ifdef RELEASE

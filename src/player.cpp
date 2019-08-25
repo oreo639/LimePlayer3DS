@@ -210,10 +210,17 @@ std::unique_ptr<Decoder> Player::GetFormat(const playbackInfo_t* playbackInfo, i
 		if (flacdec->GetIsInit())
 			return flacdec;
 	}
-	else if (filetype == FILE_MP3) {
-		auto mp3dec = std::unique_ptr<Decoder>(new Mp3Decoder(playbackInfo->filename.c_str()));
-		if (mp3dec->GetIsInit())
-			return mp3dec;
+	else if (filetype == FILE_MP3 || filetype == FILE_MP3_NOID3) {
+		if (filetype == FILE_MP3_NOID3) {
+			auto mp3dec = std::unique_ptr<Decoder>(new Mp3Decoder(playbackInfo->filename.c_str(), false));
+			if (mp3dec->GetIsInit())
+				return mp3dec;
+		}
+		else {
+			auto mp3dec = std::unique_ptr<Decoder>(new Mp3Decoder(playbackInfo->filename.c_str(), true));
+			if (mp3dec->GetIsInit())
+				return mp3dec;
+		}
 	}
 	else if (filetype == FILE_VORBIS) {
 		auto vorbisdec = std::unique_ptr<Decoder>(new VorbisDecoder(playbackInfo->filename.c_str()));

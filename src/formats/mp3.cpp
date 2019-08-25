@@ -21,28 +21,30 @@
 
 #include "mp3.hpp"
 
-static size_t				buffSize;
-static mpg123_handle*			mh;
-static uint32_t			rate;
-static uint8_t			channels;
+static size_t		buffSize;
+static mpg123_handle*	mh;
+static long		rate;
+static int		channels;
+static bool		enabled_id3;
 
-Mp3Decoder::Mp3Decoder(const char* filename) {
+Mp3Decoder::Mp3Decoder(const char* filename, bool has_id3) {
 	int err = 0;
 	int encoding = 0;
+	enabled_id3 = has_id3;
 
 	if((err = mpg123_init()) != MPG123_OK)
 		return;
 
 	if((mh = mpg123_new(NULL, &err)) == NULL)
 	{
-		printf("Error: %s\n", mpg123_plain_strerror(err));
+		fprintf(stderr, "Error: %s\n", mpg123_plain_strerror(err));
 		return;
 	}
 
 	if(mpg123_open(mh, filename) != MPG123_OK ||
-			mpg123_getformat(mh, (long *) &rate, (int *) &channels, &encoding) != MPG123_OK)
+			mpg123_getformat(mh, &rate, &channels, &encoding) != MPG123_OK)
 	{
-		printf("Trouble with mpg123: %s\n", mpg123_strerror(mh));
+		fprintf(stderr, "Trouble with mpg123: %s\n", mpg123_strerror(mh));
 		return;
 	}
 
@@ -73,17 +75,22 @@ Mp3Decoder::~Mp3Decoder(void) {
 void Mp3Decoder::Info(musinfo_t* Meta) {
 	mpg123_id3v1* v1;
 	mpg123_id3v2* v2;
-	mpg123_id3(mh, &v1, &v2);
+	if (enabled_id3) {
+		mpg123_id3(mh, &v1, &v2);
 	
-	/*Not going to deal with this bs. For now ofc.*/
-	//if (v1->artist) {
-	//infoOut->fileMeta->authorCpright = strdup(v1->artist);
-	//}
-	if (mpg123_strlen(v2->artist, true)) {
-		Meta->authorCpright.assign(v2->artist->p, strlen(v2->artist->p));
+		/*I will deal with this later.*/
+		//if (v1->artist) {
+		//	infoOut->fileMeta->authorCpright = strdup(v1->artist);
+		//}
+		if (mpg123_strlen(v2->artist, true)) {
+			Meta->authorCpright.assign(v2->artist->p, strlen(v2->artist->p));
+		}
+		else {
+			Meta->authorCpright.assign("(No Author-Mp3)");
+		}
 	}
 	else {
-		Meta->authorCpright.assign("(No Author-Mp3)", strlen("(No Author-Mp3)"));
+		Meta->authorCpright.assign("(No Author-Mp3)");
 	}
 }
 
@@ -124,3 +131,58 @@ int Mp3Decoder::Channels(void)
 {
 	return channels;
 }
+
+/*bool isMp3(const std::string& filename)
+{
+	mpg123_handle* tempMH;
+	int err = 0;
+	unsigned char tmpBuf[4096];
+	mpg123_frameinfo info;
+	size_t bytes_read;
+	int tmpEncoding = 0;
+	long tmpRate;
+	int tmpChannels;
+
+	if((err = mpg123_init()) != MPG123_OK)
+		return false;
+
+	if((tempMH = mpg123_new(NULL, &err)) == NULL)
+	{
+		DEBUG("Error: %s\n", mpg123_plain_strerror(err));
+		return false;
+	}
+
+	if(mpg123_open(tempMH, filename.c_str()) != MPG123_OK ||
+			mpg123_getformat(tempMH, &tmpRate, &tmpChannels, &tmpEncoding) != MPG123_OK)
+	{
+		DEBUG("Trouble with mpg123: %s\n", mpg123_strerror(tempMH));
+		goto err;
+	}
+
+	while (1)
+	{
+		if (mpg123_getformat(tempMH, &tmpRate, &tmpChannels, &tmpEncoding) < 0)
+			goto err;
+
+		int ret = mpg123_read(tempMH, tmpBuf, sizeof(tmpBuf), &bytes_read);
+
+		if (ret == MPG123_NEW_FORMAT)
+			continue;
+		if (ret < 0)
+			goto err;
+
+		if (mpg123_info(tempMH, &info) < 0)
+			goto err;
+
+		return tempMH;
+	}
+
+
+	mpg123_delete(tempMH);
+	mpg123_exit();
+	return true;
+err:
+	mpg123_delete(tempMH);
+	mpg123_exit();
+	return false;
+}*/

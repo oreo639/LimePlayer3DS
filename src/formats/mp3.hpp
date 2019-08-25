@@ -5,7 +5,7 @@
 
 class Mp3Decoder : public Decoder {
 	public:
-		Mp3Decoder(const char* filename);
+		Mp3Decoder(const char* filename, bool has_id3);
 		
 		~Mp3Decoder(void);
 		
@@ -25,5 +25,7 @@ class Mp3Decoder : public Decoder {
 		
 		int Channels(void) override;
 };
+
+//bool isMp3(const std::string& filename);
 
 #endif

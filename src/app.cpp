@@ -24,6 +24,7 @@
 #include "player.hpp"
 #include "file.hpp"
 #include "config.hpp"
+#include "macrotools.h"
 #include "parsecfg/plsparse.hpp"
 #include "parsecfg/m3uparse.hpp"
 
@@ -102,12 +103,15 @@ App::App(void) {
 	chdir("sdmc:/");
 	chdir("music");
 	Explorer::getDir(&dirList);
+	debug_init(true);
+	debug_perform("Debug output for LimePlayer3DS version %s\nTHIS FILE IS AUTOMATICALY GENERATED PLEASE DO NOT MODIFY!\n", STRINGIFY(LIMEPLAYER_VERSION));
 }
 
 App::~App(void) {
 	Gui::Exit();
 	Cfg::CleanSettings(&App::pInfo.settings);
 	osSetSpeedupEnable(false);
+	debug_exit();
 	LibExit();
 }
 

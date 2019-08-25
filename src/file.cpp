@@ -21,29 +21,31 @@
 #include "file.hpp"
 #include "formats/vorbis.hpp"
 #include "formats/opus.hpp"
+#include "formats/mp3.hpp"
 
-static int readmagic(const char* filename){
+int File::GetFileType(const char* file) {
 	FILE* fp = fopen(filename, "r");
-	char magic[4];
+	char magic[12];
 
 	if (!fp)
 		return 0;
 
 	fseek(fp, 0, SEEK_SET);
-	fread(magic, 1, 4, fp);
-
+	fread(magic, 1, 12, fp);
 	fclose(fp);
+
+	if (!strncmp(file, "http://", 7) || !strncmp(file, "https://", 8)) {
+		return FMT_NETWORK;
+	}
 
 	/*Wave*/
 	if (!strncmp(magic, "RIFF", 4))
-	{
 		return FILE_WAV;
-	}
+
 	/*Flac*/
 	else if (!strncmp(magic, "fLaC", 4))
-	{
 		return FILE_FLAC;
-	}
+
 	/*Ogg or Opus*/
 	else if (!strncmp(magic, "OggS", 4))
 	{
@@ -52,50 +54,36 @@ static int readmagic(const char* filename){
 		else if (!isOpus(filename))
 			return FILE_OPUS;
 	}
+
 	/*Mp3*/
 	else if (!strncmp(magic, "ID3", 3))
-	{
 		return FILE_MP3;
-	}
+
+	/*Also Mp3*/
+	//else if (isMp3(filename))
+		//return FILE_MP3_NOID3;
+
 	/*Musical Instrument Digital Interface (MIDI)*/
 	else if (!strncmp(magic, "MThd", 4))
-	{
 		return FILE_MIDI;
-	}
+
 	/*Human Machine Interface (midi-like format)*/
-	else if (!strncmp(magic, "HMI-", 4))
-	{
+	else if (!strncmp(magic, "HMI-MIDISONG", 12))
 		return FILE_MIDI;
-	}
+
 	/*Hmi Midi P (Another midi-like format made by HMI)*/
-	else if (!strncmp(magic, "HMIM", 4))
-	{
+	else if (!strncmp(magic, "HMIMIDIP", 8))
 		return FILE_MIDI;
-	}
+
 	/*MUS, (DOOM)*/
 	else if (!strncmp(magic, "MUS", 3))
-	{
 		return FILE_MIDI;
-	}
+
 	/*eXtended Midi Interface (XMI)*/
 	else if (!strncmp(magic, "FORM", 4))
-	{
 		return FILE_MIDI;
-	}
 
 	return -1; //Negetive means that the file is not officaly supported.
-}
-
-int File::GetFileType(const char* file) {
-	int filetype;
-
-	if (!strncmp(file, "http://", 7) || !strncmp(file, "https://", 8)) {
-		return FMT_NETWORK;
-	} else {
-		filetype = readmagic(file);
-	}
-	
-	return filetype;
 }
 
 int File::Copy(const char* filein, const char* fileout) {

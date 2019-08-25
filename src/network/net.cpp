@@ -8,8 +8,9 @@
 #include "net.hpp"
 #include "debug.hpp"
 #include "content.hpp"
+#include "macrotools.h"
 
-#define HTTP_USER_AGENT "LimePlayer3DS (Nintendo 3DS; HOS ARMv6K) version/LIMEPLAYER_VERSION"
+#define HTTP_USER_AGENT "LimePlayer3DS (Nintendo 3DS; HOS ARMv6K) version/" STRINGIFY(LIMEPLAYER_VERSION)
 
 #define R_APP_OUT_OF_MEMORY MAKERESULT(RL_FATAL, RS_OUTOFRESOURCE, RM_APPLICATION, RD_OUT_OF_MEMORY)
 
