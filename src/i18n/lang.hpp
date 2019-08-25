@@ -1,6 +1,12 @@
 #ifndef __LIME_LANG_i18n__
 #define __LIME_LANG_i18n__
 
+#include <unordered_map>
+
+#include <citro2d.h>
+
+typedef std::unordered_map<std::string, C2D_Text> textMap;
+
 // Internal language values
 typedef enum
 {
@@ -30,9 +36,15 @@ typedef enum
 	TEXT_LIMEPLAYER
 } JsonStrings;
 
-namespace Lang {
-	int ReadTranslationStrings(int lang, std::string file, std::vector<std::string>* array);
+class TranslationStrings {
+	public:
+		TranslationStrings(int lang);
+		int ParseJson(int lang, std::string file, textMap& strings);
+		C2D_Text* localize(const std::string& v);
 
-	int Str2Int(const std::string& str);
+	private:
+		textMap gui;
 };
+
+int getSystemLanguage(void);
 #endif

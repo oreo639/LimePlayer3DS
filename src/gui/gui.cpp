@@ -23,7 +23,7 @@
 #include "app.hpp"
 #include "error.hpp"
 #include "debug.hpp"
-#include "lang.hpp"
+#include "i18n.hpp"
 
 // Generated at build time
 #include "sprites.h"
@@ -36,8 +36,6 @@ C2D_SpriteSheet spriteSheet;
 C2D_Sprite* sprite;
 C2D_TextBuf g_staticBuf, g_dynamicBuf;
 
-std::vector<C2D_Text> staticText;
-
 static u8 preVol;
 static u64 trigeredTime = 0;
 
@@ -46,16 +44,51 @@ int seloffs = 0;
 
 static void menuList(int cur, int from, float startpoint, float size, int rows);
 
+settings_t *settings_ptr;
+
 void Gui::Init(settings_t* settings) {
-	Gui::InitlimeGFX();
-	Gui::TextInit(settings);
+	C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
+	C2D_Init(C2D_DEFAULT_MAX_OBJECTS);
+	C2D_Prepare();
+
+	// Create screens
+	top = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
+	bot = C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
+	
+	// Load graphics
+	spriteSheet = C2D_SpriteSheetLoad("romfs:/gfx/sprites.t3x");
+	if (!spriteSheet)
+		svcBreak(USERBREAK_PANIC);
+
+	// Create two text buffers: one for static text, and another one for
+	// dynamic text - the latter will be cleared at each frame.
+	g_staticBuf = C2D_TextBufNew(4096); // support up to 4096 glyphs in the buffer
+	g_dynamicBuf = C2D_TextBufNew(4096); // support up to 4096 glyphs in the buffer
+	i18n::Init();
+
+	settings_ptr = settings;
 }
 
 void Gui::Exit(void) {
-	Gui::TextExit();
-	Gui::CloselimeGFX();
+	i18n::Exit();
+	C2D_TextBufDelete(g_dynamicBuf);
+	C2D_TextBufDelete(g_staticBuf);
+
+	// Delete spritesheet
+	C2D_SpriteSheetFree(spriteSheet);
+
+	// Deinit libs
+	C2D_Fini();
+	C3D_Fini();
+	gfxExit();
 }
 
+C2D_Text Gui::StaticTextGen(std::string str) {
+	C2D_Text tmpStaticText;
+	C2D_TextParse(&tmpStaticText, g_staticBuf, str.c_str());
+	C2D_TextOptimize(&tmpStaticText);
+	return tmpStaticText;
+}
 
 void Gui::startframe(void)
 {
@@ -68,65 +101,6 @@ void Gui::endframe(void)
 {
 	C3D_FrameEnd(0);
 	C2D_TextBufClear(g_dynamicBuf);
-}
-
-C2D_Text staticTextGen(std::string* str) {
-	C2D_Text tmpStaticText;
-	C2D_TextParse(&tmpStaticText, g_staticBuf, str->c_str());
-	C2D_TextOptimize(&tmpStaticText);
-	return tmpStaticText;
-}
-
-void Gui::TextInit(settings_t* settings)
-{
-	std::vector<std::string> strArray;
-	// Create two text buffers: one for static text, and another one for
-	// dynamic text - the latter will be cleared at each frame.
-	g_staticBuf = C2D_TextBufNew(4096); // support up to 4096 glyphs in the buffer
-	g_dynamicBuf = C2D_TextBufNew(4096); // support up to 4096 glyphs in the buffer
-	if (!Lang::ReadTranslationStrings(settings->textLang, "lang.json", &strArray)) {
-		for (uint32_t i = 0; i < strArray.size(); i++)
-			staticText.push_back(staticTextGen(&strArray[i]));
-	}
-}
-
-void Gui::TextExit(void)
-{
-	staticText.clear();
-	C2D_TextBufDelete(g_dynamicBuf);
-	C2D_TextBufDelete(g_staticBuf);
-}
-
-int Gui::InitlimeGFX(void)
-{
-	C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
-	C2D_Init(C2D_DEFAULT_MAX_OBJECTS);
-	C2D_Prepare();
-
-	// Create screens
-	top = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
-	bot = C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
-	
-	// Load graphics
-	spriteSheet = C2D_SpriteSheetLoad("romfs:/gfx/sprites.t3x");
-	if (!spriteSheet) svcBreak(USERBREAK_PANIC);
-	
-	if (!top || !bot)
-		return 1;
-
-	return 0;
-
-}
-
-void Gui::CloselimeGFX(void)
-{
-	// Delete spritesheet
-	C2D_SpriteSheetFree(spriteSheet);
-
-	// Deinit libs
-	C2D_Fini();
-	C3D_Fini();
-	gfxExit();
 }
 
 void Gui::List(const char* text, int row)
@@ -162,7 +136,7 @@ void Gui::Drawui(playbackInfo_t* playbackInfo)
 	}
 	else if (App::appState == App::LOGO) {
 		C2D_SceneBegin(top);
-		Gui::PrintStatic(TEXT_WELCOME, 25, 25, 0.5f, 0.5f);
+		Gui::PrintStatic("TEXT_WELCOME", 25, 25, 0.5f, 0.5f);
 		Gui::Print("Press the <A> button to continue.", 25, 35, 0.5f, 0.5f);
 		C2D_SceneBegin(bot);
 	}
@@ -213,10 +187,11 @@ void Gui::Print(const char* text, float xloc, float yloc, float scaleX, float sc
 	Gui::PrintColor(text, xloc, yloc, scaleX, scaleY, 0xFFFFFFFF);
 }
 
-void Gui::PrintStatic(uint8_t id, float xloc, float yloc, float scaleX, float scaleY)
+void Gui::PrintStatic(const std::string &ident, float xloc, float yloc, float scaleX, float scaleY)
 {
-	if (id < staticText.size())
-		C2D_DrawText(&staticText[id], C2D_WithColor, xloc, yloc, 0.5f, scaleX, scaleY, 0xFFFFFFFF);
+	C2D_Text* tempSt = i18n::Localize(settings_ptr->textLang, ident);
+	if (tempSt)
+		C2D_DrawText(tempSt, C2D_WithColor, xloc, yloc, 0.5f, scaleX, scaleY, 0xFFFFFFFF);
 	else
 		Gui::Print("GuiPrintStatic: Invalid string.", xloc, yloc, scaleX, scaleY);
 }

@@ -23,7 +23,7 @@
 #include "formats/opus.hpp"
 #include "formats/mp3.hpp"
 
-int File::GetFileType(const char* file) {
+int File::GetFileType(const char* filename) {
 	FILE* fp = fopen(filename, "r");
 	char magic[12];
 
@@ -34,7 +34,7 @@ int File::GetFileType(const char* file) {
 	fread(magic, 1, 12, fp);
 	fclose(fp);
 
-	if (!strncmp(file, "http://", 7) || !strncmp(file, "https://", 8)) {
+	if (!strncmp(filename, "http://", 7) || !strncmp(filename, "https://", 8)) {
 		return FMT_NETWORK;
 	}
 

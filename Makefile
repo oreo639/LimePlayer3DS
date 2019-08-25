@@ -38,12 +38,15 @@ APP_AUTHOR          :=	LimePlayer Team
 
 SOURCES		:=	src src/formats \
 			src/formats/stream \
-			src/network src/parsecfg \
+			src/network \
+			src/gui \
+			src/i18n \
+			src/parsecfg \
 			src/parsecfg/INIReader \
 			src/parsecfg/INIReader/cpp \
 			src/formats/flac_callbacks
 
-INCLUDES	:=	include src
+INCLUDES	:=	include $(SOURCES)
 
 TARGET		:=	$(notdir $(CURDIR))
 OUTDIR		:=	out

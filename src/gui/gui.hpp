@@ -15,15 +15,9 @@ namespace Gui {
 
 	void Exit(void);
 
-	void TextInit(settings_t* settings);
-
-	void TextExit(void);
+	C2D_Text StaticTextGen(std::string str);
 
 	void Drawui(playbackInfo_t* musInfo);
-
-	int InitlimeGFX(void);
-
-	void CloselimeGFX(void);
 
 	void CursorMove(int move);
 
@@ -37,7 +31,7 @@ namespace Gui {
 
 	void Print(const char* text, float xloc, float yloc, float scaleX, float scaleY);
 
-	void PrintStatic(uint8_t id, float xloc, float yloc, float scaleX, float scaleY);
+	void PrintStatic(const std::string &ident, float xloc, float yloc, float scaleX, float scaleY);
 
 	void drawImage(int image_id, float x, float y);
 
