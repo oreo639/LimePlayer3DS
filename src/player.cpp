@@ -82,6 +82,7 @@ bool PlayerInterface::TogglePlayback(void) {
  * Stops current playback. Playback thread should exit as a result.
  */
 void PlayerInterface::ExitPlayback(void) {
+	DEBUG("Exit Playback called!\n");
 	stop = true;
 }
 
@@ -145,7 +146,7 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 		for(int i = 0; ndspChnIsPlaying(0) == false; i++) {
 			svcSleepThread(1000000); // Wait one millisecond.
 			if(i > 5 * 1000) { // Wait 5 seconds
-				DEBUG("player.cpp: Chnn wait imeout.\n");
+				DEBUG("Chnn wait imeout.\n");
 				stop = true;
 				Error::Add(DECODER_INIT_TIMEOUT);
 				break;
@@ -186,10 +187,10 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 		linearFree(audioBuffer);
 		ndspChnWaveBufClear(0);
 		ClearMetadata(&playbackInfo->fileMeta);
-		DEBUG("player.cpp: Playback complete.\n");
+		DEBUG("Playback complete.\n");
 		decoder = nullptr;
 	} else {
-		DEBUG("player.cpp: Decoder could not be initalized.\n");
+		DEBUG("Decoder could not be initalized.\n");
 	}
 }
 

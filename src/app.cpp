@@ -34,57 +34,6 @@ App::AppState App::appState = INIT;
 dirList_t App::dirList;
 playbackInfo_t App::pInfo;
 
-Thread thread = NULL;
-
-static void exitPlayback(void)
-{
-	PlayerInterface::ExitPlayback();
-
-	threadJoin(thread, U64_MAX);
-	threadFree(thread);
-	thread = NULL;
-}
-
-static int changeFile(const std::string &filename, playbackInfo_t* playbackInfo)
-{
-	s32 prio;
-
-	/**
-	* If music is playing, stop it. Only one playback thread should be playing
-	* at any time.
-	*/
-	if(thread != NULL)
-	{
-		exitPlayback();
-	}
-
-	if(!playbackInfo)
-		return 0;
-
-	playbackInfo->usePlaylist = 0;
-
-	std::string extension = filename.substr(filename.find_last_of('.') + 1);
-	if (!strncmp(extension.c_str(), "json", 4)) {
-		std::string url;
-		Cfg::ParseNC(filename.c_str(), &url);
-		playbackInfo->filename = url;
-	} else if (!strncmp(extension.c_str(), "pls", 3)) {
-		// Note to future me.
-		// Add pls support to netfmt.
-		Pls::Parse(filename, &playbackInfo->playlistfile);
-		playbackInfo->usePlaylist = 1;
-	} else if (!strncmp(extension.c_str(), "m3u", 3)) {
-		M3u::Parse(filename, &playbackInfo->playlistfile);
-		playbackInfo->usePlaylist = 1;
-	} else
-		playbackInfo->filename = filename;
-
-	svcGetThreadPriority(&prio, CUR_THREAD_HANDLE);
-	thread = threadCreate(PlayerInterface::ThreadMainFunct, (void *)playbackInfo, 32 * 1024, prio - 1, -2, false);
-
-	return 0;
-}
-
 App::App(void) {
 	appState = INIT;
 	LibInit();
@@ -112,10 +61,12 @@ App::App(void) {
 
 App::~App(void) {
 	Gui::Exit();
+	DEBUG("App is exiting!\n");
 	Cfg::CleanSettings(&App::pInfo.settings);
 	osSetSpeedupEnable(false);
 	debug_exit();
 	LibExit();
+	DEBUG("Goodbye.\n");
 }
 
 void noDspFirmExit(void) {
@@ -155,7 +106,6 @@ void App::LibInit(void) {
 }
 
 void App::LibExit(void) {
-	exitPlayback();
 	httpcExit();
 	ndspExit();
 	romfsExit();
@@ -172,93 +122,10 @@ int App::MainLoop() {
 
 void App::Update() {
 	hidScanInput();
-	// Respond to user input
 	u32 kDown = hidKeysDown();
-	u32 kHeld = hidKeysHeld();
-	static u64	mill = 0;
-	int cursor;
-	
-	cursor = Gui::GetCursorPos();
 
 	if (kDown & KEY_START) {
 		appState = EXITING;
-	}
-
-	if (Error::IsQuered()) {
-		if (kDown & KEY_A) {
-			Error::Remove();
-		}
-	} else if (appState == LOGO) {
-		if (kDown & KEY_A) {
-			Gui::SetMenu(std::make_unique<BrowserMenu>());
-			appState = MENU;
-		}
-	}
-	else if (appState == MENU) {
-		if(kHeld & KEY_L)
-		{
-			if(kDown & (KEY_R | KEY_UP))
-			{
-				if(PlayerInterface::IsPlaying())
-					PlayerInterface::TogglePlayback();
-			}
-
-			if(kDown & KEY_B)
-			{
-				exitPlayback();
-			}
-
-			if(kDown & KEY_X)
-			{
-				PlayerInterface::SkipPlayback();
-			}
-			return;
-		}
-
-		if (kDown & KEY_A) {
-			if (cursor < dirList.dirnum) {
-				chdir(dirList.directories[cursor].c_str());
-				Gui::CursorReset();
-			} else {
-				changeFile(dirList.files[cursor-dirList.dirnum], &App::pInfo);
-			}
-			Explorer::getDir(&dirList);
-		}
-
-		if (kDown & KEY_X) {
-			// KUSC http://16643.live.streamtheworld.com/KUSCMP128.mp3
-			// RadioSega http://content.radiosega.net:8006/rs-mpeg.mp3
-			// RadioNintendo http://play.radionintendo.com/stream
-			changeFile("http://play.radionintendo.com/stream", &App::pInfo);
-		}
-
-		if (kDown & KEY_B) {
-			chdir("../");
-			Gui::CursorReset();
-			Explorer::getDir(&dirList);
-		}
-
-		if ((kDown & KEY_DOWN || ((kHeld & KEY_DOWN) && (osGetTime() - mill > 500))) && cursor < dirList.total) {
-			Gui::CursorMove(1);
-		}
-
-		if ((kDown & KEY_UP || ((kHeld & KEY_UP) && (osGetTime() - mill > 500))) && cursor >= 0) {
-			Gui::CursorMove(-1);
-		}
-
-		if((kDown & KEY_RIGHT || ((kHeld & KEY_RIGHT) && (osGetTime() - mill > 500))) && cursor < dirList.total)
-		{
-			Gui::CursorMove(5);
-		}
-
-		if((kDown & KEY_LEFT || ((kHeld & KEY_LEFT) && (osGetTime() - mill > 500))) && cursor >= 0)
-		{
-			Gui::CursorMove(-5);
-		}
-
-		if(kDown) {
-			mill = osGetTime();
-		}
 	}
 }
 

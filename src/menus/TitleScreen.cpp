@@ -1,4 +1,6 @@
 #include "TitleScreen.hpp"
+#include "BrowserMenu.hpp"
+#include "app.hpp"
 
 TitleScreen::TitleScreen() {}
 
@@ -14,5 +16,10 @@ void TitleScreen::drawBottom() const
 
 void TitleScreen::update(touchPosition* touch)
 {
+	u32 kDown = hidKeysDown();
 
+	if (kDown & KEY_A) {
+		Gui::SetMenu(std::make_unique<BrowserMenu>());
+		App::appState = App::MENU;
+	}
 }

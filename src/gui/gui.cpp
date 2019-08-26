@@ -73,7 +73,10 @@ void Gui::Init(settings_t* settings) {
 }
 
 void Gui::Exit(void) {
+	DEBUG("Gui is exiting.\n");
 	i18n::Exit();
+	while (!menus.empty())
+		Gui::BackMenu();
 	C2D_TextBufDelete(g_dynamicBuf);
 	C2D_TextBufDelete(g_staticBuf);
 
