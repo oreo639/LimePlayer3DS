@@ -62,7 +62,13 @@ void i18n::Exit(void)
 }
 
 C2D_Text* i18n::Localize(int lang, const std::string& val) {
-	switch (lang)
+	int tmplang = LANG_EN;
+	if (lang == LANG_SYSTEM)
+		tmplang = getSystemLanguage();
+	else
+		tmplang = lang;
+
+	switch (tmplang)
 	{
 		case LANG_DE:
 			return de->Localize(val);
