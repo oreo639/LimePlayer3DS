@@ -48,7 +48,6 @@ App::App(void) {
 	Cfg::ParseSettings("/3ds/limeplayer3ds/config.json", &App::pInfo.settings);
 
 	debug_init(true);
-	debug_perform("Debug output for LimePlayer3DS version %s\nTHIS FILE IS AUTOMATICALY GENERATED PLEASE DO NOT MODIFY!\n", STRINGIFY(LIMEPLAYER_VERSION));
 
 	Gui::Init(&App::pInfo.settings);
 	Gui::SetMenu(std::make_unique<TitleScreen>());

@@ -95,7 +95,7 @@ CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS `arm-none-eabi-pkg-config opusfile --cflags`
 		$(CUSTOMFLAGS)
 
 ifdef RELEASE
-	CFLAGS += -O3 -g -DNODEBUGSTR=1
+	CFLAGS += -O3 -g
 else
 	CFLAGS += -Og -ggdb
 endif

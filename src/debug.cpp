@@ -17,10 +17,12 @@ void debug_init(bool use_file) {
 		File::Copy("/3ds/limeplayer3ds/recent.log", "/3ds/limeplayer3ds/0.log");
 
 		logFP = fopen("/3ds/limeplayer3ds/recent.log", "w+");
-		if (logFP)
+		if (logFP) {
+			is_init = true;
 			log_file = use_file;
+			debug_perform("Debug output for LimePlayer3DS version %s\nTHIS FILE IS AUTOMATICALY GENERATED PLEASE DO NOT MODIFY!\n", STRINGIFY(LIMEPLAYER_VERSION));
+		}
 	}
-	is_init = true;
 }
 
 void debug_exit(void) {
