@@ -40,8 +40,8 @@ SOURCES		:=	src src/formats \
 			src/formats/stream \
 			src/network \
 			src/gui \
-			src/menus \
-			src/overlays \
+			src/gui/menus \
+			src/gui/overlays \
 			src/i18n \
 			src/parsecfg \
 			src/parsecfg/INIReader \

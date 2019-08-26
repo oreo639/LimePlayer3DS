@@ -77,7 +77,7 @@ void parse_options(json_t* entries_elem, settings_t* todo_config)
 {
 	const char *key;
 	json_t *value;
-	todo_config->textLang = 0;
+	todo_config->language = 0;
 
 	void *iter = json_object_iter(entries_elem);
 	while(iter)
@@ -97,9 +97,9 @@ void parse_options(json_t* entries_elem, settings_t* todo_config)
 		else if(!strcmp(key, SETTING_LANGUAGE))
 		{
 			if(json_is_string(value)) {
-				todo_config->textLang = i18n::Code2Int(json_string_value(value));
+				todo_config->language = i18n::Code2Int(json_string_value(value));
 			} else {
-				todo_config->textLang = json_integer_value(value);
+				todo_config->language = json_integer_value(value);
 			}
 		}
 		iter = json_object_iter_next(entries_elem, iter);

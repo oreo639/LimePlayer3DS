@@ -20,6 +20,5 @@ void TitleScreen::update(touchPosition* touch)
 
 	if (kDown & KEY_A) {
 		Gui::SetMenu(std::make_unique<BrowserMenu>());
-		App::appState = App::MENU;
 	}
 }

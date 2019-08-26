@@ -14,7 +14,7 @@ typedef struct
 {
 	std::string		wildMidiConfig;
 	uint32_t		theme;
-	int			textLang;
+	int			language;
 	playvec			playlist;
 } settings_t;
 

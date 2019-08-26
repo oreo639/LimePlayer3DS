@@ -122,8 +122,15 @@ void Gui::BackMenu(void)
     menus.pop();
 }
 
-void Gui::Drawui(playbackInfo_t* playbackInfo)
+void Gui::Update(playbackInfo_t* playbackInfo)
 {
+	hidScanInput();
+	u32 kDown = hidKeysDown();
+
+	if (kDown & KEY_START) {
+		App::exit = true;
+	}
+
 	C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
 
 	Gui::ClearScreen(GFX_TOP);
@@ -131,11 +138,16 @@ void Gui::Drawui(playbackInfo_t* playbackInfo)
 
 	Gui::SetTarget(GFX_TOP);
 	menus.top()->doTopDraw();
-	//flushText();
 
 	Gui::SetTarget(GFX_BOTTOM);
 	menus.top()->doBottomDraw();
-	//flushText();
+
+	if (Error::IsQuered()) {
+		Gui::drawError();
+	}
+
+	C3D_FrameEnd(0);
+	C2D_TextBufClear(g_dynamicBuf);
 
 	touchPosition touch;
 	hidTouchRead(&touch);
@@ -160,12 +172,6 @@ void Gui::Drawui(playbackInfo_t* playbackInfo)
 	}
 
 	*/
-	if (Error::IsQuered()) {
-		Gui::drawError();
-	}
-
-	C3D_FrameEnd(0);
-	C2D_TextBufClear(g_dynamicBuf);
 }
 
 void Gui::List(const char* text, int row)
@@ -231,7 +237,7 @@ void Gui::Print(const char* text, float xloc, float yloc, float scaleX, float sc
 
 void Gui::PrintStatic(const std::string &ident, float xloc, float yloc, float scaleX, float scaleY)
 {
-	C2D_Text* tempSt = i18n::Localize(settings_ptr->textLang, ident);
+	C2D_Text* tempSt = i18n::Localize(settings_ptr->language, ident);
 	if (tempSt)
 		C2D_DrawText(tempSt, C2D_WithColor, xloc, yloc, 0.5f, scaleX, scaleY, 0xFFFFFFFF);
 	else

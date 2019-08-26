@@ -40,9 +40,9 @@ int TranslationStrings::ParseJson(int lang, std::string file, textMap& strings) 
 
 	if (!pJson) {
 		pJson = json_load_file(("romfs:/i18n/en/"+file).c_str(), 0, pjsonError);
-		DEBUG("Locale %s not implemented.\n Using en as fallback", getLanguageString(lang).c_str());
+		DEBUG("Locale %s not implemented. Using en as fallback.\n", getLanguageString(lang).c_str());
 		if (!pJson) {
-			DEBUG("Json string loading failed, please check that file exists and follows the json spec.");
+			DEBUG("Json string loading failed, please check that file exists and follows the json spec.\n");
 			return 1;
 		}
 	}

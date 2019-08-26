@@ -88,11 +88,15 @@ int File::GetFileType(const char* filename) {
 
 int File::Copy(const char* filein, const char* fileout) {
 	FILE* fin = fopen(filein, "r");
-	FILE* fout = fopen(fileout, "w+");
 	int c;
 
-	if (!fin || !fout)
+	if (!fin)
 		return 1;
+
+	FILE* fout = fopen(fileout, "w+");
+
+	if (!fout)
+		return 2;
 
 	while ((c = fgetc(fin)) && c != EOF) {
 		fputc(c, fout);
@@ -101,4 +105,13 @@ int File::Copy(const char* filein, const char* fileout) {
 	fclose(fin);
 	fclose(fout);
 	return 0;
+}
+
+int File::Exists(const char* filepath) {
+	FILE* fin = fopen(filepath, "r");
+	if (!fin)
+		return 0;
+
+	fclose(fin);
+	return 1;
 }

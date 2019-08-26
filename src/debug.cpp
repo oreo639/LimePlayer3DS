@@ -3,6 +3,7 @@
 #include <stdarg.h>
 
 #include "debug.hpp"
+#include "file.hpp"
 
 static FILE* logFP = NULL;
 static bool is_init = false;
@@ -11,6 +12,12 @@ static bool log_file = false;
 void debug_init(bool use_file) {
 	if (!is_init) {
 		log_file = use_file;
+
+		File::Copy("/3ds/limeplayer3ds/3.log", "/3ds/limeplayer3ds/2.log");
+		File::Copy("/3ds/limeplayer3ds/1.log", "/3ds/limeplayer3ds/2.log");
+		File::Copy("/3ds/limeplayer3ds/0.log", "/3ds/limeplayer3ds/1.log");
+		File::Copy("/3ds/limeplayer3ds/recent.log", "/3ds/limeplayer3ds/0.log");
+
 		if (log_file)
 			logFP = fopen("/3ds/limeplayer3ds/recent.log", "w+");
 		is_init = true;
@@ -34,5 +41,7 @@ void debug_perform(const char* fmt, ...) {
 			vfprintf(logFP, fmt, args);
 		vfprintf(stderr, fmt, args);
 		va_end(args);
+		// Make sure data is written to file NOW.
+		fflush(logFP);
 	}
 }

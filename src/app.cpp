@@ -30,18 +30,16 @@
 #include "parsecfg/plsparse.hpp"
 #include "parsecfg/m3uparse.hpp"
 
-App::AppState App::appState = INIT;
+bool App::exit = false;
 dirList_t App::dirList;
 playbackInfo_t App::pInfo;
 
 App::App(void) {
-	appState = INIT;
 	LibInit();
 	osSetSpeedupEnable(true);
-	appState = LOGO;
-	
-	struct stat st;
-	if (stat("/3ds/limeplayer3ds/config.json", &st)) {
+	aptSetSleepAllowed(false);
+
+	if (!File::Exists("/3ds/limeplayer3ds/config.json")) {
 		mkdir("/3ds/", 0777);
 		mkdir("/3ds/limeplayer3ds/", 0777);
 
@@ -49,14 +47,15 @@ App::App(void) {
 	}
 	Cfg::ParseSettings("/3ds/limeplayer3ds/config.json", &App::pInfo.settings);
 
+	debug_init(true);
+	debug_perform("Debug output for LimePlayer3DS version %s\nTHIS FILE IS AUTOMATICALY GENERATED PLEASE DO NOT MODIFY!\n", STRINGIFY(LIMEPLAYER_VERSION));
+
 	Gui::Init(&App::pInfo.settings);
-	
+	Gui::SetMenu(std::make_unique<TitleScreen>());
+
 	chdir("sdmc:/");
 	chdir("music");
 	Explorer::getDir(&dirList);
-	debug_init(true);
-	debug_perform("Debug output for LimePlayer3DS version %s\nTHIS FILE IS AUTOMATICALY GENERATED PLEASE DO NOT MODIFY!\n", STRINGIFY(LIMEPLAYER_VERSION));
-	Gui::SetMenu(std::make_unique<TitleScreen>());
 }
 
 App::~App(void) {
@@ -113,22 +112,14 @@ void App::LibExit(void) {
 }
 
 int App::MainLoop() {
-	if (appState != EXITING) {
+	if (App::exit != true) {
 		return aptMainLoop();
 	} else {
+		aptMainLoop();
 		return 0;
 	}
 }
 
 void App::Update() {
-	hidScanInput();
-	u32 kDown = hidKeysDown();
-
-	if (kDown & KEY_START) {
-		appState = EXITING;
-	}
-}
-
-void App::Draw() {
-	Gui::Drawui(&App::pInfo);
+	Gui::Update(&App::pInfo);
 }

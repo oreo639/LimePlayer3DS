@@ -18,7 +18,7 @@ namespace Gui {
 
 	C2D_Text StaticTextGen(std::string str);
 
-	void Drawui(playbackInfo_t* musInfo);
+	void Update(playbackInfo_t* musInfo);
 
 	void CursorMove(int move);
 
