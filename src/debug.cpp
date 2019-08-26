@@ -10,23 +10,23 @@ static bool is_init = false;
 static bool log_file = false;
 
 void debug_init(bool use_file) {
-	if (!is_init) {
-		log_file = use_file;
-
+	if (!is_init && use_file) {
 		File::Copy("/3ds/limeplayer3ds/3.log", "/3ds/limeplayer3ds/2.log");
 		File::Copy("/3ds/limeplayer3ds/1.log", "/3ds/limeplayer3ds/2.log");
 		File::Copy("/3ds/limeplayer3ds/0.log", "/3ds/limeplayer3ds/1.log");
 		File::Copy("/3ds/limeplayer3ds/recent.log", "/3ds/limeplayer3ds/0.log");
 
-		if (log_file)
-			logFP = fopen("/3ds/limeplayer3ds/recent.log", "w+");
-		is_init = true;
+		logFP = fopen("/3ds/limeplayer3ds/recent.log", "w+");
+		if (logFP)
+			log_file = use_file;
 	}
+	is_init = true;
 }
 
 void debug_exit(void) {
 	if (is_init) {
-		if (log_file) fclose(logFP);
+		if (log_file)
+			fclose(logFP);
 		is_init = false;
 	}
 }

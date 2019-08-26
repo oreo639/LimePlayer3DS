@@ -24,19 +24,21 @@
 #include "formats/mp3.hpp"
 
 int File::GetFileType(const char* filename) {
+	if (!strncmp(filename, "http://", 7) || !strncmp(filename, "https://", 8)) {
+		return FMT_NETWORK;
+	}
+
 	FILE* fp = fopen(filename, "r");
 	char magic[12];
 
-	if (!fp)
+	if (!fp) {
+		DEBUG("Could not open %s. Please make sure file exists.\n", filename);
 		return 0;
+	}
 
 	fseek(fp, 0, SEEK_SET);
 	fread(magic, 1, 12, fp);
 	fclose(fp);
-
-	if (!strncmp(filename, "http://", 7) || !strncmp(filename, "https://", 8)) {
-		return FMT_NETWORK;
-	}
 
 	/*Wave*/
 	if (!strncmp(magic, "RIFF", 4))

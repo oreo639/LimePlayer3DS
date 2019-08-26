@@ -202,16 +202,19 @@ std::unique_ptr<Decoder> Player::GetFormat(const playbackInfo_t* playbackInfo, i
 	std::string errInfo;
 
 	if (filetype == FILE_WAV) {
+		DEBUG("Attempting to load the Wav decoder.\n");
 		auto wavdec = std::unique_ptr<Decoder>(new WavDecoder(playbackInfo->filename.c_str()));
 		if (wavdec->GetIsInit())
 			return wavdec;
 	}
 	else if (filetype == FILE_FLAC) {
+		DEBUG("Attempting to load the Flac decoder.\n");
 		auto flacdec = std::unique_ptr<Decoder>(new FlacDecoder(playbackInfo->filename.c_str()));
 		if (flacdec->GetIsInit())
 			return flacdec;
 	}
 	else if (filetype == FILE_MP3 || filetype == FILE_MP3_NOID3) {
+		DEBUG("Attempting to load the Mp3 decoder.\n");
 		if (filetype == FILE_MP3_NOID3) {
 			auto mp3dec = std::unique_ptr<Decoder>(new Mp3Decoder(playbackInfo->filename.c_str(), false));
 			if (mp3dec->GetIsInit())
@@ -224,27 +227,34 @@ std::unique_ptr<Decoder> Player::GetFormat(const playbackInfo_t* playbackInfo, i
 		}
 	}
 	else if (filetype == FILE_VORBIS) {
+		DEBUG("Attempting to load the Vorbis decoder.\n");
 		auto vorbisdec = std::unique_ptr<Decoder>(new VorbisDecoder(playbackInfo->filename.c_str()));
 		if (vorbisdec->GetIsInit())
 			return vorbisdec;
 	}
 	else if (filetype == FILE_OPUS) {
+		DEBUG("Attempting to load the Opus decoder.\n");
 		auto opusdec = std::unique_ptr<Decoder>(new OpusDecoder(playbackInfo->filename.c_str()));
 		if (opusdec->GetIsInit())
 			return opusdec;
 	}	
 	else if (filetype == FILE_MIDI) {
+		DEBUG("Attempting to load the Midi decoder.\n");
 		auto mididec = std::unique_ptr<Decoder>(new MidiDecoder(playbackInfo->filename.c_str(), playbackInfo->settings.wildMidiConfig.c_str()));
 		if (mididec->GetIsInit())
 			return mididec;
 	}
 	else if (filetype == FMT_NETWORK) {
+		DEBUG("Attempting to load the Network decoder.\n");
 		auto netdec = std::unique_ptr<Decoder>(new NetfmtDecoder(playbackInfo->filename.c_str()));
 		if (netdec->GetIsInit())
 			return netdec;
 
 		errInfo = netdec->GetErrInfo();
 	}
+
+	else
+		DEBUG("No decoder found.\n");
 
 	Error::Add(DECODER_INIT_FAIL, errInfo);
 	return nullptr;
