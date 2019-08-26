@@ -65,7 +65,7 @@ int TranslationStrings::ParseJson(int lang, std::string file, textMap& strings) 
 	return 0;
 }
 
-C2D_Text* TranslationStrings::localize(const std::string& v) {
+C2D_Text* TranslationStrings::Localize(const std::string& v) {
 	auto staticText = gui.find(v);
 	if (staticText != gui.end()) {
 		return &staticText->second;

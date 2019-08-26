@@ -40,7 +40,7 @@ class TranslationStrings {
 	public:
 		TranslationStrings(int lang);
 		int ParseJson(int lang, std::string file, textMap& strings);
-		C2D_Text* localize(const std::string& v);
+		C2D_Text* Localize(const std::string& v);
 
 	private:
 		textMap gui;

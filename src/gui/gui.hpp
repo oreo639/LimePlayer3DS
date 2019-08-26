@@ -5,6 +5,7 @@
 #include <citro2d.h>
 
 #include "player.hpp"
+#include "menu.hpp"
 
 #define SCREEN_WIDTH  400
 #define SCREEN_HEIGHT 240
@@ -25,9 +26,15 @@ namespace Gui {
 
 	int GetCursorPos(void);
 
-	void startframe(void);
+	int GetSelPos(void);
 
-	void endframe(void);
+	void ClearScreen(gfxScreen_t screen);
+
+	void SetTarget(gfxScreen_t screen);
+
+	void SetMenu(std::unique_ptr<Menu> menu);
+
+	void BackMenu(void);
 
 	void Print(const char* text, float xloc, float yloc, float scaleX, float scaleY);
 
@@ -40,6 +47,8 @@ namespace Gui {
 	void PrintColor(const char* text, float xloc, float yloc, float scaleX, float scaleY, u32 color);
 
 	void List(const char* text, int row);
+
+	void menuList(int cur, int from, float startpoint, float size, int rows);
 
 	void drawBaseGui(void);
 

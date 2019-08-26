@@ -18,13 +18,13 @@ class App {
 		};
 		static AppState appState;
 		static dirList_t dirList;
+		static playbackInfo_t pInfo;
 		App();
 		~App();
 		static int MainLoop();
 		static void Update();
 		static void Draw();
 	private:
-		static playbackInfo_t pInfo;
 		static void LibInit();
 		static void LibExit();
 };

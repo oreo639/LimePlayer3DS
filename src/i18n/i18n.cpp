@@ -65,29 +65,29 @@ C2D_Text* i18n::Localize(int lang, const std::string& val) {
 	switch (lang)
 	{
 		case LANG_DE:
-			return de->localize(val);
+			return de->Localize(val);
 		case LANG_EN:
-			return en->localize(val);
+			return en->Localize(val);
 		case LANG_ES:
-			return es->localize(val);
+			return es->Localize(val);
 		case LANG_FR:
-			return fr->localize(val);
+			return fr->Localize(val);
 		case LANG_IT:
-			return it->localize(val);
+			return it->Localize(val);
 		case LANG_JP:
-			return jp->localize(val);
+			return jp->Localize(val);
 		case LANG_KO:
-			return ko->localize(val);
+			return ko->Localize(val);
 		case LANG_NL:
-			return nl->localize(val);
+			return nl->Localize(val);
 		case LANG_PT:
-			return pt->localize(val);
+			return pt->Localize(val);
 		case LANG_ZH:
-			return zh->localize(val);
+			return zh->Localize(val);
 		case LANG_TW:
-			return tw->localize(val);
+			return tw->Localize(val);
 		case LANG_RU:
-			return ru->localize(val);
+			return ru->Localize(val);
 		default:
 			return NULL;
 	}
@@ -117,7 +117,7 @@ int i18n::Code2Int(const std::string& str) {
 		return LANG_NL;
 	else if (str == "pt")
 		return LANG_PT;
-	else if (str  == "ru")
+	else if (str == "ru")
 		return LANG_RU;
 	else if (str == "tw")
 		return LANG_TW;

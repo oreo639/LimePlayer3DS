@@ -15,6 +15,7 @@
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <vector>
+#include <stack>
 
 #include <stdio.h>
 #include <time.h>
@@ -29,6 +30,8 @@
 #include "sprites.h"
 
 #define MENU_ICON_HORIZONTAL 100
+
+std::stack<std::unique_ptr<Menu>> menus;
 
 C3D_RenderTarget* top;
 C3D_RenderTarget* bot;
@@ -90,15 +93,74 @@ C2D_Text Gui::StaticTextGen(std::string str) {
 	return tmpStaticText;
 }
 
-void Gui::startframe(void)
+void Gui::ClearScreen(gfxScreen_t screen)
 {
-	C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
-	C2D_TargetClear(top, C2D_Color32(20, 29, 31, 255));
-	C2D_TargetClear(bot, C2D_Color32(20, 29, 31, 255));
+	if (screen == GFX_BOTTOM)
+		C2D_TargetClear(bot, C2D_Color32(20, 29, 31, 255));
+	else
+		C2D_TargetClear(top, C2D_Color32(20, 29, 31, 255));
 }
 
-void Gui::endframe(void)
+void Gui::SetTarget(gfxScreen_t screen)
 {
+	if (screen == GFX_BOTTOM)
+		C2D_SceneBegin(bot);
+	else
+		C2D_SceneBegin(top);
+}
+
+void Gui::SetMenu(std::unique_ptr<Menu> menu)
+{
+    menus.push(std::move(menu));
+}
+
+void Gui::BackMenu(void)
+{
+    menus.pop();
+}
+
+void Gui::Drawui(playbackInfo_t* playbackInfo)
+{
+	C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
+
+	Gui::ClearScreen(GFX_TOP);
+	Gui::ClearScreen(GFX_BOTTOM);
+
+	Gui::SetTarget(GFX_TOP);
+	menus.top()->doTopDraw();
+	//flushText();
+
+	Gui::SetTarget(GFX_BOTTOM);
+	menus.top()->doBottomDraw();
+	//flushText();
+
+	touchPosition touch;
+	hidTouchRead(&touch);
+	menus.top()->doUpdate(&touch);
+
+	/*if (App::appState == App::MENU) {
+		drawBaseGui();
+		if (PlayerInterface::IsPlaying()) {
+			drawBrowserPlayer(playbackInfo);
+		}
+		C2D_SceneBegin(bot);
+		menuList(cursor, seloffs, 15, 32.5f, App::dirList.total);
+		C2D_DrawRectSolid(0, 0, 0.5f, SCREEN_WIDTH, 15, C2D_Color32(119, 131, 147, 255));
+		Gui::List(App::dirList.currentDir.c_str(), 0);
+		fblist(App::dirList.total, 15);
+	}
+	else if (App::appState == App::LOGO) {
+		C2D_SceneBegin(top);
+		Gui::PrintStatic("TEXT_WELCOME", 25, 25, 0.5f, 0.5f);
+		Gui::Print("Press the <A> button to continue.", 25, 35, 0.5f, 0.5f);
+		C2D_SceneBegin(bot);
+	}
+
+	*/
+	if (Error::IsQuered()) {
+		Gui::drawError();
+	}
+
 	C3D_FrameEnd(0);
 	C2D_TextBufClear(g_dynamicBuf);
 }
@@ -117,34 +179,6 @@ void Gui::fblist(int rows, int startpoint)
 			Gui::PrintColor(App::dirList.files[seloffs+i-App::dirList.dirnum].c_str(), 8.0f, i*32.5f+startpoint, 0.4f, 0.4f, 0xFF000000);
 		}
 	}
-}
-
-
-void Gui::Drawui(playbackInfo_t* playbackInfo)
-{
-	Gui::startframe();
-	if (App::appState == App::MENU) {
-		drawBaseGui();
-		if (PlayerInterface::IsPlaying()) {
-			drawBrowserPlayer(playbackInfo);
-		}
-		C2D_SceneBegin(bot);
-		menuList(cursor, seloffs, 15, 32.5f, App::dirList.total);
-		C2D_DrawRectSolid(0, 0, 0.5f, SCREEN_WIDTH, 15, C2D_Color32(119, 131, 147, 255));
-		Gui::List(App::dirList.currentDir.c_str(), 0);
-		fblist(App::dirList.total, 15);
-	}
-	else if (App::appState == App::LOGO) {
-		C2D_SceneBegin(top);
-		Gui::PrintStatic("TEXT_WELCOME", 25, 25, 0.5f, 0.5f);
-		Gui::Print("Press the <A> button to continue.", 25, 35, 0.5f, 0.5f);
-		C2D_SceneBegin(bot);
-	}
-
-	if (Error::IsQuered()) {
-		Gui::drawError();
-	}
-	Gui::endframe();
 }
 
 void Gui::CursorMove(int move) {
@@ -169,6 +203,11 @@ void Gui::CursorReset(void) {
 int Gui::GetCursorPos(void) {
 	return cursor;
 }
+
+int Gui::GetSelPos(void) {
+	return seloffs;
+}
+
 
 void Gui::PrintColor(const char* text, float xloc, float yloc, float scaleX, float scaleY, u32 color)
 {
@@ -213,7 +252,7 @@ static void volumeIndicator(u8 volume) {
 	}
 }
 
-static void menuList(int cur, int from, float startpoint, float size, int rows) {
+void Gui::menuList(int cur, int from, float startpoint, float size, int rows) {
 	C2D_SceneBegin(bot);
 	if (rows < 1)
 		return;

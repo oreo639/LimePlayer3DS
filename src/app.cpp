@@ -25,6 +25,8 @@
 #include "file.hpp"
 #include "config.hpp"
 #include "macrotools.h"
+#include "TitleScreen.hpp"
+#include "BrowserMenu.hpp"
 #include "parsecfg/plsparse.hpp"
 #include "parsecfg/m3uparse.hpp"
 
@@ -105,6 +107,7 @@ App::App(void) {
 	Explorer::getDir(&dirList);
 	debug_init(true);
 	debug_perform("Debug output for LimePlayer3DS version %s\nTHIS FILE IS AUTOMATICALY GENERATED PLEASE DO NOT MODIFY!\n", STRINGIFY(LIMEPLAYER_VERSION));
+	Gui::SetMenu(std::make_unique<TitleScreen>());
 }
 
 App::~App(void) {
@@ -187,6 +190,7 @@ void App::Update() {
 		}
 	} else if (appState == LOGO) {
 		if (kDown & KEY_A) {
+			Gui::SetMenu(std::make_unique<BrowserMenu>());
 			appState = MENU;
 		}
 	}
