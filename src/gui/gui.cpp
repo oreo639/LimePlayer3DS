@@ -42,11 +42,6 @@ C2D_TextBuf g_staticBuf, g_dynamicBuf;
 static u8 preVol;
 static u64 trigeredTime = 0;
 
-int cursor = 0;
-int seloffs = 0;
-
-static void menuList(int cur, int from, float startpoint, float size, int rows);
-
 settings_t *settings_ptr;
 
 void Gui::Init(settings_t* settings) {
@@ -174,49 +169,6 @@ void Gui::Update(playbackInfo_t* playbackInfo)
 	*/
 }
 
-void Gui::List(const char* text, int row)
-{
-	Gui::PrintColor(text, 8.0f, row*12, 0.4f, 0.4f, 0xFF000000);
-}
-
-void Gui::fblist(int rows, int startpoint)
-{
-	for (int i = 0; rows-seloffs > i && i <= MAX_LIST; i++) {
-		if (seloffs+i < App::dirList.dirnum)
-			Gui::PrintColor(App::dirList.directories[seloffs+i].c_str(), 8.0f, i*32.5f+startpoint, 0.4f, 0.4f, 0xFF000000);
-		else if (seloffs+i < App::dirList.total) {
-			Gui::PrintColor(App::dirList.files[seloffs+i-App::dirList.dirnum].c_str(), 8.0f, i*32.5f+startpoint, 0.4f, 0.4f, 0xFF000000);
-		}
-	}
-}
-
-void Gui::CursorMove(int move) {
-	if(move < 0 && (App::dirList.total - cursor >= MAX_LIST && seloffs != 0))
-					seloffs = seloffs+move;
-	else if(move > 0 && (cursor >= MAX_LIST-1 && App::dirList.total - cursor > 0 && seloffs < App::dirList.total - MAX_LIST))
-					seloffs = seloffs+move;
-	if (cursor + move < 0) {
-		cursor = 0;
-		seloffs = 0;
-	} else if (cursor + move > App::dirList.total-1)
-		cursor = App::dirList.total-1;
-	else
-		cursor = cursor + move;
-}
-
-void Gui::CursorReset(void) {
-	cursor = 0;
-	seloffs = 0;
-}
-
-int Gui::GetCursorPos(void) {
-	return cursor;
-}
-
-int Gui::GetSelPos(void) {
-	return seloffs;
-}
-
 
 void Gui::PrintColor(const char* text, float xloc, float yloc, float scaleX, float scaleY, u32 color)
 {
@@ -260,24 +212,6 @@ static void volumeIndicator(u8 volume) {
 		Gui::drawImageLayered(indicator + sprites_popup_vol0_idx, 120, 30, 0.7f);
 	}
 }
-
-void Gui::menuList(int cur, int from, float startpoint, float size, int rows) {
-	C2D_SceneBegin(bot);
-	if (rows < 1)
-		return;
-	int i = 0;
-	bool color = true;
-	for (i = 0; rows-from > i && i < MAX_LIST; i++) {
-		if (cur-from == i)
-			C2D_DrawRectSolid(0, i*size+startpoint, 0.5f, SCREEN_WIDTH, size, C2D_Color32(255, 255, 2, 255));
-		else if (color)
-			C2D_DrawRectSolid(0, i*size+startpoint, 0.5f, SCREEN_WIDTH, size, C2D_Color32(23, 100, 64, 255));
-		else if (!color)
-			C2D_DrawRectSolid(0, i*size+startpoint, 0.5f, SCREEN_WIDTH, size, C2D_Color32(43, 191, 63, 255));
-	color = !color;
-	}
-}
-
 
 void Gui::drawBaseGui(void) {
 	u8 curVol;

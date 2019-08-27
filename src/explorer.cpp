@@ -28,9 +28,9 @@ bool strSort(std::string a, std::string b) {return a<b;}
 
 int Explorer::getNumberFiles(void)
 {
-	DIR				*dp;
+	DIR		*dp;
 	struct dirent	*ep;
-	int				ret = 0;
+	int		ret = 0;
 
 	if((dp = opendir(".")) == NULL)
 		goto err;
@@ -49,20 +49,18 @@ err:
 }
 
 void Explorer::changedir(dirList_t dirList, int sel) {
-	if (sel < dirList.dirnum)
+	if (sel < dirList.directories.size())
 		chdir(dirList.directories[sel].c_str());
 	else if (sel < dirList.total) {
-		chdir(dirList.files[sel-dirList.dirnum].c_str());
+		chdir(dirList.files[sel-dirList.directories.size()].c_str());
 	}
 }
 
 int Explorer::getDir(dirList_t* dirList)
 {
-	DIR				*dp;
+	DIR		*dp;
 	struct dirent	*ep;
-	int				fileNum = 0;
-	int				dirNum = 0;
-	char*			wd = getcwd(NULL, 0);
+	char*		wd = getcwd(NULL, 0);
 
 	if(wd == NULL)
 		return 0;
@@ -74,7 +72,7 @@ int Explorer::getDir(dirList_t* dirList)
 	dirList->directories.clear();
 	dirList->directories.clear();
 
-	dirList->currentDir.assign(wd, strlen(wd));
+	dirList->currentDir.assign(wd);
 
 	if((dp = opendir(dirList->currentDir.c_str())) == NULL) {
 		closedir(dp);
@@ -88,11 +86,9 @@ int Explorer::getDir(dirList_t* dirList)
 		{
 			dirList->directories.push_back(ep->d_name);
 			dirList->directories[dirList->directories.size()-1].append("/");
-			dirNum++;
 			continue;
 		} else {
 			dirList->files.push_back(ep->d_name);
-			fileNum++;
 			continue;
 		}
 	}
@@ -100,11 +96,11 @@ int Explorer::getDir(dirList_t* dirList)
 	std::sort(dirList->directories.begin(), dirList->directories.end(), strSort);
 	std::sort(dirList->files.begin(), dirList->files.end(), strSort);
 
-	dirList->filenum = fileNum;
-	dirList->dirnum = dirNum;
-	dirList->total = fileNum + dirNum;
+	dirList->dirNum = dirList->directories.size();
+	dirList->fileNum = dirList->files.size();
+	dirList->total = dirList->files.size() + dirList->directories.size();
 
 	closedir(dp);
 	free(wd);
-	return fileNum + dirNum;
+	return dirList->directories.size() + dirList->files.size();
 }

@@ -7,6 +7,9 @@
 
 Thread thread = NULL;
 
+static int cursor = 0;
+static int seloffs = 0;
+
 static void exitPlayback(void)
 {
 	PlayerInterface::ExitPlayback();
@@ -56,6 +59,39 @@ static int changeFile(const std::string &filename, playbackInfo_t* playbackInfo)
 	return 0;
 }
 
+void List(const char* text, int row)
+{
+	Gui::PrintColor(text, 8.0f, row*12, 0.4f, 0.4f, 0xFF000000);
+}
+
+void fblist(int rows, int startpoint, float size)
+{
+	for (int i = 0; rows-seloffs > i && i <= MAX_LIST; i++) {
+		if (seloffs+i < App::dirList.dirNum)
+			Gui::PrintColor(App::dirList.directories[seloffs+i].c_str(), 8.0f, i*size+startpoint, 0.4f, 0.4f, 0xFF000000);
+		else if (seloffs+i < App::dirList.total) {
+			Gui::PrintColor(App::dirList.files[seloffs+i-App::dirList.directories.size()].c_str(), 8.0f, i*size+startpoint, 0.4f, 0.4f, 0xFF000000);
+		}
+	}
+}
+
+void menuList(int cur, int from, float startpoint, float size, int rows) {
+	if (rows < 1)
+		return;
+	int i = 0;
+	bool color = true;
+	for (i = 0; rows-from > i && i < MAX_LIST; i++) {
+		if (cur-from == i)
+			C2D_DrawRectSolid(0, i*size+startpoint, 0.5f, SCREEN_WIDTH, size, C2D_Color32(255, 255, 2, 255));
+		else if (color)
+			C2D_DrawRectSolid(0, i*size+startpoint, 0.5f, SCREEN_WIDTH, size, C2D_Color32(23, 100, 64, 255));
+		else if (!color)
+			C2D_DrawRectSolid(0, i*size+startpoint, 0.5f, SCREEN_WIDTH, size, C2D_Color32(43, 191, 63, 255));
+	color = !color;
+	}
+}
+
+
 BrowserMenu::BrowserMenu() {}
 
 BrowserMenu::~BrowserMenu()
@@ -73,10 +109,10 @@ void BrowserMenu::drawTop() const
 
 void BrowserMenu::drawBottom() const
 {
-	Gui::menuList(Gui::GetCursorPos(), Gui::GetSelPos(), 15, 32.5f, App::dirList.total);
+	menuList(cursor, seloffs, 15, 15, App::dirList.total);
 	C2D_DrawRectSolid(0, 0, 0.5f, SCREEN_WIDTH, 15, C2D_Color32(119, 131, 147, 255));
-	Gui::List(App::dirList.currentDir.c_str(), 0);
-	Gui::fblist(App::dirList.total, 15);
+	List(App::dirList.currentDir.c_str(), 0);
+	fblist(App::dirList.total, 15, 15);
 }
 
 void BrowserMenu::update(touchPosition* touch)
@@ -84,9 +120,6 @@ void BrowserMenu::update(touchPosition* touch)
 	u32 kDown = hidKeysDown();
 	u32 kHeld = hidKeysHeld();
 	static u64	mill = 0;
-	int cursor;
-	
-	cursor = Gui::GetCursorPos();
 
 	if (Error::IsQuered()) {
 		if (kDown & KEY_A) {
@@ -116,11 +149,12 @@ void BrowserMenu::update(touchPosition* touch)
 		}
 
 		if (kDown & KEY_A) {
-			if (cursor < App::dirList.dirnum) {
+			if (cursor < App::dirList.dirNum) {
 				chdir(App::dirList.directories[cursor].c_str());
-				Gui::CursorReset();
+				cursor = 0;
+				seloffs = 0;
 			} else {
-				changeFile(App::dirList.files[cursor-App::dirList.dirnum], &App::pInfo);
+				changeFile(App::dirList.files[cursor-App::dirList.directories.size()], &App::pInfo);
 			}
 			Explorer::getDir(&App::dirList);
 		}
@@ -134,26 +168,62 @@ void BrowserMenu::update(touchPosition* touch)
 
 		if (kDown & KEY_B) {
 			chdir("../");
-			Gui::CursorReset();
+			cursor = 0;
+			seloffs = 0;
 			Explorer::getDir(&App::dirList);
 		}
 
-		if ((kDown & KEY_DOWN || ((kHeld & KEY_DOWN) && (osGetTime() - mill > 500))) && cursor < App::dirList.total) {
-			Gui::CursorMove(1);
-		}
-
-		if ((kDown & KEY_UP || ((kHeld & KEY_UP) && (osGetTime() - mill > 500))) && cursor >= 0) {
-			Gui::CursorMove(-1);
-		}
-
-		if((kDown & KEY_RIGHT || ((kHeld & KEY_RIGHT) && (osGetTime() - mill > 500))) && cursor < App::dirList.total)
+		if((kDown & KEY_UP || ((kHeld & KEY_UP) && (osGetTime() - mill > 500))) && cursor > 0)
 		{
-			Gui::CursorMove(5);
+			cursor--;
+
+			/* 26 is the maximum number of entries that can be printed */
+			if(App::dirList.total - cursor > MAX_LIST && seloffs != 0)
+				seloffs--;
 		}
 
-		if((kDown & KEY_LEFT || ((kHeld & KEY_LEFT) && (osGetTime() - mill > 500))) && cursor >= 0)
+		if((kDown & KEY_DOWN || ((kHeld & KEY_DOWN) && (osGetTime() - mill > 500))) && cursor < App::dirList.total-1)
 		{
-			Gui::CursorMove(-5);
+			cursor++;
+
+			if(cursor >= MAX_LIST && App::dirList.total - cursor >= 0 && seloffs < App::dirList.total - MAX_LIST)
+				seloffs++;
+		}
+
+		if((kDown & KEY_LEFT || ((kHeld & KEY_LEFT) && (osGetTime() - mill > 500))) && cursor > 0)
+		{
+			int skip = MAX_LIST / 2;
+
+			if(cursor < skip)
+				skip = cursor;
+
+			cursor -= skip;
+
+			/* 26 is the maximum number of entries that can be printed */
+			/* TODO: Not using MAX_LIST here? */
+			if(App::dirList.total - cursor > MAX_LIST && seloffs != 0)
+			{
+				seloffs -= skip;
+				if(seloffs < 0)
+					seloffs = 0;
+			}
+		}
+
+		if((kDown & KEY_RIGHT || ((kHeld & KEY_RIGHT) && (osGetTime() - mill > 500))) && cursor < App::dirList.total-1)
+		{
+			int skip = App::dirList.total-1 - cursor;
+
+			if(skip > MAX_LIST / 2)
+				skip = MAX_LIST / 2;
+
+			cursor += skip;
+
+			if(cursor >= MAX_LIST && App::dirList.total - cursor >= 0 && seloffs < App::dirList.total - MAX_LIST)
+			{
+				seloffs += skip;
+				if(seloffs > App::dirList.total - MAX_LIST)
+					seloffs = App::dirList.total - MAX_LIST;
+			}
 		}
 
 		if(kDown) {

@@ -12,9 +12,9 @@ typedef std::vector<std::string> strvec;
 typedef struct
 {
 	strvec		files;
-	int		filenum;
+	int		fileNum;
 	strvec		directories;
-	int		dirnum;
+	int		dirNum;
 	std::string	currentDir;
 	int		total;
 } dirList_t;

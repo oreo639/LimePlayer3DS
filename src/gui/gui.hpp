@@ -9,7 +9,7 @@
 
 #define SCREEN_WIDTH  400
 #define SCREEN_HEIGHT 240
-#define MAX_LIST 7
+#define MAX_LIST 15
 
 namespace Gui {
 	void Init(settings_t* settings);
@@ -19,14 +19,6 @@ namespace Gui {
 	C2D_Text StaticTextGen(std::string str);
 
 	void Update(playbackInfo_t* musInfo);
-
-	void CursorMove(int move);
-
-	void CursorReset(void);
-
-	int GetCursorPos(void);
-
-	int GetSelPos(void);
 
 	void ClearScreen(gfxScreen_t screen);
 
@@ -46,16 +38,10 @@ namespace Gui {
 
 	void PrintColor(const char* text, float xloc, float yloc, float scaleX, float scaleY, u32 color);
 
-	void List(const char* text, int row);
-
-	void menuList(int cur, int from, float startpoint, float size, int rows);
-
 	void drawBaseGui(void);
 
 	void drawBrowserPlayer(playbackInfo_t* info);
 
 	void drawError(void);
-
-	void fblist(int rows, int startpoint);
 };
 #endif
