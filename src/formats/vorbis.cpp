@@ -54,7 +54,8 @@ void VorbisDecoder::Info(musinfo_t* Meta) {
 
 	if ((ret = vorbis_comment_query(comment, const_cast<char*>("artist"), 0)))
 		Meta->authorCpright.assign(ret);
-	else
+
+	if (Meta->authorCpright.empty())
 		Meta->authorCpright.assign("(No Author-Vorbis)");
 }
 

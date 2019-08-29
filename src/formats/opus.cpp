@@ -50,7 +50,8 @@ void OpusDecoder::Info(musinfo_t* Meta) {
 
 	if ((ret = opus_tags_query(comment, const_cast<char*>("artist"), 0)))
 		Meta->authorCpright.assign(ret);
-	else
+
+	if (Meta->authorCpright.empty())
 		Meta->authorCpright.assign("(No Author-Opus)", strlen("(No Author-Opus)"));
 }
 

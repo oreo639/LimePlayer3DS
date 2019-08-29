@@ -1,9 +1,12 @@
 #include "BrowserMenu.hpp"
+#include "gui.hpp"
+#include "app.hpp"
 #include "config.hpp"
 #include "plsparse.hpp"
 #include "m3uparse.hpp"
 #include "error.hpp"
-#include "app.hpp"
+
+#include "QuickSetOverlay.hpp"
 
 Thread thread = NULL;
 
@@ -28,9 +31,7 @@ static int changeFile(const std::string &filename, playbackInfo_t* playbackInfo)
 	* at any time.
 	*/
 	if(thread != NULL)
-	{
 		exitPlayback();
-	}
 
 	if(!playbackInfo)
 		return 0;
@@ -75,11 +76,14 @@ void fblist(int rows, int startpoint, float size)
 	}
 }
 
-void menuList(int cur, int from, float startpoint, float size, int rows) {
-	if (rows < 1)
-		return;
+void menuList(int cur, int from, float startpoint, float size, int rows)
+{
 	int i = 0;
 	bool color = true;
+
+	if (rows < 1)
+		return;
+
 	for (i = 0; rows-from > i && i < MAX_LIST; i++) {
 		if (cur-from == i)
 			C2D_DrawRectSolid(0, i*size+startpoint, 0.5f, SCREEN_WIDTH, size, C2D_Color32(255, 255, 2, 255));
@@ -87,10 +91,26 @@ void menuList(int cur, int from, float startpoint, float size, int rows) {
 			C2D_DrawRectSolid(0, i*size+startpoint, 0.5f, SCREEN_WIDTH, size, C2D_Color32(23, 100, 64, 255));
 		else if (!color)
 			C2D_DrawRectSolid(0, i*size+startpoint, 0.5f, SCREEN_WIDTH, size, C2D_Color32(43, 191, 63, 255));
-	color = !color;
+
+		color = !color;
 	}
 }
 
+void drawBrowserPlayer(playbackInfo_t* info)
+{
+	Gui::DrawImage(sprites_player_playlist_idx, 20, 15);
+	if (!info->filename.empty()) {
+		Gui::Print(info->filename.c_str(), 150.0f, 20.0f, 0.5f, 0.5f);
+	} else {
+		Gui::Print("Loading...", 150.0f, 20.0f, 0.5f, 0.5f);
+	}
+
+	if (!info->fileMeta.authorCpright.empty()) {
+		Gui::Print(info->fileMeta.authorCpright.c_str(), 150.0f, 40.0f, 0.5f, 0.5f);
+	} else {
+		Gui::Print("Loading...", 150.0f, 40.0f, 0.5f, 0.5f);
+	}
+}
 
 BrowserMenu::BrowserMenu() {}
 
@@ -101,10 +121,10 @@ BrowserMenu::~BrowserMenu()
 
 void BrowserMenu::drawTop() const
 {
-	Gui::drawBaseGui();
 	if (PlayerInterface::IsPlaying()) {
-		Gui::drawBrowserPlayer(&App::pInfo);
+		drawBrowserPlayer(&App::pInfo);
 	}
+	Gui::DrawBaseGui();
 }
 
 void BrowserMenu::drawBottom() const
@@ -128,23 +148,24 @@ void BrowserMenu::update(touchPosition* touch)
 		}
 	}
 	else {
-		if(kHeld & KEY_L)
-		{
-			if(kDown & (KEY_R | KEY_UP))
-			{
+		if (kDown & KEY_SELECT) {
+			BrowserMenu::addOverlay<QuickSetOverlay>();
+		}
+
+		if(kHeld & KEY_L) {
+			if(kDown & (KEY_R | KEY_UP)) {
 				if(PlayerInterface::IsPlaying())
 					PlayerInterface::TogglePlayback();
 			}
 
-			if(kDown & KEY_B)
-			{
+			if(kDown & KEY_B) {
 				exitPlayback();
 			}
 
-			if(kDown & KEY_X)
-			{
+			if(kDown & KEY_X) {
 				PlayerInterface::SkipPlayback();
 			}
+
 			return;
 		}
 
@@ -156,6 +177,7 @@ void BrowserMenu::update(touchPosition* touch)
 			} else {
 				changeFile(App::dirList.files[cursor-App::dirList.directories.size()], &App::pInfo);
 			}
+
 			Explorer::getDir(&App::dirList);
 		}
 

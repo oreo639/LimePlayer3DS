@@ -26,12 +26,12 @@
 #define ENTRIES_STRING "playlists"
 #define RADIO_STRING "station"
 
-#define NAME_STRING "name"
-#define FILE_STRING "file"
+#define PLAYLIST_NAME "name"
+#define PLAYLIST_FILE "file"
 
 #define SETTING_MIDI "WildMidiCFG"
 #define SETTING_THEME "theme"
-#define SETTING_LANGUAGE "lang"
+#define SETTING_LANGUAGE "language"
 
 
 void parse_entries(json_t* entries_elem, settings_t* todo_config)
@@ -43,23 +43,32 @@ void parse_entries(json_t* entries_elem, settings_t* todo_config)
 		json_t *value;
 
 		for (uint16_t i = 0; i < entries_number; i++) {
-			if (json_is_object(json_array_get(entries_elem, i)))
-			{
+			if (json_is_object(json_array_get(entries_elem, i))) {
+				playlist_t tmp_playlist;
 				json_object_foreach(json_array_get(entries_elem, i), key, value) {
-					playlist_t tmp_playlist;
-					if(json_is_string(value)) {
-						if(!strcmp(key, NAME_STRING))
-						{
+					if(!strcmp(key, PLAYLIST_NAME))
+					{
+						if (json_is_string(value))
 							tmp_playlist.name.assign(json_string_value(value));
-						}
-						else if(!strcmp(key, FILE_STRING))
-						{
+					}
+					else if(!strcmp(key, PLAYLIST_FILE))
+					{
+						if (json_is_array(value)) {
+							size_t index;
+							json_t *value_arr;
+							json_array_foreach(value, index, value_arr) {
+								if (json_is_string(value_arr)) {
+									std::string tmp_filepath(json_string_value(value_arr));
+									tmp_playlist.filepath.push_back(tmp_filepath);
+								}
+							}
+						} else if (json_is_string(value)) {
 							std::string tmp_filepath(json_string_value(value));
 							tmp_playlist.filepath.push_back(tmp_filepath);
 						}
 					}
-					todo_config->playlist.push_back(tmp_playlist);
 				}
+				todo_config->playlist.push_back(tmp_playlist);
 			}
 			else
 			{
@@ -132,9 +141,8 @@ int Cfg::ParseSettings(const char* filepath, settings_t* settings) {
 	json_error_t *pjsonError = NULL;
 	json_t *pJson = json_load_file(filepath, 0, pjsonError);
 
-	if (pJson == 0) {
+	if (!pJson)
 		return 1;
-	}
 
 	const char *key;
 	json_t *value;
@@ -163,9 +171,8 @@ int Cfg::ParseNC(const char* filepath, std::string* url) {
 	json_error_t *pjsonError = NULL;
 	json_t *pJson = json_load_file(filepath, 0, pjsonError);
 
-	if (pJson == 0) {
+	if (!pJson)
 		return 1;
-	}
 
 	const char *key;
 	json_t *value;
@@ -185,6 +192,42 @@ int Cfg::ParseNC(const char* filepath, std::string* url) {
 
 	return 0;
 }
+
+int Cfg::WriteJson(const char* outpath, settings_t* settings) {
+	json_t *root = json_object();
+	json_t *set_obj = json_object();
+	json_t *pls_json_arr = json_array();
+
+	json_object_set_new(root, "Note", json_string("You can find documentation on LimePlayer3DS's config.json at https://github.com/Oreo639/LimePlayer3DS/wiki/config.json"));
+
+	json_object_set_new(set_obj, SETTING_THEME, json_integer(settings->theme));
+	json_object_set_new(set_obj, SETTING_MIDI, json_string(settings->wildMidiConfig.c_str()));
+	json_object_set_new(set_obj, SETTING_LANGUAGE, json_string(i18n::Int2Code(settings->language).c_str()));
+	json_object_set_new(root, CONFIG_STRING, set_obj);
+
+	for (uint32_t i = 0; settings->playlist.size() > i; i++) {
+		json_t *pls_obj = json_object();
+		json_object_set_new(pls_obj, PLAYLIST_NAME, json_string(settings->playlist[i].name.c_str()));
+
+		if (settings->playlist[i].filepath.size() > 1) {
+			json_t *pls_obj_arr = json_array();
+
+			for (uint32_t j = 0; settings->playlist[i].filepath.size() > j; j++)
+				json_array_append_new(pls_obj_arr, json_string(settings->playlist[i].filepath[j].c_str()));
+
+			json_object_set_new(pls_obj, PLAYLIST_FILE, pls_obj_arr);
+
+		} else if (settings->playlist[i].filepath.size() == 1)
+			json_object_set_new(pls_obj, PLAYLIST_FILE, json_string(settings->playlist[i].filepath[0].c_str()));
+
+		json_array_append_new(pls_json_arr, pls_obj);
+	}
+	json_object_set_new(root, ENTRIES_STRING, pls_json_arr);
+
+	json_dump_file(root, outpath, JSON_INDENT(8));
+	return 0;
+}
+
 
 void Cfg::CleanSettings(settings_t* parsed_config)
 {

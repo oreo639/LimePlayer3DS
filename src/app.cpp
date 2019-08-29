@@ -44,8 +44,27 @@ App::App(void) {
 		mkdir("/3ds/limeplayer3ds/", 0777);
 
 		File::Copy("romfs:/defaultcfg/config.json", "/3ds/limeplayer3ds/config.json");
+
+		/*App::pInfo.settings.wildMidiConfig = "/tmp";
+		App::pInfo.settings.theme = 1;
+		App::pInfo.settings.language = 0;
+		Cfg::WriteJson("/3ds/limeplayer3ds/config.json", &App::pInfo.settings);*/
 	}
 	Cfg::ParseSettings("/3ds/limeplayer3ds/config.json", &App::pInfo.settings);
+
+	/*{
+		App::pInfo.settings.playlist.clear();
+		playlist_t tmp_playlist;
+
+		tmp_playlist.name.assign("Test");
+		tmp_playlist.filepath.push_back("/tmp.m");
+		tmp_playlist.filepath.push_back("/tmp.c");
+		tmp_playlist.filepath.push_back("/tmp.e");
+
+		App::pInfo.settings.playlist.push_back(tmp_playlist);
+	}
+
+	Cfg::WriteJson("/3ds/limeplayer3ds/config.json", &App::pInfo.settings);*/
 
 	debug_init(true);
 

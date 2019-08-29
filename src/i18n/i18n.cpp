@@ -130,3 +130,37 @@ int i18n::Code2Int(const std::string& str) {
 
 	return LANG_EN;
 }
+
+std::string i18n::Int2Code(int lang) {
+	switch (lang) {
+		case LANG_SYSTEM:
+			return "sy";
+		case LANG_JP:
+			return "jp";
+		case LANG_EN:
+			return "en";
+		case LANG_FR:
+			return "fr";
+		case LANG_DE:
+			return "de";
+		case LANG_IT:
+			return "it";
+		case LANG_ES:
+			return "es";
+		case LANG_ZH:
+			return "zh";
+		case LANG_KO:
+			return "ko";
+		case LANG_NL:
+			return "nl";
+		case LANG_PT:
+			return "pt";
+		case LANG_RU:
+			return "ru";
+		case LANG_TW:
+			return "tw";
+		default:
+			return "en";
+	}
+	return "en";
+}

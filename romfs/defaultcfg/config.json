@@ -1,18 +1,22 @@
 {
-	"Comments": "You can find documentation on LimePlayer3DS's config.json at https://github.com/Oreo639/LimePlayer3DS/wiki/config.json",
-	"settings": {
-		"theme": 0,
-		"WildMidiCFG": "/3ds/limeplayer3ds/8mbgmpat/timidity.cfg",
-		"lang": 0
-	},
-	"playlists": [
-		{
-			"name": "TeamGalitic",
-			"file": "/GalacticGrunt.mid"
-		},
-		{
-			"name": "GGrunt",
-			"file": "/Galacticrunt.mid"
-		}
-	]
+        "Note": "You can find documentation on LimePlayer3DS's config.json at https://github.com/Oreo639/LimePlayer3DS/wiki/config.json",
+        "settings": {
+                "theme": 0,
+                "WildMidiCFG": "/tmp",
+                "language": "sy"
+        },
+        "playlists": [
+                {
+                        "name": "Sinoh Tunes",
+                        "file": [
+                                "/Galacticrunt.mid",
+                                "/Lake.mid",
+                                "/Elite_Four.mp3"
+                        ]
+                },
+                {
+                        "name": "Vapour Mus",
+                        "file": "/vapour.wav"
+                }
+        ]
 }

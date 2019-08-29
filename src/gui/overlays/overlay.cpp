@@ -25,7 +25,7 @@ Overlay::Overlay(Overlay& overlay) : me(overlay.overlay) {}
 
 void Overlay::dim() const
 {
-    C2D_DrawRectSolid(0, 0, 0.5f, 400, 240, C2D_Color32(0, 0, 0, 190));
+     Gui::DrawSolidRectangle(0, 0, 400, 240, C2D_Color32(0, 0, 0, 190));
 }
 
 void Overlay::doTopDraw() const

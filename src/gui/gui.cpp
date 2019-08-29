@@ -29,8 +29,6 @@
 // Generated at build time
 #include "sprites.h"
 
-#define MENU_ICON_HORIZONTAL 100
-
 std::stack<std::unique_ptr<Menu>> menus;
 
 C3D_RenderTarget* top;
@@ -84,39 +82,6 @@ void Gui::Exit(void) {
 	gfxExit();
 }
 
-C2D_Text Gui::StaticTextGen(std::string str) {
-	C2D_Text tmpStaticText;
-	C2D_TextParse(&tmpStaticText, g_staticBuf, str.c_str());
-	C2D_TextOptimize(&tmpStaticText);
-	return tmpStaticText;
-}
-
-void Gui::ClearScreen(gfxScreen_t screen)
-{
-	if (screen == GFX_BOTTOM)
-		C2D_TargetClear(bot, C2D_Color32(20, 29, 31, 255));
-	else
-		C2D_TargetClear(top, C2D_Color32(20, 29, 31, 255));
-}
-
-void Gui::SetTarget(gfxScreen_t screen)
-{
-	if (screen == GFX_BOTTOM)
-		C2D_SceneBegin(bot);
-	else
-		C2D_SceneBegin(top);
-}
-
-void Gui::SetMenu(std::unique_ptr<Menu> menu)
-{
-    menus.push(std::move(menu));
-}
-
-void Gui::BackMenu(void)
-{
-    menus.pop();
-}
-
 void Gui::Update(playbackInfo_t* playbackInfo)
 {
 	hidScanInput();
@@ -138,7 +103,7 @@ void Gui::Update(playbackInfo_t* playbackInfo)
 	menus.top()->doBottomDraw();
 
 	if (Error::IsQuered()) {
-		Gui::drawError();
+		Gui::DrawError();
 	}
 
 	C3D_FrameEnd(0);
@@ -147,28 +112,40 @@ void Gui::Update(playbackInfo_t* playbackInfo)
 	touchPosition touch;
 	hidTouchRead(&touch);
 	menus.top()->doUpdate(&touch);
-
-	/*if (App::appState == App::MENU) {
-		drawBaseGui();
-		if (PlayerInterface::IsPlaying()) {
-			drawBrowserPlayer(playbackInfo);
-		}
-		C2D_SceneBegin(bot);
-		menuList(cursor, seloffs, 15, 32.5f, App::dirList.total);
-		C2D_DrawRectSolid(0, 0, 0.5f, SCREEN_WIDTH, 15, C2D_Color32(119, 131, 147, 255));
-		Gui::List(App::dirList.currentDir.c_str(), 0);
-		fblist(App::dirList.total, 15);
-	}
-	else if (App::appState == App::LOGO) {
-		C2D_SceneBegin(top);
-		Gui::PrintStatic("TEXT_WELCOME", 25, 25, 0.5f, 0.5f);
-		Gui::Print("Press the <A> button to continue.", 25, 35, 0.5f, 0.5f);
-		C2D_SceneBegin(bot);
-	}
-
-	*/
 }
 
+void Gui::SetTarget(gfxScreen_t screen)
+{
+	if (screen == GFX_BOTTOM)
+		C2D_SceneBegin(bot);
+	else
+		C2D_SceneBegin(top);
+}
+
+void Gui::ClearScreen(gfxScreen_t screen)
+{
+	if (screen == GFX_BOTTOM)
+		C2D_TargetClear(bot, C2D_Color32(20, 29, 31, 255));
+	else
+		C2D_TargetClear(top, C2D_Color32(20, 29, 31, 255));
+}
+
+void Gui::SetMenu(std::unique_ptr<Menu> menu)
+{
+    menus.push(std::move(menu));
+}
+
+void Gui::BackMenu(void)
+{
+    menus.pop();
+}
+
+C2D_Text Gui::StaticTextGen(std::string str) {
+	C2D_Text tmpStaticText;
+	C2D_TextParse(&tmpStaticText, g_staticBuf, str.c_str());
+	C2D_TextOptimize(&tmpStaticText);
+	return tmpStaticText;
+}
 
 void Gui::PrintColor(const char* text, float xloc, float yloc, float scaleX, float scaleY, u32 color)
 {
@@ -196,24 +173,30 @@ void Gui::PrintStatic(const std::string &ident, float xloc, float yloc, float sc
 		Gui::Print("GuiPrintStatic: Invalid string.", xloc, yloc, scaleX, scaleY);
 }
 
-void Gui::drawImage(int image_id, float x, float y)
+void Gui::DrawImage(int image_id, float x, float y)
 {
-	C2D_DrawImageAt(C2D_SpriteSheetGetImage(spriteSheet, image_id), x, y, 0.6f, NULL, 1.0f, 1.0f);
+	C2D_DrawImageAt(C2D_SpriteSheetGetImage(spriteSheet, image_id), x, y, 0.5f, NULL, 1.0f, 1.0f);
 }
-void Gui::drawImageLayered(int image_id, float x, float y, float layer)
+
+void Gui::DrawImageLayered(int image_id, float x, float y, float layer)
 {
 	C2D_DrawImageAt(C2D_SpriteSheetGetImage(spriteSheet, image_id), x, y, layer, NULL, 1.0f, 1.0f);
+}
+
+void Gui::DrawSolidRectangle(float x, float y, float w, float h, u32 color)
+{
+	C2D_DrawRectSolid(x, y, 0.5f, w, h, color);
 }
 
 static void volumeIndicator(u8 volume) {
 	int indicator = (volume/15);
 	if (indicator < 6) {
-		Gui::drawImageLayered(sprites_popup_vol_bkg_idx, 120, 30, 0.7f);
-		Gui::drawImageLayered(indicator + sprites_popup_vol0_idx, 120, 30, 0.7f);
+		Gui::DrawImageLayered(sprites_popup_vol_bkg_idx, 120, 30, 0.6f);
+		Gui::DrawImageLayered(indicator + sprites_popup_vol0_idx, 120, 30, 0.6f);
 	}
 }
 
-void Gui::drawBaseGui(void) {
+void Gui::DrawBaseGui(void) {
 	u8 curVol;
 	bool twfohourtime = false;
 	time_t rawtime = time(NULL);
@@ -250,22 +233,7 @@ void Gui::drawBaseGui(void) {
 	preVol = curVol;
 }
 
-void Gui::drawBrowserPlayer(playbackInfo_t* info) {
-	Gui::drawImage(sprites_player_playlist_idx, 20, 15);
-	if (!info->filename.empty()) {
-		Gui::Print(info->filename.c_str(), 150.0f, 20.0f, 0.5f, 0.5f);
-	} else {
-		Gui::Print("Loading...", 150.0f, 20.0f, 0.5f, 0.5f);
-	}
-
-	if (!info->fileMeta.authorCpright.empty()) {
-		Gui::Print(info->fileMeta.authorCpright.c_str(), 150.0f, 40.0f, 0.5f, 0.5f);
-	} else {
-		Gui::Print("Loading...", 150.0f, 40.0f, 0.5f, 0.5f);
-	}
-}
-
-void Gui::drawError(void) {
+void Gui::DrawError(void) {
 	LimeError_t error = Error::Get();
 	int errorcode = error.err_code;
 	char codestr[30];

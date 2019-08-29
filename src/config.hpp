@@ -15,6 +15,8 @@ namespace Cfg {
 
 	int ParseNC(const char* filepath, std::string* url);
 
+	int WriteJson(const char* outpath, settings_t* settings);
+
 	void CleanSettings(settings_t* parsed_config);
 }
 

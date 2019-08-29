@@ -1,6 +1,5 @@
 #ifndef __LP_BROWSERMENU_HPP__
 #define __LP_BROWSERMENU_HPP__
-#include "gui.hpp"
 #include "menu.hpp"
 #include <cmath>
 #include <memory>
