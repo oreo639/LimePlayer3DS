@@ -18,30 +18,32 @@
 
 void Menu::doTopDraw() const
 {
-    drawTop();
-    if (currentOverlay)
-    {
-        currentOverlay->drawTop();
-    }
+	if (currentOverlay)
+	{
+		if (!currentOverlay->replacesTop())
+			drawTop();
+
+		currentOverlay->doTopDraw();
+	} else
+		drawTop();
 }
 
 void Menu::doBottomDraw() const
 {
-    drawBottom();
-    if (currentOverlay)
-    {
-        currentOverlay->drawBottom();
-    }
+	if (currentOverlay)
+	{
+		if (!currentOverlay->replacesBottom())
+			drawBottom();
+
+		currentOverlay->doBottomDraw();
+	} else
+		drawBottom();
 }
 
 void Menu::doUpdate(touchPosition* touch)
 {
-    if (currentOverlay)
-    {
-        currentOverlay->update(touch);
-    }
-    else
-    {
-        update(touch);
-    }
+	if (currentOverlay && currentOverlay->willHandleUpdate())
+		currentOverlay->doUpdate(touch);
+	else
+		update(touch);
 }

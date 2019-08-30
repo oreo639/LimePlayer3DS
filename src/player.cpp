@@ -112,7 +112,7 @@ bool PlayerInterface::IsPaused(void) {
 void Player::Play(playbackInfo_t* playbackInfo) {
 	skip = false;
 
-	int filetype = File::GetFileType(playbackInfo->filename.c_str());
+	int filetype = File::GetFileType(playbackInfo->filename);
 	if (filetype < 0) {
 		Error::Add(FILE_NOT_SUPPORTED);
 		return;

@@ -31,8 +31,8 @@ class Overlay
 		void doTopDraw() const;
 		void doBottomDraw() const;
 		virtual void update(touchPosition* touch) = 0;
-		virtual void drawTop() const			  = 0;
-		virtual void drawBottom() const		   = 0;
+		virtual void drawTop() const              = 0;
+		virtual void drawBottom() const           = 0;
 		virtual bool replacesTop() const { return false; }
 		virtual bool replacesBottom() const { return false; }
 		virtual bool handlesUpdate() const { return true; }

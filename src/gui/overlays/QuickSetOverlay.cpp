@@ -1,4 +1,5 @@
 #include "QuickSetOverlay.hpp"
+#include "SettingsMenu.hpp"
 #include "gui.hpp"
 
 #define MENU_ICON_HORIZONTAL 100
@@ -20,7 +21,7 @@ QuickSetOverlay::QuickSetOverlay(Overlay& ovly)
 void QuickSetOverlay::drawTop() const
 {
 	Overlay::dim();
-	Gui::Print("Quick settings", 20.0f, 40.0f, 0.5f, 0.5f);
+	Gui::Print("Quick menu", 20.0f, 40.0f, 0.5f, 0.5f);
 }
 
 void QuickSetOverlay::drawBottom() const
@@ -57,4 +58,8 @@ void QuickSetOverlay::update(touchPosition* touch)
 
 	if (kDown & KEY_LEFT && selcursor > 0)
 		selcursor--;
+
+	if (kDown & KEY_A && selcursor == 0) {
+		Gui::SetMenu(std::make_unique<SettingsMenu>());
+	}
 }

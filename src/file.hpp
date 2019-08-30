@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string>
 
 #ifndef LIME_FILE_H
 #define LIME_FILE_H
@@ -16,7 +17,7 @@ typedef enum
 } FILE_audioformat;
 
 namespace File {
-	int GetFileType(const char* file);
+	int GetFileType(const std::string& file);
 	int Copy(const char* filein, const char* fileout);
 	int Exists(const char* filepath);
 }

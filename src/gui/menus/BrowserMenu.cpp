@@ -149,7 +149,7 @@ void BrowserMenu::update(touchPosition* touch)
 	}
 	else {
 		if (kDown & KEY_SELECT) {
-			BrowserMenu::addOverlay<QuickSetOverlay>();
+			addOverlay<QuickSetOverlay>();
 		}
 
 		if(kHeld & KEY_L) {

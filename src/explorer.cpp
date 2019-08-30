@@ -49,10 +49,10 @@ err:
 }
 
 void Explorer::changedir(dirList_t dirList, int sel) {
-	if (sel < dirList.directories.size())
+	if (sel < dirList.dirNum)
 		chdir(dirList.directories[sel].c_str());
 	else if (sel < dirList.total) {
-		chdir(dirList.files[sel-dirList.directories.size()].c_str());
+		chdir(dirList.files[sel-dirList.dirNum].c_str());
 	}
 }
 
