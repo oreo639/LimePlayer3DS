@@ -53,7 +53,7 @@ int TranslationStrings::ParseJson(int lang, std::string file, textMap& strings) 
 	if (json_is_object(pJson)) {
 		json_object_foreach(pJson, key, value) {
 			if(json_is_string(value)) {
-				strings.emplace(key, Gui::StaticTextGen(json_string_value(value)));
+				strings.emplace(key, std::make_pair(json_string_value(value), Gui::StaticTextGen(json_string_value(value))));
 			}
 		}
 	}
@@ -65,12 +65,20 @@ int TranslationStrings::ParseJson(int lang, std::string file, textMap& strings) 
 	return 0;
 }
 
-C2D_Text* TranslationStrings::Localize(const std::string& v) {
+C2D_Text* TranslationStrings::LocalizeStatic(const std::string& v) {
 	auto staticText = gui.find(v);
 	if (staticText != gui.end()) {
-		return &staticText->second;
+		return &staticText->second.second;
 	}
 	return NULL;
+}
+
+std::string TranslationStrings::Localize(const std::string& v) {
+	auto staticText = gui.find(v);
+	if (staticText != gui.end()) {
+		return staticText->second.first;
+	}
+	return "";
 }
 
 int getSystemLanguage(void) {

@@ -9,7 +9,7 @@ class Mp3StreamDecoder : public StreamDecoder {
 		
 		~Mp3StreamDecoder(void);
 		
-		void Info(musinfo_t* Meta) override;
+		void Info(metaInfo_t* Meta) override;
 		
 		uint32_t Position(void) override;
 		

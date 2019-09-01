@@ -31,13 +31,17 @@ namespace Gui {
 
 	C2D_Text StaticTextGen(std::string str);
 
-	void Print(const char* text, float xloc, float yloc, float scaleX, float scaleY);
+	void Print(const std::string& text, float xloc, float yloc, float scaleX, float scaleY);
 
-	void PrintStatic(const std::string &ident, float xloc, float yloc, float scaleX, float scaleY);
+	void PrintStatic(const std::string& ident, float xloc, float yloc, float scaleX, float scaleY);
 
 	void DrawImage(int image_id, float x, float y);
 
 	void DrawImageLayered(int image_id, float x, float y, float layer);
+
+	void DrawImage(C2D_Image& image, float x, float y);
+
+	void DrawImageLayered(C2D_Image& image, float x, float y, float layer);
 
 	void DrawSolidRectangle(float x, float y, float w, float h, u32 color);
 

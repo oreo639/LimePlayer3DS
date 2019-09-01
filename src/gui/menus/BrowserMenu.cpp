@@ -99,17 +99,18 @@ void menuList(int cur, int from, float startpoint, float size, int rows)
 void drawBrowserPlayer(playbackInfo_t* info)
 {
 	Gui::DrawImage(sprites_player_playlist_idx, 20, 15);
-	if (!info->filename.empty()) {
-		Gui::Print(info->filename.c_str(), 150.0f, 20.0f, 0.5f, 0.5f);
-	} else {
-		Gui::Print("Loading...", 150.0f, 20.0f, 0.5f, 0.5f);
-	}
+	if (!PlayerInterface::GetDecoderName().empty())
+		Gui::Print(PlayerInterface::GetDecoderName(), 150.0f, 80.0f, 0.5f, 0.5f);
 
-	if (!info->fileMeta.authorCpright.empty()) {
-		Gui::Print(info->fileMeta.authorCpright.c_str(), 150.0f, 40.0f, 0.5f, 0.5f);
-	} else {
-		Gui::Print("Loading...", 150.0f, 40.0f, 0.5f, 0.5f);
-	}
+	if (!info->filename.empty())
+		Gui::Print(info->filename, 150.0f, 20.0f, 0.5f, 0.5f);
+	else
+		Gui::PrintStatic("TEXT_LOADING_GENERIC", 150.0f, 20.0f, 0.5f, 0.5f);
+
+	if (!info->fileMeta.Artist.empty())
+		Gui::Print(info->fileMeta.Artist, 150.0f, 40.0f, 0.5f, 0.5f);
+	else
+		Gui::PrintStatic("TEXT_LOADING_GENERIC", 150.0f, 40.0f, 0.5f, 0.5f);
 }
 
 BrowserMenu::BrowserMenu() {}
@@ -121,9 +122,9 @@ BrowserMenu::~BrowserMenu()
 
 void BrowserMenu::drawTop() const
 {
-	if (PlayerInterface::IsPlaying()) {
+	if (PlayerInterface::IsPlaying())
 		drawBrowserPlayer(&App::pInfo);
-	}
+
 	Gui::DrawBaseGui();
 }
 

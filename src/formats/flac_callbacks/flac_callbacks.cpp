@@ -113,11 +113,5 @@ void metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__StreamMet
 
 		info->sample_rate = metadata->data.stream_info.sample_rate;
 		DEBUG("sample_rate=%d\n", metadata->data.stream_info.sample_rate);
-
-		info->max_blocksize = metadata->data.stream_info.sample_rate;
-		DEBUG("max_blocksize=%d\n", metadata->data.stream_info.max_blocksize);
-
-		info->min_blocksize = metadata->data.stream_info.sample_rate;
-		DEBUG("min_blocksize=%d\n", metadata->data.stream_info.min_blocksize);
 	}
 }

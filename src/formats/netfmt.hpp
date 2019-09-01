@@ -9,8 +9,10 @@ class NetfmtDecoder : public Decoder {
 		NetfmtDecoder(const char* url);
 		
 		~NetfmtDecoder(void);
+
+		std::string GetDecoderName(void) override;
 		
-		void Info(musinfo_t* Meta) override;
+		void Info(metaInfo_t* Meta) override;
 		
 		uint32_t Position(void) override;
 		

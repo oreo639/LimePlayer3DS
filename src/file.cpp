@@ -59,14 +59,10 @@ int File::GetFileType(const std::string& filename) {
 			return FILE_OPUS;
 	}
 
-	/*Mp3*/
-	else if (!strncmp(magic, "ID3", 3) && !strncasecmp(extension.c_str(), "mp3", 3))
-		return FILE_MP3;
-
 	/*Mp3 files don't really have a magic,
 	  so I have to rely on the extension*/
 	else if (!strncasecmp(extension.c_str(), "mp3", 3))
-		return FILE_MP3_NOID3;
+		return FILE_MP3;
 
 	/*Musical Instrument Digital Interface (MIDI)*/
 	else if (!strncmp(magic, "MThd", 4))

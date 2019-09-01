@@ -23,7 +23,7 @@ static const size_t	buffSize	= 16 * 1024;
 static drwav*		pWav		= NULL;
 static uint32_t		wavprogress; //credit tangerine
 
-WavDecoder::WavDecoder(const char* filename) {
+WavDecoder::WavDecoder(const char* filename) : Decoder("Wave") {
 	pWav = drwav_open_file(filename);
 	wavprogress = 0;
 	if (pWav == NULL)
@@ -37,8 +37,8 @@ WavDecoder::~WavDecoder(void) {
 	this->IsInit = false;
 }
 
-void WavDecoder::Info(musinfo_t* Meta) {
-	Meta->authorCpright.assign("(No Author-Wav)", strlen("(No Author-Wav)"));
+void WavDecoder::Info(metaInfo_t* Meta) {
+	Meta->Artist.assign("(No Author-Wav)");
 }
 
 uint32_t WavDecoder::Position(void) {

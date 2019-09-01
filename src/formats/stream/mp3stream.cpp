@@ -26,7 +26,7 @@ static mpg123_handle*			mh;
 static uint32_t			rate;
 static uint8_t			channels;
 
-Mp3StreamDecoder::Mp3StreamDecoder(uint8_t* inbuffer, uint32_t inbufsize) {
+Mp3StreamDecoder::Mp3StreamDecoder(uint8_t* inbuffer, uint32_t inbufsize) : StreamDecoder("Mp3 Stream") {
 	int err = 0;
 	int encoding = 0;
 
@@ -70,7 +70,7 @@ Mp3StreamDecoder::~Mp3StreamDecoder(void) {
 	this->IsInit = false;
 }
 
-void Mp3StreamDecoder::Info(musinfo_t* Meta) {
+void Mp3StreamDecoder::Info(metaInfo_t* Meta) {
 	return;
 }
 

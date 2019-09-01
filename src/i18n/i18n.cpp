@@ -61,7 +61,46 @@ void i18n::Exit(void)
 	delete ru;
 }
 
-C2D_Text* i18n::Localize(int lang, const std::string& val) {
+C2D_Text* i18n::LocalizeStatic(int lang, const std::string& val) {
+	int tmplang = LANG_EN;
+	if (lang == LANG_SYSTEM)
+		tmplang = getSystemLanguage();
+	else
+		tmplang = lang;
+
+	switch (tmplang)
+	{
+		case LANG_DE:
+			return de->LocalizeStatic(val);
+		case LANG_EN:
+			return en->LocalizeStatic(val);
+		case LANG_ES:
+			return es->LocalizeStatic(val);
+		case LANG_FR:
+			return fr->LocalizeStatic(val);
+		case LANG_IT:
+			return it->LocalizeStatic(val);
+		case LANG_JP:
+			return jp->LocalizeStatic(val);
+		case LANG_KO:
+			return ko->LocalizeStatic(val);
+		case LANG_NL:
+			return nl->LocalizeStatic(val);
+		case LANG_PT:
+			return pt->LocalizeStatic(val);
+		case LANG_ZH:
+			return zh->LocalizeStatic(val);
+		case LANG_TW:
+			return tw->LocalizeStatic(val);
+		case LANG_RU:
+			return ru->LocalizeStatic(val);
+		default:
+			return NULL;
+	}
+	return NULL;
+}
+
+std::string i18n::Localize(int lang, const std::string& val) {
 	int tmplang = LANG_EN;
 	if (lang == LANG_SYSTEM)
 		tmplang = getSystemLanguage();

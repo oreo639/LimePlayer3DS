@@ -30,10 +30,10 @@
 #define BYTESPERSAMPLE 4
 
 static midi		*wMidi;
-static struct _WM_Info *midiInfo;
+static struct _WM_Info	*midiInfo;
 static const size_t	buffSize = SAMPLESPERBUF*BYTESPERSAMPLE;
 
-MidiDecoder::MidiDecoder(const char* filename, const char* midicfg) {
+MidiDecoder::MidiDecoder(const char* filename, const char* midicfg) : Decoder("Midi") {
 	int res = WildMidi_Init(midicfg, MIDISAMPLERATE, 0);
 	wMidi = WildMidi_Open(filename);
 	WildMidi_GetInfo(wMidi);
@@ -49,12 +49,12 @@ MidiDecoder::~MidiDecoder(void) {
 	this->IsInit = false;
 }
 
-void MidiDecoder::Info(musinfo_t* Meta) {
+void MidiDecoder::Info(metaInfo_t* Meta) {
 	midiInfo = WildMidi_GetInfo(wMidi);	
-	if(midiInfo->copyright)
-		Meta->authorCpright.assign(midiInfo->copyright, strlen(midiInfo->copyright));
+	if (midiInfo && midiInfo->copyright)
+		Meta->Artist.assign(midiInfo->copyright);
 	else
-		Meta->authorCpright.assign("(No Author-Midi)", strlen("(No Author-Midi)"));
+		Meta->Artist.assign("(No Author-Midi)");
 }
 
 uint32_t MidiDecoder::Position(void) {

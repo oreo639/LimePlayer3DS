@@ -5,11 +5,11 @@
 
 class Mp3Decoder : public Decoder {
 	public:
-		Mp3Decoder(const char* filename, bool has_id3);
+		Mp3Decoder(const char* filename);
 		
 		~Mp3Decoder(void);
 		
-		void Info(musinfo_t* Meta) override;
+		void Info(metaInfo_t* Meta) override;
 		
 		uint32_t Position(void) override;
 		

@@ -25,12 +25,10 @@ static size_t		buffSize;
 static mpg123_handle*	mh;
 static long		rate;
 static int		channels;
-static bool		enabled_id3;
 
-Mp3Decoder::Mp3Decoder(const char* filename, bool has_id3) {
+Mp3Decoder::Mp3Decoder(const char* filename) : Decoder("Mp3") {
 	int err = 0;
 	int encoding = 0;
-	enabled_id3 = has_id3;
 
 	if((err = mpg123_init()) != MPG123_OK)
 		return;
@@ -72,10 +70,10 @@ Mp3Decoder::~Mp3Decoder(void) {
 	this->IsInit = false;
 }
 
-void Mp3Decoder::Info(musinfo_t* Meta) {
+void Mp3Decoder::Info(metaInfo_t* Meta) {
 	mpg123_id3v1* v1;
 	mpg123_id3v2* v2;
-	if (enabled_id3) {
+	if (mpg123_meta_check(mh) & MPG123_ID3) {
 		mpg123_id3(mh, &v1, &v2);
 	
 		/*I will deal with this later.*/
@@ -83,14 +81,14 @@ void Mp3Decoder::Info(musinfo_t* Meta) {
 		//	infoOut->fileMeta->authorCpright = strdup(v1->artist);
 		//}
 		if (mpg123_strlen(v2->artist, true)) {
-			Meta->authorCpright.assign(v2->artist->p, strlen(v2->artist->p));
+			Meta->Artist.assign(v2->artist->p);
 		}
 		else {
-			Meta->authorCpright.assign("(No Author-Mp3)");
+			Meta->Artist.assign("(No Author-Mp3)");
 		}
 	}
 	else {
-		Meta->authorCpright.assign("(No Author-Mp3)");
+		Meta->Artist.assign("(No Author-Mp3)");
 	}
 }
 

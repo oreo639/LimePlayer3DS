@@ -8,15 +8,21 @@
 
 typedef struct
 {
-	std::string	songName;
-	std::string	authorCpright;
-	std::string	description;
-} musinfo_t;
+	std::string	Title;
+	std::string	Album;
+	std::string	Artist;
+	std::string	Year;
+	std::string	Comment;
+	std::string	Genre;
+	bool		isSupported;
+	bool		isParsed;
+	//void	*Image;
+} metaInfo_t;
 
 typedef struct
 {
 	std::string	filename;
-	musinfo_t	fileMeta;
+	metaInfo_t	fileMeta;
 	settings_t	settings;
 	playlist_t	playlistfile;
 	int		usePlaylist; // 0 do not use playlist, 1 use playlistfile, 2 use playlist from settings
@@ -32,13 +38,19 @@ enum Format {
 class Decoder {
 	public:
 		// Decoder interface
-		bool GetIsInit(void) {return IsInit;};
+		Decoder(const char* name) : DecoderName(name) {}
 
-		const char* GetErrInfo(void) {return ErrInfo;};
+		Decoder(void) {}
 
 		virtual ~Decoder() {}
 
-		virtual void Info(musinfo_t* Meta);
+		bool GetIsInit(void) {return IsInit;}
+
+		const char* GetErrInfo(void) {return ErrInfo;}
+
+		virtual std::string GetDecoderName(void) {return DecoderName;}
+
+		virtual void Info(metaInfo_t* Meta);
 		
 		virtual uint32_t Position(void);
 		
@@ -57,16 +69,22 @@ class Decoder {
 	protected:
 		bool IsInit = 0;
 
-		const char* ErrInfo = NULL;
+		const char* ErrInfo;
+		const char* DecoderName = "Unknown";
 };
 
 class StreamDecoder {
 	public:
-		virtual ~StreamDecoder() {}
 		// Stream Decoder interface
+		StreamDecoder(const char* name) : DecoderName(name) {}
+
+		virtual ~StreamDecoder() {}
+
+		virtual std::string GetDecoderName(void) {return DecoderName;}
+
 		bool GetIsInit(void) {return IsInit;};
 		
-		virtual void Info(musinfo_t* Meta);
+		virtual void Info(metaInfo_t* Meta);
 		
 		virtual uint32_t Position(void);
 		
@@ -84,6 +102,8 @@ class StreamDecoder {
 
 	protected:
 		bool IsInit = 0;
+
+		const char* DecoderName = "Stream (Generic)";
 };
 
 namespace PlayerInterface {
@@ -98,6 +118,8 @@ namespace PlayerInterface {
 	bool IsPlaying(void);
 		
 	bool IsPaused(void);
+
+	std::string GetDecoderName(void);
 }
 
 #endif

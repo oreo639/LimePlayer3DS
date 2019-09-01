@@ -10,8 +10,7 @@ typedef enum
 	FILE_FLAC,        ///< Free Lossless Audio Codec
 	FILE_VORBIS,      ///< Ogg Vorbis
 	FILE_OPUS,        ///< Ogg Opus
-	FILE_MP3,         ///< Mp3 with ID3
-	FILE_MP3_NOID3,   ///< Mp3 without ID3
+	FILE_MP3,         ///< Mp3
 	FILE_MIDI,        ///< Midi and midilike
 	FMT_NETWORK,      ///< Network http stream
 } FILE_audioformat;

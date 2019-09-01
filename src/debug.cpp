@@ -11,7 +11,7 @@ static bool log_file = false;
 
 void debug_init(bool use_file) {
 	if (!is_init && use_file) {
-		File::Copy("/3ds/limeplayer3ds/3.log", "/3ds/limeplayer3ds/2.log");
+		File::Copy("/3ds/limeplayer3ds/2.log", "/3ds/limeplayer3ds/3.log");
 		File::Copy("/3ds/limeplayer3ds/1.log", "/3ds/limeplayer3ds/2.log");
 		File::Copy("/3ds/limeplayer3ds/0.log", "/3ds/limeplayer3ds/1.log");
 		File::Copy("/3ds/limeplayer3ds/recent.log", "/3ds/limeplayer3ds/0.log");

@@ -29,7 +29,7 @@ static const size_t		buffSize = 8 * 4096;
 
 uint64_t fillVorbisBuffer(char* bufferOut);
 
-VorbisDecoder::VorbisDecoder(const char* filename) {
+VorbisDecoder::VorbisDecoder(const char* filename) : Decoder("Vorbis") {
 	if((f = fopen(filename, "rb")) == NULL)
 		return;
 
@@ -48,15 +48,15 @@ VorbisDecoder::~VorbisDecoder(void) {
 	this->IsInit = false;
 }
 
-void VorbisDecoder::Info(musinfo_t* Meta) {
+void VorbisDecoder::Info(metaInfo_t* Meta) {
 	const char *ret = NULL;
 	vorbis_comment *comment = ov_comment(&vorbisFile, -1);
 
 	if ((ret = vorbis_comment_query(comment, const_cast<char*>("artist"), 0)))
-		Meta->authorCpright.assign(ret);
+		Meta->Artist.assign(ret);
 
-	if (Meta->authorCpright.empty())
-		Meta->authorCpright.assign("(No Author-Vorbis)");
+	if (Meta->Artist.empty())
+		Meta->Artist.assign("(No Author-Vorbis)");
 }
 
 uint32_t VorbisDecoder::Position(void) {

@@ -25,7 +25,7 @@
 static FLAC__StreamDecoder	*dFlac;
 static callback_info		*cFlac;
 
-FlacDecoder::FlacDecoder(const char* filename) {
+FlacDecoder::FlacDecoder(const char* filename) : Decoder("FLAC") {
 	dFlac = FLAC__stream_decoder_new();
 	cFlac = new callback_info;
 
@@ -53,8 +53,8 @@ FlacDecoder::~FlacDecoder(void) {
 	this->IsInit = false;
 }
 
-void FlacDecoder::Info(musinfo_t* Meta) {
-	Meta->authorCpright.assign("(No Author-Flac)", strlen("(No Author-Flac)"));
+void FlacDecoder::Info(metaInfo_t* Meta) {
+	Meta->Artist.assign("(No Author-Flac)", strlen("(No Author-Flac)"));
 }
 
 uint32_t FlacDecoder::Position(void) {

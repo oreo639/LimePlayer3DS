@@ -159,14 +159,14 @@ void Gui::PrintColor(const char* text, float xloc, float yloc, float scaleX, flo
 	C2D_DrawText(&dynText, C2D_WithColor, xloc, yloc, 0.5f, scaleX, scaleY, color);
 }
 
-void Gui::Print(const char* text, float xloc, float yloc, float scaleX, float scaleY)
+void Gui::Print(const std::string& text, float xloc, float yloc, float scaleX, float scaleY)
 {
-	Gui::PrintColor(text, xloc, yloc, scaleX, scaleY, 0xFFFFFFFF);
+	Gui::PrintColor(text.c_str(), xloc, yloc, scaleX, scaleY, 0xFFFFFFFF);
 }
 
 void Gui::PrintStatic(const std::string &ident, float xloc, float yloc, float scaleX, float scaleY)
 {
-	C2D_Text* tempSt = i18n::Localize(settings_ptr->language, ident);
+	C2D_Text* tempSt = i18n::LocalizeStatic(settings_ptr->language, ident);
 	if (tempSt)
 		C2D_DrawText(tempSt, C2D_WithColor, xloc, yloc, 0.5f, scaleX, scaleY, 0xFFFFFFFF);
 	else
@@ -181,6 +181,16 @@ void Gui::DrawImage(int image_id, float x, float y)
 void Gui::DrawImageLayered(int image_id, float x, float y, float layer)
 {
 	C2D_DrawImageAt(C2D_SpriteSheetGetImage(spriteSheet, image_id), x, y, layer, NULL, 1.0f, 1.0f);
+}
+
+void Gui::DrawImage(C2D_Image& image, float x, float y)
+{
+	C2D_DrawImageAt(image, x, y, 0.5f, NULL, 1.0f, 1.0f);
+}
+
+void Gui::DrawImageLayered(C2D_Image& image, float x, float y, float layer)
+{
+	C2D_DrawImageAt(image, x, y, layer, NULL, 1.0f, 1.0f);
 }
 
 void Gui::DrawSolidRectangle(float x, float y, float w, float h, u32 color)

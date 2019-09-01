@@ -34,17 +34,18 @@
 #include "formats/opus.hpp"
 #include "formats/vorbis.hpp"
 #include "formats/wav.hpp"
-#include "network/netfmt.hpp"
+#include "formats/netfmt.hpp"
 
 static volatile bool	skip = false;
 static volatile bool	stop = true;
 static ndspWaveBuf	waveBuf[2];
+std::unique_ptr<Decoder> decoder;
 
 namespace Player
 {
 		void Play(playbackInfo_t* playbackInfo);
 
-		void ClearMetadata(musinfo_t* fileMeta);
+		void ClearMetadata(metaInfo_t* fileMeta);
 
 		std::unique_ptr<Decoder> GetFormat(const playbackInfo_t* playbackInfo, int filetype);
 };
@@ -109,6 +110,17 @@ bool PlayerInterface::IsPaused(void) {
 	return ndspChnIsPaused(0);
 }
 
+/**
+ * Returns Decoder name.
+ * \return	String of name.
+ */
+std::string PlayerInterface::GetDecoderName(void) {
+	if (decoder)
+		return decoder->GetDecoderName();
+	else
+		return "";
+}
+
 void Player::Play(playbackInfo_t* playbackInfo) {
 	skip = false;
 
@@ -117,7 +129,7 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 		Error::Add(FILE_NOT_SUPPORTED);
 		return;
 	}
-	std::unique_ptr<Decoder> decoder = GetFormat(playbackInfo, filetype);
+	decoder = GetFormat(playbackInfo, filetype);
 	
 	if (decoder != nullptr) {
 		decoder->Info(&playbackInfo->fileMeta);
@@ -194,8 +206,9 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 	}
 }
 
-void Player::ClearMetadata(musinfo_t* fileMeta) {
-	fileMeta->authorCpright.clear();
+void Player::ClearMetadata(metaInfo_t* fileMeta) {
+	fileMeta->isParsed = false;
+	fileMeta->Artist.clear();
 }
 
 std::unique_ptr<Decoder> Player::GetFormat(const playbackInfo_t* playbackInfo, int filetype) {
@@ -213,18 +226,11 @@ std::unique_ptr<Decoder> Player::GetFormat(const playbackInfo_t* playbackInfo, i
 		if (flacdec->GetIsInit())
 			return flacdec;
 	}
-	else if (filetype == FILE_MP3 || filetype == FILE_MP3_NOID3) {
+	else if (filetype == FILE_MP3) {
 		DEBUG("Attempting to load the Mp3 decoder.\n");
-		if (filetype == FILE_MP3_NOID3) {
-			auto mp3dec = std::unique_ptr<Decoder>(new Mp3Decoder(playbackInfo->filename.c_str(), false));
-			if (mp3dec->GetIsInit())
-				return mp3dec;
-		}
-		else {
-			auto mp3dec = std::unique_ptr<Decoder>(new Mp3Decoder(playbackInfo->filename.c_str(), true));
-			if (mp3dec->GetIsInit())
-				return mp3dec;
-		}
+		auto mp3dec = std::unique_ptr<Decoder>(new Mp3Decoder(playbackInfo->filename.c_str()));
+		if (mp3dec->GetIsInit())
+			return mp3dec;
 	}
 	else if (filetype == FILE_VORBIS) {
 		DEBUG("Attempting to load the Vorbis decoder.\n");

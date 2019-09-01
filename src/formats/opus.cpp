@@ -27,7 +27,7 @@ static const size_t		buffSize = 32 * 1024;
 uint64_t fillOpusBuffer(int16_t* bufferOut);
 
 
-OpusDecoder::OpusDecoder(const char* filename) {
+OpusDecoder::OpusDecoder(const char* filename) : Decoder("Opus") {
 	int err = 0;
 
 	if((opusFile = op_open_file(filename, &err)) == NULL)
@@ -44,15 +44,15 @@ OpusDecoder::~OpusDecoder(void) {
 	this->IsInit = false;
 }
 
-void OpusDecoder::Info(musinfo_t* Meta) {
+void OpusDecoder::Info(metaInfo_t* Meta) {
 	const char *ret;
 	const OpusTags *comment = op_tags(opusFile, -1);
 
 	if ((ret = opus_tags_query(comment, const_cast<char*>("artist"), 0)))
-		Meta->authorCpright.assign(ret);
+		Meta->Artist.assign(ret);
 
-	if (Meta->authorCpright.empty())
-		Meta->authorCpright.assign("(No Author-Opus)", strlen("(No Author-Opus)"));
+	if (Meta->Artist.empty())
+		Meta->Artist.assign("(No Author-Opus)");
 }
 
 uint32_t OpusDecoder::Position(void) {

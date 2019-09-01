@@ -5,7 +5,7 @@
 
 #include <citro2d.h>
 
-typedef std::unordered_map<std::string, C2D_Text> textMap;
+typedef std::unordered_map<std::string, std::pair<std::string, C2D_Text>> textMap;
 
 // Internal language values
 typedef enum
@@ -40,7 +40,8 @@ class TranslationStrings {
 	public:
 		TranslationStrings(int lang);
 		int ParseJson(int lang, std::string file, textMap& strings);
-		C2D_Text* Localize(const std::string& v);
+		C2D_Text* LocalizeStatic(const std::string& key);
+		std::string Localize(const std::string& key);
 
 	private:
 		textMap gui;

@@ -26,9 +26,7 @@
 #include "formats/stream/vorbisstream.hpp"
 
 std::unique_ptr<StreamDecoder> streamdec = nullptr;
-musinfo_t* MetaPtr = NULL;
-
-static uint32_t bytesread = 0;
+metaInfo_t* MetaPtr = NULL;
 
 NetfmtDecoder::NetfmtDecoder(const char* url) {
 	if (http_open(&this->httpctx, url, false)) {
@@ -77,7 +75,11 @@ NetfmtDecoder::~NetfmtDecoder(void) {
 	this->IsInit = false;
 }
 
-void NetfmtDecoder::Info(musinfo_t* Meta) {
+std::string  NetfmtDecoder::GetDecoderName(void) {
+	return streamdec->GetDecoderName();
+}
+
+void NetfmtDecoder::Info(metaInfo_t* Meta) {
 	MetaPtr = Meta;
 }
 
@@ -96,10 +98,6 @@ void NetfmtDecoder::Seek(uint32_t location) {
 uint32_t NetfmtDecoder::Decode(void* buffer) {
 	if (http_download(&this->httpctx) != (s32)HTTPC_RESULTCODE_DOWNLOADPENDING)
 		return 0;
-
-	if (this->httpctx.isShoutcastSupported) {
-		// Do byte interval calculations here.
-	}
 
 	return streamdec->Decode(this->httpctx.dbuf, this->httpctx.readsize, buffer);
 }
