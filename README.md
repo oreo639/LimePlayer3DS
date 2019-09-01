@@ -52,6 +52,8 @@ These are the contrubuters and maintainers, both big and small (will be updated 
 
 + Astronautlevel & Liquidfernir (and the Anemone3DS team): For their work on Anemone3DS which helped quite a bit when it came to starting with citro2d graphics, and they were very helpful in general.
 
++ Flagbrew: Some of the code for gui was adapted to work with LimePlayer3DS.
+
 + Others: If I forgot to mention someone important (as in their code is used without credit), please let me know.
 
 + Most of the icons under gfx are from the site [icons8.com](https://icons8.com) and are licensed under the [CC-BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/3.0/)
