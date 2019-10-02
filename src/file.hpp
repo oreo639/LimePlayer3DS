@@ -20,4 +20,8 @@ namespace File {
 	int Copy(const char* filein, const char* fileout);
 	int Exists(const char* filepath);
 }
+
+namespace FIO {
+	int Exists(const std::string& filepath);
+}
 #endif

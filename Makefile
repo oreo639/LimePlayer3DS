@@ -33,7 +33,7 @@ include $(DEVKITARM)/3ds_rules
 #---------------------------------------------------------------------------------
 # Your values.
 APP_TITLE           :=	LimePlayer3DS
-APP_DESCRIPTION     :=	A graphical music player for mp3, wav, midi, and more.
+APP_DESCRIPTION     :=	Graphical music player for mp3, midi, and more.
 APP_AUTHOR          :=	LimePlayer Team
 
 SOURCES		:=	src src/formats \

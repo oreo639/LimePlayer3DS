@@ -21,86 +21,134 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #include "explorer.hpp"
 
-bool strSort(std::string a, std::string b) {return a<b;} 
+bool entSort(DirEntry a, DirEntry b) {
+	bool srt;
 
-int Explorer::getNumberFiles(void)
-{
-	DIR		*dp;
-	struct dirent	*ep;
-	int		ret = 0;
+	if (a.directory == b.directory)
+		srt = a.filename < b.filename;
+	else
+		srt = a.directory > b.directory;
 
-	if((dp = opendir(".")) == NULL)
-		goto err;
-
-	while((ep = readdir(dp)) != NULL)
-		ret++;
-
-	closedir(dp);
-
-out:
-	return ret;
-
-err:
-	ret = -1;
-	goto out;
+	return srt;
 }
 
-void Explorer::changedir(dirList_t dirList, int sel) {
-	if (sel < dirList.dirNum)
-		chdir(dirList.directories[sel].c_str());
-	else if (sel < dirList.total) {
-		chdir(dirList.files[sel-dirList.dirNum].c_str());
-	}
+Explorer::Explorer(const std::string& root) : RootDir(root) {
+	this->LoadEntries();
 }
 
-int Explorer::getDir(dirList_t* dirList)
-{
+int Explorer::LoadEntries(void) {
 	DIR		*dp;
 	struct dirent	*ep;
-	char*		wd = getcwd(NULL, 0);
 
-	if(wd == NULL)
-		return 0;
-	
-	
-	dirList->files.clear();
-	dirList->files.clear();
-	
-	dirList->directories.clear();
-	dirList->directories.clear();
-
-	dirList->currentDir.assign(wd);
-
-	if((dp = opendir(dirList->currentDir.c_str())) == NULL) {
+	if(!(dp = opendir((RootDir + RelativePath).c_str())) || errno == ENOENT) {
 		closedir(dp);
-		free(wd);
-		return 0;
+		return EXPATH_NOEXIST;
 	}
 
-	while((ep = readdir(dp)) != NULL)
-	{
-		if(ep->d_type == DT_DIR)
-		{
-			dirList->directories.push_back(ep->d_name);
-			dirList->directories[dirList->directories.size()-1].append("/");
+	this->entries.clear();
+
+	this->entries.emplace_back("..", true);
+
+	while((ep = readdir(dp)) != NULL) {
+		std::string filename(ep->d_name);
+		bool isDirectory;
+
+		if (filename == "." || filename == "..")
 			continue;
-		} else {
-			dirList->files.push_back(ep->d_name);
-			continue;
-		}
+
+		if ((isDirectory = (ep->d_type == DT_DIR)))
+			filename.append("/");
+
+		this->entries.emplace_back(filename, isDirectory);
 	}
 
-	std::sort(dirList->directories.begin(), dirList->directories.end(), strSort);
-	std::sort(dirList->files.begin(), dirList->files.end(), strSort);
-
-	dirList->dirNum = dirList->directories.size();
-	dirList->fileNum = dirList->files.size();
-	dirList->total = dirList->files.size() + dirList->directories.size();
+	std::sort(this->entries.begin(), this->entries.end(), entSort);
 
 	closedir(dp);
-	free(wd);
-	return dirList->directories.size() + dirList->files.size();
+	return 0;
+}
+
+std::string Explorer::Item(uint32_t index) {
+	if (index < this->entries.size())
+		return this->entries[index].filename;
+	return "";
+}
+
+bool Explorer::IsDir(uint32_t index) {
+	if (index < this->entries.size())
+		return this->entries[index].directory;
+	return false;
+}
+
+DirEntry Explorer::GetEntry(uint32_t index) {
+	return this->entries[index];
+}
+
+std::string Explorer::GetAbsolutePath(uint32_t index) {
+	if (index < this->entries.size()) {
+		std::string absolutePath(this->GetCurrentDir());
+
+		if (absolutePath.find_last_of('/') != absolutePath.size()-1)
+			absolutePath.append("/");
+
+		absolutePath.append(this->entries[index].filename);
+		return absolutePath;
+	}
+
+	return "";
+}
+
+int Explorer::ChangeTo(uint32_t index) {
+	ChangeDir(this->entries[index].filename);
+	return this->LoadEntries();
+}
+
+int Explorer::ChangeDir(const std::string path) {
+	if (path.empty())
+		return EXPATH_EMPTY;
+
+	if (path == "..")
+		return BackDir();
+
+	if (path == ".")
+		return 0;
+
+	std::string curdir(GetCurrentDir());
+	if (curdir.find_last_of('/') != curdir.size()-1)
+		RelativePath += "/";
+
+	if (path.find_last_of('/') != path.size()-1)
+		RelativePath += (path + "/");
+	else
+		RelativePath += path;
+	return this->LoadEntries();
+}
+
+int Explorer::BackDir(void) {
+	if (RelativePath.empty())
+		return EXPATH_EXIT;
+
+	uint8_t delpos = RelativePath.find_last_of('/');
+	if ((delpos == 0) && (RelativePath.size()))
+		return EXPATH_EXIT;
+	else if (delpos >= RelativePath.size())
+		RelativePath.clear();
+	else if (delpos == RelativePath.size() - 1) {
+		delpos = RelativePath.substr(0, delpos).find_last_of('/');
+		if (delpos >= RelativePath.size())
+			RelativePath.clear();
+		else
+			RelativePath = RelativePath.substr(0, delpos+1);
+
+		if (GetCurrentDir().empty())
+			RelativePath = "/";
+	} else
+		RelativePath = RelativePath.substr(0, delpos);
+
+	return this->LoadEntries();
+	return 0;
 }

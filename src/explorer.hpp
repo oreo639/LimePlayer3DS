@@ -19,13 +19,39 @@ typedef struct
 	int		total;
 } dirList_t;
 
-namespace Explorer
+typedef struct DirEntry {
+	DirEntry(const std::string& name, bool directory) : filename(name), directory(directory) {}
+	std::string filename;
+	bool directory;
+} DirEntry_t;
+
+enum {
+	EXPATH_NOEXIST = 1,   // Directory does not exist
+	EXPATH_EMPTY = 2,     // The given path is an empty string
+	EXPATH_EXIT = 200     // Attempted to access beyond root dir
+};
+
+class Explorer
 {
-	int getNumberFiles(void);
+	public:
+	Explorer(const std::string& root);
+	~Explorer() {}
+	std::string Item(uint32_t index);
+	bool IsDir(uint32_t index);
+	DirEntry GetEntry(uint32_t index);
+	std::string GetAbsolutePath(uint32_t index);
+	int ChangeTo(uint32_t index);
+	int ChangeDir(const std::string path);
+	int BackDir(void);
+	void GotoRoot(void) {RelativePath.clear(); LoadEntries();}
+	int Size(void) {return entries.size();}
+	std::string GetCurrentDir(void) {return RootDir + RelativePath;}
 
-	void changedir(dirList_t dirList, int sel);
-
-	int getDir(dirList_t* dirList);	
-}
+	private:
+	int LoadEntries(void);
+	std::vector<DirEntry_t> entries;
+	std::string RootDir;
+	std::string RelativePath;
+};
 
 #endif

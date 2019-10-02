@@ -17,6 +17,7 @@
 #include <3ds.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #include "file.hpp"
 #include "formats/vorbis.hpp"
@@ -115,4 +116,9 @@ int File::Exists(const char* filepath) {
 
 	fclose(fin);
 	return 1;
+}
+
+int FIO::Exists(const std::string& filepath) {
+	struct stat st;
+	return (stat(filepath.c_str(), &st) == 0);
 }

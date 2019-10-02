@@ -56,7 +56,7 @@ void PlayerInterface::ThreadMainFunct(void *input) {
 
 	if (info->usePlaylist == 1) {
 		for (uint32_t i = 0; i < info->playlistfile.filepath.size() && !stop; i++) {
-			info->filename = info->playlistfile.filepath[i];
+			info->filepath = info->playlistfile.filepath[i];
 			Player::Play(info);
 		}
 	} else {
@@ -124,11 +124,14 @@ std::string PlayerInterface::GetDecoderName(void) {
 void Player::Play(playbackInfo_t* playbackInfo) {
 	skip = false;
 
-	int filetype = File::GetFileType(playbackInfo->filename);
+	int filetype = File::GetFileType(playbackInfo->filepath);
+
 	if (filetype < 0) {
 		Error::Add(FILE_NOT_SUPPORTED);
 		return;
-	}
+	} else if (filetype != FMT_NETWORK)
+		playbackInfo->filename = playbackInfo->filepath.substr(playbackInfo->filepath.find_last_of('/') + 1);
+
 	decoder = GetFormat(playbackInfo, filetype);
 	
 	if (decoder != nullptr) {
@@ -216,43 +219,43 @@ std::unique_ptr<Decoder> Player::GetFormat(const playbackInfo_t* playbackInfo, i
 
 	if (filetype == FILE_WAV) {
 		DEBUG("Attempting to load the Wav decoder.\n");
-		auto wavdec = std::unique_ptr<Decoder>(new WavDecoder(playbackInfo->filename.c_str()));
+		auto wavdec = std::make_unique<WavDecoder>(playbackInfo->filepath.c_str());
 		if (wavdec->GetIsInit())
 			return wavdec;
 	}
 	else if (filetype == FILE_FLAC) {
 		DEBUG("Attempting to load the Flac decoder.\n");
-		auto flacdec = std::unique_ptr<Decoder>(new FlacDecoder(playbackInfo->filename.c_str()));
+		auto flacdec = std::make_unique<FlacDecoder>(playbackInfo->filepath.c_str());
 		if (flacdec->GetIsInit())
 			return flacdec;
 	}
 	else if (filetype == FILE_MP3) {
 		DEBUG("Attempting to load the Mp3 decoder.\n");
-		auto mp3dec = std::unique_ptr<Decoder>(new Mp3Decoder(playbackInfo->filename.c_str()));
+		auto mp3dec = std::make_unique<Mp3Decoder>(playbackInfo->filepath.c_str());
 		if (mp3dec->GetIsInit())
 			return mp3dec;
 	}
 	else if (filetype == FILE_VORBIS) {
 		DEBUG("Attempting to load the Vorbis decoder.\n");
-		auto vorbisdec = std::unique_ptr<Decoder>(new VorbisDecoder(playbackInfo->filename.c_str()));
+		auto vorbisdec = std::make_unique<VorbisDecoder>(playbackInfo->filepath.c_str());
 		if (vorbisdec->GetIsInit())
 			return vorbisdec;
 	}
 	else if (filetype == FILE_OPUS) {
 		DEBUG("Attempting to load the Opus decoder.\n");
-		auto opusdec = std::unique_ptr<Decoder>(new OpusDecoder(playbackInfo->filename.c_str()));
+		auto opusdec = std::make_unique<OpusDecoder>(playbackInfo->filepath.c_str());
 		if (opusdec->GetIsInit())
 			return opusdec;
 	}	
 	else if (filetype == FILE_MIDI) {
 		DEBUG("Attempting to load the Midi decoder.\n");
-		auto mididec = std::unique_ptr<Decoder>(new MidiDecoder(playbackInfo->filename.c_str(), playbackInfo->settings.wildMidiConfig.c_str()));
+		auto mididec = std::make_unique<MidiDecoder>(playbackInfo->filepath.c_str(), playbackInfo->settings.wildMidiConfig.c_str());
 		if (mididec->GetIsInit())
 			return mididec;
 	}
 	else if (filetype == FMT_NETWORK) {
 		DEBUG("Attempting to load the Network decoder.\n");
-		auto netdec = std::unique_ptr<Decoder>(new NetfmtDecoder(playbackInfo->filename.c_str()));
+		auto netdec = std::make_unique<NetfmtDecoder>(playbackInfo->filepath.c_str());
 		if (netdec->GetIsInit())
 			return netdec;
 

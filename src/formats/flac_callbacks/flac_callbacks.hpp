@@ -11,8 +11,6 @@ typedef struct
 	unsigned sample_rate = 0;
 	unsigned channels = 0;
 	unsigned long total_samples = 0;
-	unsigned max_blocksize = 0;
-	unsigned min_blocksize = 0;
 
 	int32_t output_buffer[BUFFER_SIZE];
 	int32_t *write_pointer = nullptr;

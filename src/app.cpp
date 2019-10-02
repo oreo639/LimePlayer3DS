@@ -31,7 +31,7 @@
 #include "parsecfg/m3uparse.hpp"
 
 bool App::exit = false;
-dirList_t App::dirList;
+//dirList_t App::dirList;
 playbackInfo_t App::pInfo;
 
 App::App(void) {
@@ -70,10 +70,6 @@ App::App(void) {
 
 	Gui::Init(&App::pInfo.settings);
 	Gui::SetMenu(std::make_unique<TitleScreen>());
-
-	chdir("sdmc:/");
-	chdir("music");
-	Explorer::getDir(&dirList);
 }
 
 App::~App(void) {
