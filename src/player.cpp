@@ -131,6 +131,8 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 		return;
 	} else if (filetype != FMT_NETWORK)
 		playbackInfo->filename = playbackInfo->filepath.substr(playbackInfo->filepath.find_last_of('/') + 1);
+	else if (filetype == FMT_NETWORK)
+		playbackInfo->filename = playbackInfo->filepath;
 
 	decoder = GetFormat(playbackInfo, filetype);
 	
