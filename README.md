@@ -17,7 +17,7 @@ TODO:
 (GUI redesign and rewrite. Loading cover pictures. Reading of metadata.)
 
 ## Note
-Limeplayer3DS is currently undergoing a c++ rewrite (instead of just being in c). Alot of its functionality is not going to be avliable right now.
+LimePlayer3DS is currently in beta so not all features are going to be avalible.
 
 ## Officaly Supported Formats
 Mp3, Wav, Flac, Midi, Xmi, Mus, Hmi, Hmp, Ogg, and Opus.
@@ -42,15 +42,15 @@ If you want to build with compiler optimazitions, just add RELEASE=1 to the end 
 
 ## Developers
 These are the contrubuters and maintainers, both big and small (will be updated every once and a while)
-+ Maintainers: Oreo639, TBD
-+ Contributers: liquidfenrir (fixed the makefile)
++ Maintainers: oreo639, TBD
++ Contributers: LiquidFenrir (fixed the makefile)
 
 ## Credits
-+ Limeplayer started as a fork of ctrmus, meaning that the majority of its code came from, is based off, or was built on top of ctrmus.
++ LimePlayer started as a fork of ctrmus, meaning that the majority of its code came from, is based off, or was built on top of ctrmus.
 
 + Deltabeard: For his work on ctrmus which was the original foundation for this application.
 
-+ Astronautlevel & Liquidfernir (and the Anemone3DS team): For their work on Anemone3DS which helped quite a bit when it came to starting with citro2d graphics, and they were very helpful in general.
++ Astronautlevel & LiquidFernir (and the Anemone3DS team): For their work on Anemone3DS which helped quite a bit when it came to starting with citro2d graphics, and they were very helpful in general.
 
 + Flagbrew: Some of the code for gui was adapted to work with LimePlayer3DS.
 
