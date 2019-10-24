@@ -120,6 +120,20 @@ namespace PlayerInterface {
 		
 	bool IsPaused(void);
 
+	uint32_t GetTotalLength(void);
+
+	uint32_t GetTotalTime(void);
+
+	uint32_t GetCurrentPos(void);
+
+	uint32_t GetCurrentTime(void);
+
+	void SeekSection(uint32_t location);
+
+	void SeekSectionPercent(int percent);
+
+	void SeekSectionTime(int time);
+
 	std::string GetDecoderName(void);
 }
 

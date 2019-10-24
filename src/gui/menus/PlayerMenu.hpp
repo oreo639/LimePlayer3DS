@@ -6,16 +6,17 @@
 #include "menu.hpp"
 #include "explorer.hpp"
 
-class BrowserMenu : public Menu
+class PlayerMenu : public Menu
 {
 	public:
-		BrowserMenu();
-		~BrowserMenu();
+		PlayerMenu();
+		~PlayerMenu();
 		void drawTop() const override;
 		void drawBottom() const override;
 		void update(touchPosition* touch) override;
 		void fblist(int rows, int startpoint, float size) const;
 	private:
+		void BrowserControls(touchPosition* touch);
 		std::unique_ptr<Explorer> expInst;
 };
 

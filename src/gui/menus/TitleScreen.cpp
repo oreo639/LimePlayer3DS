@@ -1,5 +1,5 @@
 #include "TitleScreen.hpp"
-#include "BrowserMenu.hpp"
+#include "PlayerMenu.hpp"
 #include "app.hpp"
 
 TitleScreen::TitleScreen() {}
@@ -19,6 +19,6 @@ void TitleScreen::update(touchPosition* touch)
 	u32 kDown = hidKeysDown();
 
 	if (kDown & KEY_A) {
-		Gui::SetMenu(std::make_unique<BrowserMenu>());
+		Gui::SetMenu(std::make_unique<PlayerMenu>());
 	}
 }

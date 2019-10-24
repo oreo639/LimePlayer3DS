@@ -36,8 +36,8 @@
 #include "formats/wav.hpp"
 #include "formats/netfmt.hpp"
 
-static volatile bool	skip = false;
-static volatile bool	stop = true;
+static bool		skip = false;
+static bool		stop = true;
 static ndspWaveBuf	waveBuf[2];
 std::unique_ptr<Decoder> decoder;
 
@@ -107,7 +107,79 @@ bool PlayerInterface::IsPlaying(void) {
  * \return	True if paused.
  */
 bool PlayerInterface::IsPaused(void) {
-	return ndspChnIsPaused(0);
+	return stop ? true : ndspChnIsPaused(0);
+}
+
+/*
+ * Returns the total number of samples in a file.
+ * \return	Total number of samples.
+ */
+uint32_t PlayerInterface::GetTotalLength(void) {
+	if (!stop)
+		return decoder->Length();
+
+	return 0;
+}
+
+/*
+ * Returns the estimated total number of seconds in the file.
+ * \return	Estimated total seconds.
+ */
+uint32_t PlayerInterface::GetTotalTime(void) {
+	if (!stop)
+		return PlayerInterface::GetTotalLength()/decoder->Samplerate();
+
+	return 0;
+}
+
+/*
+ * Returns the current sample.
+ * \return	Current sample.
+ */
+uint32_t PlayerInterface::GetCurrentPos(void) {
+	if (!stop)
+		return decoder->Position();
+
+	return 0;
+}
+
+/*
+ * Returns the estimated number of seconds elapsed.
+ * \return	Current location in file in seconds.
+ */
+uint32_t PlayerInterface::GetCurrentTime(void) {
+	if (!stop)
+		return PlayerInterface::GetCurrentPos()/decoder->Samplerate();
+
+	return 0;
+}
+
+/*
+ * Seeks to a specific sample in the file,
+ * although it is not meant to be called directly
+ * it is avliable to be used by other functions to provide seeking
+ * using percent, seconds, etc.
+ */
+void PlayerInterface::SeekSection(uint32_t location) {
+	if (!stop) {
+		ndspChnSetPaused(0, true); //Pause playback...
+		decoder->Seek(location);
+		ndspChnSetPaused(0, false); //once the seeking is done, playback can continue.
+	}
+}
+
+/*
+ * Seeks to a percent in the file.
+ */
+void PlayerInterface::SeekSectionPercent(int percent) {
+	PlayerInterface::SeekSection((PlayerInterface::GetTotalLength() * (percent / 100.0)));
+}
+
+/*
+ * Estimates the elapsed samples for a given time in seconds.
+ */
+void PlayerInterface::SeekSectionTime(int time) {
+	PlayerInterface::SeekSection(time * decoder->Samplerate());
 }
 
 /**

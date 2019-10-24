@@ -15,6 +15,7 @@
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <algorithm>
+#include <list>
 
 #include <assert.h>
 #include <string.h>
@@ -36,7 +37,7 @@ bool entSort(DirEntry a, DirEntry b) {
 	return srt;
 }
 
-Explorer::Explorer(const std::string& root) : RootDir(root) {
+Explorer::Explorer(const std::string& root) : rootDir(root) {
 	this->LoadEntries();
 }
 
@@ -44,7 +45,7 @@ int Explorer::LoadEntries(void) {
 	DIR		*dp;
 	struct dirent	*ep;
 
-	if(!(dp = opendir((RootDir + RelativePath).c_str())) || errno == ENOENT) {
+	if(!(dp = opendir((rootDir / relativePath).c_str())) || errno == ENOENT) {
 		closedir(dp);
 		return EXPATH_NOEXIST;
 	}
@@ -70,6 +71,41 @@ int Explorer::LoadEntries(void) {
 
 	closedir(dp);
 	return 0;
+}
+
+template <template <typename T, typename = std::allocator<T> > class Container>
+Container<PathType> SplitPath(const PathType& path)
+{
+	Container<PathType> ret;
+	long the_size = std::distance(path.begin(),path.end());
+	if(the_size == 0)
+		return Container<PathType>();
+	ret.resize(the_size);
+	std::copy(path.begin(),path.end(),ret.begin());
+	return ret;
+}
+
+PathType Explorer::NormalizePath(const PathType& path)
+{
+	PathType ret;
+	std::list<PathType> splitPath = SplitPath<std::list>(path);
+	for(std::list<PathType>::iterator it = (path.is_absolute() ? ++splitPath.begin() : splitPath.begin()); it != splitPath.end(); ++it)
+	{
+		std::list<PathType>::iterator it_next = it;
+		++it_next;
+		if(it_next == splitPath.end())
+			break;
+		if(*it_next == "..")
+		{
+			it = splitPath.erase(it);
+			it = splitPath.erase(it);
+		}
+	}
+	for(std::list<PathType>::iterator it = splitPath.begin(); it != splitPath.end(); ++it)
+	{
+		ret /= *it;
+	}
+	return ret;
 }
 
 std::string Explorer::Item(uint32_t index) {
@@ -107,48 +143,26 @@ int Explorer::ChangeTo(uint32_t index) {
 	return this->LoadEntries();
 }
 
-int Explorer::ChangeDir(const std::string path) {
+int Explorer::ChangeDir(const PathType path) {
+	int ret = 0;
 	if (path.empty())
 		return EXPATH_EMPTY;
 
-	if (path == "..")
-		return BackDir();
+	relativePath /= path;
+	relativePath = this->NormalizePath(relativePath);
 
-	if (path == ".")
-		return 0;
+	if (relativePath == "/.." || relativePath == "..")
+		relativePath.clear();
 
-	std::string curdir(GetCurrentDir());
-	if (curdir.find_last_of('/') != curdir.size()-1)
-		RelativePath += "/";
+	ret = this->LoadEntries();
 
-	if (path.find_last_of('/') != path.size()-1)
-		RelativePath += (path + "/");
-	else
-		RelativePath += path;
-	return this->LoadEntries();
+	if (relativePath.empty())
+		if (!ret)
+			ret = EXPATH_EXIT;
+
+	return ret;
 }
 
 int Explorer::BackDir(void) {
-	if (RelativePath.empty())
-		return EXPATH_EXIT;
-
-	uint8_t delpos = RelativePath.find_last_of('/');
-	if ((delpos == 0) && (RelativePath.size()))
-		return EXPATH_EXIT;
-	else if (delpos >= RelativePath.size())
-		RelativePath.clear();
-	else if (delpos == RelativePath.size() - 1) {
-		delpos = RelativePath.substr(0, delpos).find_last_of('/');
-		if (delpos >= RelativePath.size())
-			RelativePath.clear();
-		else
-			RelativePath = RelativePath.substr(0, delpos+1);
-
-		if (GetCurrentDir().empty())
-			RelativePath = "/";
-	} else
-		RelativePath = RelativePath.substr(0, delpos);
-
-	return this->LoadEntries();
-	return 0;
+	return this->ChangeDir("..");
 }

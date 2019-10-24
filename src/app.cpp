@@ -26,12 +26,10 @@
 #include "config.hpp"
 #include "macrotools.h"
 #include "TitleScreen.hpp"
-#include "BrowserMenu.hpp"
 #include "parsecfg/plsparse.hpp"
 #include "parsecfg/m3uparse.hpp"
 
 bool App::exit = false;
-//dirList_t App::dirList;
 playbackInfo_t App::pInfo;
 
 App::App(void) {

@@ -3,11 +3,13 @@
 
 #include <string>
 #include <vector>
+#include <filesystem>
 #include <sys/stat.h>
 #include <dirent.h>
 #include <unistd.h>
 
 typedef std::vector<std::string> strvec;
+typedef std::filesystem::path PathType;
 
 typedef struct
 {
@@ -41,17 +43,18 @@ class Explorer
 	DirEntry GetEntry(uint32_t index);
 	std::string GetAbsolutePath(uint32_t index);
 	int ChangeTo(uint32_t index);
-	int ChangeDir(const std::string path);
+	int ChangeDir(const PathType path);
 	int BackDir(void);
-	void GotoRoot(void) {RelativePath.clear(); LoadEntries();}
+	void GotoRoot(void) {relativePath.clear(); LoadEntries();}
 	int Size(void) {return entries.size();}
-	std::string GetCurrentDir(void) {return RootDir + RelativePath;}
+	std::string GetCurrentDir(void) {return rootDir / relativePath;}
 
 	private:
 	int LoadEntries(void);
+	PathType NormalizePath(const PathType& path);
 	std::vector<DirEntry_t> entries;
-	std::string RootDir;
-	std::string RelativePath;
+	PathType rootDir;
+	PathType relativePath;
 };
 
 #endif
