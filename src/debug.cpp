@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdarg.h>
 
+#ifndef NODEBUG
 #include "debug.hpp"
 #include "file.hpp"
 
@@ -47,3 +48,4 @@ void debug_perform(const char* fmt, ...) {
 		fflush(logFP);
 	}
 }
+#endif // ifndef NODEBUG

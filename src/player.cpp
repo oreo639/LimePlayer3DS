@@ -115,7 +115,7 @@ bool PlayerInterface::IsPaused(void) {
  * \return	Total number of samples.
  */
 uint32_t PlayerInterface::GetTotalLength(void) {
-	if (!stop)
+	if (!stop && decoder)
 		return decoder->Length();
 
 	return 0;
@@ -126,7 +126,7 @@ uint32_t PlayerInterface::GetTotalLength(void) {
  * \return	Estimated total seconds.
  */
 uint32_t PlayerInterface::GetTotalTime(void) {
-	if (!stop)
+	if (!stop && decoder)
 		return PlayerInterface::GetTotalLength()/decoder->Samplerate();
 
 	return 0;
@@ -137,7 +137,7 @@ uint32_t PlayerInterface::GetTotalTime(void) {
  * \return	Current sample.
  */
 uint32_t PlayerInterface::GetCurrentPos(void) {
-	if (!stop)
+	if (!stop && decoder)
 		return decoder->Position();
 
 	return 0;
@@ -148,7 +148,7 @@ uint32_t PlayerInterface::GetCurrentPos(void) {
  * \return	Current location in file in seconds.
  */
 uint32_t PlayerInterface::GetCurrentTime(void) {
-	if (!stop)
+	if (!stop && decoder)
 		return PlayerInterface::GetCurrentPos()/decoder->Samplerate();
 
 	return 0;
@@ -161,17 +161,18 @@ uint32_t PlayerInterface::GetCurrentTime(void) {
  * using percent, seconds, etc.
  */
 void PlayerInterface::SeekSection(uint32_t location) {
-	if (!stop) {
+	if (!stop && decoder) {
+		bool oldstate = ndspChnIsPaused(0);
 		ndspChnSetPaused(0, true); //Pause playback...
 		decoder->Seek(location);
-		ndspChnSetPaused(0, false); //once the seeking is done, playback can continue.
+		ndspChnSetPaused(0, oldstate); //once the seeking is done, playback can continue.
 	}
 }
 
 /*
  * Seeks to a percent in the file.
  */
-void PlayerInterface::SeekSectionPercent(int percent) {
+void PlayerInterface::SeekSectionPercent(uint32_t percent) {
 	PlayerInterface::SeekSection((PlayerInterface::GetTotalLength() * (percent / 100.0)));
 }
 
@@ -179,6 +180,8 @@ void PlayerInterface::SeekSectionPercent(int percent) {
  * Estimates the elapsed samples for a given time in seconds.
  */
 void PlayerInterface::SeekSectionTime(int time) {
+	if (time < 0)
+		time = 0;
 	PlayerInterface::SeekSection(time * decoder->Samplerate());
 }
 
@@ -187,7 +190,7 @@ void PlayerInterface::SeekSectionTime(int time) {
  * \return	String of name.
  */
 std::string PlayerInterface::GetDecoderName(void) {
-	if (decoder)
+	if (!stop && decoder)
 		return decoder->GetDecoderName();
 	else
 		return "";

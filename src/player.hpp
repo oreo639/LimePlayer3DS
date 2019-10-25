@@ -130,7 +130,7 @@ namespace PlayerInterface {
 
 	void SeekSection(uint32_t location);
 
-	void SeekSectionPercent(int percent);
+	void SeekSectionPercent(uint32_t percent);
 
 	void SeekSectionTime(int time);
 

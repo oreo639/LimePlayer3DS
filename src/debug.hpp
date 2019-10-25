@@ -1,14 +1,27 @@
 #include "macrotools.h"
 
-#ifndef NODEBUGSTR
+#ifndef __LP_DEBUG_H__
+#define __LP_DEBUG_H__
+
+#ifndef NODEBUG
 #define DEBUG(...) debug_perform("[" __FILE__ "] " STRINGIFY(__LINE__) ": " __VA_ARGS__)
-#else
-#pragma message("Note: Debug strings are disabled.")
-#define DEBUG(...)
-#endif
 
 void debug_init(bool use_file);
 
 void debug_exit(void);
 
 void debug_perform(const char* fmt, ...);
+
+#else
+
+#pragma message("Note: Debug strings are disabled.")
+#define DEBUG(...)
+
+static void debug_init(bool use_file) {};
+
+static void debug_exit(void) {};
+
+static void debug_perform(const char* fmt, ...) {};
+
+#endif // ifndef NODEBUG
+#endif // ifndef __LP_DEBUG_H__

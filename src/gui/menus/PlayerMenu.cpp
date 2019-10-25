@@ -182,9 +182,19 @@ void PlayerMenu::update(touchPosition* touch)
 		}
 
 		if (kHeld & KEY_X) {
-			if(kDown & (KEY_R | KEY_UP)) {
+			if (kDown & (KEY_R | KEY_UP)) {
 				if(PlayerInterface::IsPlaying())
 					PlayerInterface::TogglePlayback();
+			}
+
+			if (kDown & KEY_RIGHT) {
+				if(PlayerInterface::IsPlaying())
+					PlayerInterface::SeekSectionTime(PlayerInterface::GetCurrentTime()+15);
+			}
+
+			if (kDown & KEY_LEFT) {
+				if(PlayerInterface::IsPlaying())
+					PlayerInterface::SeekSectionTime(PlayerInterface::GetCurrentTime()-15);
 			}
 
 			if(kDown & KEY_A) {
