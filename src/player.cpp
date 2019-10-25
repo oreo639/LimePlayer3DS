@@ -36,6 +36,8 @@
 #include "formats/wav.hpp"
 #include "formats/netfmt.hpp"
 
+#define MUSIC_CHANNEL 0
+
 static bool		skip = false;
 static bool		stop = true;
 static ndspWaveBuf	waveBuf[2];
@@ -74,8 +76,8 @@ void PlayerInterface::ThreadMainFunct(void *input) {
  * \return	True if paused.
  */
 bool PlayerInterface::TogglePlayback(void) {
-	bool paused = ndspChnIsPaused(0);
-	ndspChnSetPaused(0, !paused);
+	bool paused = ndspChnIsPaused(MUSIC_CHANNEL);
+	ndspChnSetPaused(MUSIC_CHANNEL, !paused);
 	return !paused;
 }
 
@@ -162,10 +164,10 @@ uint32_t PlayerInterface::GetCurrentTime(void) {
  */
 void PlayerInterface::SeekSection(uint32_t location) {
 	if (!stop && decoder) {
-		bool oldstate = ndspChnIsPaused(0);
-		ndspChnSetPaused(0, true); //Pause playback...
+		bool oldstate = ndspChnIsPaused(MUSIC_CHANNEL);
+		ndspChnSetPaused(MUSIC_CHANNEL, true); //Pause playback...
 		decoder->Seek(location);
-		ndspChnSetPaused(0, oldstate); //once the seeking is done, playback can continue.
+		ndspChnSetPaused(MUSIC_CHANNEL, oldstate); //once the seeking is done, playback can continue.
 	}
 }
 
@@ -212,41 +214,47 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 	decoder = GetFormat(playbackInfo, filetype);
 	
 	if (decoder != nullptr) {
+		bool lastbuf = false;
 		decoder->Info(&playbackInfo->fileMeta);
 
 		int16_t* audioBuffer = (int16_t*)linearAlloc((decoder->Buffsize() * sizeof(int16_t)) * 2);
 
-		ndspChnReset(0);
-		ndspChnWaveBufClear(0);
+		ndspChnReset(MUSIC_CHANNEL);
+		ndspChnWaveBufClear(MUSIC_CHANNEL);
 		ndspSetOutputMode(NDSP_OUTPUT_STEREO);
-		ndspChnSetInterp(0, decoder->Channels() == 2 ? NDSP_INTERP_POLYPHASE : NDSP_INTERP_LINEAR);
-		ndspChnSetRate(0, decoder->Samplerate());
-		ndspChnSetFormat(0, decoder->Channels() == 2 ? NDSP_FORMAT_STEREO_PCM16 : NDSP_FORMAT_MONO_PCM16);
+		ndspChnSetInterp(MUSIC_CHANNEL, decoder->Channels() == 2 ? NDSP_INTERP_POLYPHASE : NDSP_INTERP_LINEAR);
+		ndspChnSetRate(MUSIC_CHANNEL, decoder->Samplerate());
+		ndspChnSetFormat(MUSIC_CHANNEL, decoder->Channels() == 2 ? NDSP_FORMAT_STEREO_PCM16 : NDSP_FORMAT_MONO_PCM16);
 
 		memset(waveBuf, 0, sizeof(waveBuf));
 		waveBuf[0].data_vaddr = audioBuffer;
 		waveBuf[1].data_vaddr = audioBuffer + decoder->Buffsize();
 		for (auto& buf : waveBuf) {
 			buf.nsamples = decoder->Decode(buf.data_pcm16) / decoder->Channels();
-			ndspChnWaveBufAdd(0, &buf);
+			if(read <= 0)
+			{
+				buf.status = NDSP_WBUF_DONE;
+				lastbuf = true;
+				continue;
+			}
+			DSP_FlushDataCache(buf.data_pcm16, decoder->Buffsize() * sizeof(int16_t));
+			ndspChnWaveBufAdd(MUSIC_CHANNEL, &buf);
 		}
-		
+
 		/**
 		 * There may be a chance that the music has not started by the time we get
 		 * to the while loop. So we ensure that music has started here.
 		 */
-		for(int i = 0; ndspChnIsPlaying(0) == false; i++) {
+		for(int i = 0; ndspChnIsPlaying(MUSIC_CHANNEL) == false; i++) {
 			svcSleepThread(1000000); // Wait one millisecond.
 			if(i > 5 * 1000) { // Wait 5 seconds
 				DEBUG("Chnn wait imeout.\n");
 				stop = true;
 				Error::Add(DECODER_INIT_TIMEOUT);
-				break;
+				goto player_exit;
 			}
 		}
 
-
-		bool lastbuf = false;
 		while(!stop && !skip)
 		{
 			svcSleepThread(100 * 1000);
@@ -255,7 +263,7 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 			if (lastbuf == true)
 				break;
 
-			if (ndspChnIsPaused(0) == true || lastbuf == true)
+			if (ndspChnIsPaused(MUSIC_CHANNEL) == true || lastbuf == true)
 				continue;
 
 			for (auto& buf : waveBuf) {
@@ -271,13 +279,14 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 					else if(read < decoder->Buffsize())
 						buf.nsamples = read / decoder->Channels();
 		
-					ndspChnWaveBufAdd(0, &buf);
+					ndspChnWaveBufAdd(MUSIC_CHANNEL, &buf);
 				}
 				DSP_FlushDataCache(buf.data_pcm16, decoder->Buffsize() * sizeof(int16_t));
 			}
 		}
+player_exit:
 		linearFree(audioBuffer);
-		ndspChnWaveBufClear(0);
+		ndspChnWaveBufClear(MUSIC_CHANNEL);
 		ClearMetadata(&playbackInfo->fileMeta);
 		DEBUG("Playback complete.\n");
 		decoder = nullptr;
