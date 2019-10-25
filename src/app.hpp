@@ -7,7 +7,6 @@
 class App {
 	public:
 		static bool exit;
-		//static dirList_t dirList;
 		static playbackInfo_t pInfo;
 		App();
 		~App();

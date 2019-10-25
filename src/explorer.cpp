@@ -73,38 +73,25 @@ int Explorer::LoadEntries(void) {
 	return 0;
 }
 
-template <template <typename T, typename = std::allocator<T> > class Container>
-Container<PathType> SplitPath(const PathType& path)
-{
-	Container<PathType> ret;
-	long the_size = std::distance(path.begin(),path.end());
-	if(the_size == 0)
-		return Container<PathType>();
-	ret.resize(the_size);
-	std::copy(path.begin(),path.end(),ret.begin());
-	return ret;
-}
-
 PathType Explorer::NormalizePath(const PathType& path)
 {
 	PathType ret;
-	std::list<PathType> splitPath = SplitPath<std::list>(path);
-	for(std::list<PathType>::iterator it = (path.is_absolute() ? ++splitPath.begin() : splitPath.begin()); it != splitPath.end(); ++it)
+	for(auto& part : path)
 	{
-		std::list<PathType>::iterator it_next = it;
-		++it_next;
-		if(it_next == splitPath.end())
-			break;
-		if(*it_next == "..")
+		if(part == "..")
 		{
-			it = splitPath.erase(it);
-			it = splitPath.erase(it);
-		}
+			uint32_t find = ret.string().find_last_of("/");
+			if (find >= ret.string().size()-1)
+				ret.clear();
+			else
+				ret = ret.string().substr(0, find+1);
+		} else if (part == ".")
+			continue; 
+		else
+			ret /= part.string();
 	}
-	for(std::list<PathType>::iterator it = splitPath.begin(); it != splitPath.end(); ++it)
-	{
-		ret /= *it;
-	}
+	if (ret.string().size()-1 != ret.string().find_last_of("/"))
+		ret += "/";
 	return ret;
 }
 
@@ -150,9 +137,6 @@ int Explorer::ChangeDir(const PathType path) {
 
 	relativePath /= path;
 	relativePath = this->NormalizePath(relativePath);
-
-	if (relativePath == "/.." || relativePath == "..")
-		relativePath.clear();
 
 	ret = this->LoadEntries();
 
