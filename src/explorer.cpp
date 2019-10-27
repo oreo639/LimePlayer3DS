@@ -45,7 +45,7 @@ int Explorer::LoadEntries(void) {
 	DIR		*dp;
 	struct dirent	*ep;
 
-	if(!(dp = opendir((rootDir / relativePath).c_str())) || errno == ENOENT) {
+	if(!(dp = opendir(GetCurrentDir().c_str())) || errno == ENOENT) {
 		closedir(dp);
 		return EXPATH_NOEXIST;
 	}
@@ -95,6 +95,17 @@ PathType Explorer::NormalizePath(const PathType& path)
 	return ret;
 }
 
+int Explorer::CheckDir(const PathType& path) {
+	DIR		*dp;
+	if(!(dp = opendir((path).c_str())) || errno == ENOENT) {
+		closedir(dp);
+		return EXPATH_NOEXIST;
+	}
+
+	closedir(dp);
+	return 0;
+}
+
 std::string Explorer::Item(uint32_t index) {
 	if (index < this->entries.size())
 		return this->entries[index].filename;
@@ -134,6 +145,9 @@ int Explorer::ChangeDir(const PathType path) {
 	int ret = 0;
 	if (path.empty())
 		return EXPATH_EMPTY;
+
+	if (this->CheckDir(GetCurrentDir() / path))
+		return EXPATH_NOEXIST;
 
 	relativePath /= path;
 	relativePath = this->NormalizePath(relativePath);

@@ -52,6 +52,7 @@ class Explorer
 	private:
 	int LoadEntries(void);
 	PathType NormalizePath(const PathType& path);
+	int CheckDir(const PathType& path);
 	std::vector<DirEntry_t> entries;
 	PathType rootDir;
 	PathType relativePath;
