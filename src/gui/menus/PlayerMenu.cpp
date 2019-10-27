@@ -122,7 +122,6 @@ void drawBrowserPlayer(playbackInfo_t* info)
 
 PlayerMenu::PlayerMenu() {
 	expInst = std::make_unique<Explorer>("sdmc:/");
-	expInst->ChangeDir("music");
 }
 
 PlayerMenu::~PlayerMenu()
