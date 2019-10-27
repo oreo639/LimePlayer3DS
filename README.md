@@ -39,10 +39,8 @@ Once you complete Prerequsites, run `make` or `make <target>`. Replace `<target>
 
 If you want to build with compiler optimazitions, just add RELEASE=1 to the end (EX: `make 3dsx RELEASE=1`)
 
-## Developers
-These are the contrubuters and maintainers, both big and small (will be updated every once and a while)
-+ Maintainers: oreo639, TBD
-+ Contributers: LiquidFenrir (fixed the makefile)
+## Contributors
+Check [CONTRIBUTORS.md](CONTRIBUTORS.md) for more information
 
 ## Credits
 + LimePlayer started as a fork of ctrmus, meaning that the majority of its code came from, is based off, or was built on top of ctrmus.
