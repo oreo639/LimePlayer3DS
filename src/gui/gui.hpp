@@ -45,7 +45,7 @@ namespace Gui {
 
 	void DrawSolidRectangle(float x, float y, float w, float h, u32 color);
 
-	void PrintColor(const char* text, float xloc, float yloc, float scaleX, float scaleY, u32 color);
+	void PrintColor(const std::string& text, float xloc, float yloc, float scaleX, float scaleY, u32 color);
 
 	void DrawBaseGui(void);
 

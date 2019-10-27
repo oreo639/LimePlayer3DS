@@ -15,7 +15,7 @@ SelectFileMenu::SelectFileMenu(std::string* path) : filepath(path)
 	}
 }
 
-static void List(const char* text, int row)
+static void displayDirName(const char* text, int row)
 {
 	Gui::PrintColor(text, 8.0f, row*12, 0.4f, 0.4f, 0xFF000000);
 }
@@ -53,13 +53,14 @@ static void menuList(int cur, int from, float startpoint, float size, int rows)
 void SelectFileMenu::drawTop() const
 {
 	Gui::Print("Select a config file.", 20.0f, 40.0f, 0.5f, 0.5f);
+	Gui::Print("Press <X> to exit.", 20.0f, 60.0f, 0.5f, 0.5f);
 }
 
 void SelectFileMenu::drawBottom() const
 {
 	menuList(cursor, seloffs, 15, 15, expInst->Size());
 	C2D_DrawRectSolid(0, 0, 0.5f, SCREEN_WIDTH, 15, C2D_Color32(119, 131, 147, 255));
-	List(expInst->GetCurrentDir().c_str(), 0);
+	displayDirName(expInst->GetCurrentDir().c_str(), 0);
 	fblist(expInst->Size(), 15, 15);
 }
 
@@ -68,6 +69,9 @@ void SelectFileMenu::update(touchPosition* touch)
 	u32 kDown = hidKeysDown();
 	u32 kHeld = hidKeysHeld();
 	static u64	mill = 0;
+
+	if (kDown & KEY_X)
+		Gui::BackMenu();
 
 	if (kDown & KEY_A) {
 		DirEntry_t dent = expInst->GetEntry(cursor);

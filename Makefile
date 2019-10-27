@@ -68,6 +68,8 @@ UNIQUE_ID	:=	0xEDA06
 PRODUCT_CODE	:=	CTR-P-LIME
 ICON_FLAGS	:=	nosavebackups,visible
 
+NODEBUG := 0
+
 VERSION_MAJOR	:=	0
 VERSION_MINOR	:=	0
 VERSION_BUILD	:=	8
@@ -90,15 +92,16 @@ CFLAGS	:=	-Wall -mword-relocations \
 			-fomit-frame-pointer -ffunction-sections \
 			$(ARCH)
 
-CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS `arm-none-eabi-pkg-config opusfile --cflags` \
-		-DLIMEPLAYER_VERSION="$(VERSION_ALL)" \
-		$(CUSTOMFLAGS)
-
 ifdef RELEASE
 	CFLAGS += -O3 -g
 else
 	CFLAGS += -Og -ggdb
 endif
+
+CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS `arm-none-eabi-pkg-config opusfile --cflags` \
+		-DLIMEPLAYER_VERSION=$(VERSION_ALL) \
+		-DNODEBUG=${NODEBUG} \
+		${CUSTOMFLAGS}
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++17
 
@@ -225,6 +228,7 @@ ifeq ($(suffix $(BANNER_AUDIO)),.cwav)
 else
 	BANNER_AUDIO_ARG := -a
 endif
+
 #---------------------------------------------------------------------------------
 all: 3dsx
 #---------------------------------------------------------------------------------

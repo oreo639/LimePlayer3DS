@@ -3,7 +3,7 @@
 #ifndef __LP_DEBUG_H__
 #define __LP_DEBUG_H__
 
-#ifndef NODEBUG
+#if !NODEBUG
 #define DEBUG(...) debug_perform("[" __FILE__ "] " STRINGIFY(__LINE__) ": " __VA_ARGS__)
 
 void debug_init(bool use_file);
@@ -23,5 +23,5 @@ static void debug_exit(void) {};
 
 static void debug_perform(const char* fmt, ...) {};
 
-#endif // ifndef NODEBUG
+#endif // if !NODEBUG
 #endif // ifndef __LP_DEBUG_H__

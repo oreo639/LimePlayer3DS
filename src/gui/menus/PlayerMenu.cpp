@@ -170,53 +170,45 @@ void PlayerMenu::update(touchPosition* touch)
 	u32 kDown = hidKeysDown();
 	u32 kHeld = hidKeysHeld();
 
-	if (Error::IsQuered()) {
-		if (kDown & KEY_A) {
-			Error::Remove();
-			kDown = 0;
-		}
+	if (kDown & KEY_SELECT) {
+		addOverlay<QuickSetOverlay>();
 	}
-	else {
-		if (kDown & KEY_SELECT) {
-			addOverlay<QuickSetOverlay>();
+
+	if (kHeld & KEY_X) {
+		if (kDown & (KEY_R | KEY_UP)) {
+			if(PlayerInterface::IsPlaying())
+				PlayerInterface::TogglePlayback();
 		}
 
-		if (kHeld & KEY_X) {
-			if (kDown & (KEY_R | KEY_UP)) {
-				if(PlayerInterface::IsPlaying())
-					PlayerInterface::TogglePlayback();
-			}
-
-			if (kDown & KEY_RIGHT) {
-				if(PlayerInterface::IsPlaying())
-					PlayerInterface::SeekSectionTime(PlayerInterface::GetCurrentTime()+15);
-			}
-
-			if (kDown & KEY_LEFT) {
-				if(PlayerInterface::IsPlaying())
-					PlayerInterface::SeekSectionTime(PlayerInterface::GetCurrentTime()-15);
-			}
-
-			if(kDown & KEY_A) {
-				exitPlayback();
-			}
-
-			if(kDown & KEY_Y) {
-				PlayerInterface::SkipPlayback();
-			}
-
-			return;
+		if (kDown & KEY_RIGHT) {
+			if(PlayerInterface::IsPlaying())
+				PlayerInterface::SeekSectionTime(PlayerInterface::GetCurrentTime()+15);
 		}
 
-		if (kDown & KEY_R && window < WINDOW_MAX-1)
-			window++;
+		if (kDown & KEY_LEFT) {
+			if(PlayerInterface::IsPlaying())
+				PlayerInterface::SeekSectionTime(PlayerInterface::GetCurrentTime()-15);
+		}
 
-		if (kDown & KEY_L && window > WINDOW_MIN)
-			window--;
+		if(kDown & KEY_A) {
+			exitPlayback();
+		}
 
-		if (window == WINDOW_BROWSER)
-			PlayerMenu::BrowserControls(touch);
+		if(kDown & KEY_Y) {
+			PlayerInterface::SkipPlayback();
+		}
+
+		return;
 	}
+
+	if (kDown & KEY_R && window < WINDOW_MAX-1)
+		window++;
+
+	if (kDown & KEY_L && window > WINDOW_MIN)
+		window--;
+
+	if (window == WINDOW_BROWSER)
+		PlayerMenu::BrowserControls(touch);
 }
 
 void PlayerMenu::BrowserControls(touchPosition* touch) {

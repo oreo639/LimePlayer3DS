@@ -109,6 +109,12 @@ void Gui::Update(playbackInfo_t* playbackInfo)
 	C3D_FrameEnd(0);
 	C2D_TextBufClear(g_dynamicBuf);
 
+	if (Error::IsQuered()) {
+		if (kDown)
+			Error::Remove();
+		return;
+	}
+
 	touchPosition touch;
 	hidTouchRead(&touch);
 	menus.top()->doUpdate(&touch);
@@ -147,21 +153,21 @@ C2D_Text Gui::StaticTextGen(std::string str) {
 	return tmpStaticText;
 }
 
-void Gui::PrintColor(const char* text, float xloc, float yloc, float scaleX, float scaleY, u32 color)
+void Gui::PrintColor(const std::string& text, float xloc, float yloc, float scaleX, float scaleY, u32 color)
 {
 	// Clear the dynamic text buffer
 	C2D_TextBufClear(g_dynamicBuf);
 
 	// Generate and draw dynamic text
 	C2D_Text dynText;
-	C2D_TextParse(&dynText, g_dynamicBuf, text);
+	C2D_TextParse(&dynText, g_dynamicBuf, text.c_str());
 	C2D_TextOptimize(&dynText);
 	C2D_DrawText(&dynText, C2D_WithColor, xloc, yloc, 0.5f, scaleX, scaleY, color);
 }
 
 void Gui::Print(const std::string& text, float xloc, float yloc, float scaleX, float scaleY)
 {
-	Gui::PrintColor(text.c_str(), xloc, yloc, scaleX, scaleY, 0xFFFFFFFF);
+	Gui::PrintColor(text, xloc, yloc, scaleX, scaleY, 0xFFFFFFFF);
 }
 
 void Gui::PrintStatic(const std::string &ident, float xloc, float yloc, float scaleX, float scaleY)
@@ -259,6 +265,7 @@ void Gui::DrawError(void) {
 	else if (errorcode == DECODER_INIT_FAIL){
 		Gui::Print("ERR: Failed to initalize decoder.", 20.0f, 40.0f, 0.5f, 0.5f);
 	}
+	else if (errorcode == ERRORH_GENERIC);
 	else {
 		char errstr[30];
 		snprintf(errstr, 30, "ERR: Undefined error.");

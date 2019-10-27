@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdarg.h>
 
-#ifndef NODEBUG
+#if !NODEBUG
 #include "debug.hpp"
 #include "file.hpp"
 

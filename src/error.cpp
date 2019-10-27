@@ -11,7 +11,7 @@ void Error::Add(int err) {
 	}
 }
 
-void Error::Add(int err, std::string& extraInfo) {
+void Error::Add(int err, const std::string& extraInfo) {
 	// Error codes of 0 are not allowed
 	if (err != 0) {
 		LimeError_t tmperr;

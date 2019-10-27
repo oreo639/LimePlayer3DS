@@ -1,6 +1,14 @@
 #include "QuickSetOverlay.hpp"
 #include "SettingsMenu.hpp"
+#include "AboutMenu.hpp"
 #include "gui.hpp"
+
+enum {
+	SELMENU_SETTINGS = 0,
+	SELMENU_RADIO,
+	SELMENU_GLOBE,
+	SELMENU_CREDITS
+};
 
 #define MENU_ICON_HORIZONTAL 100
 
@@ -28,19 +36,19 @@ void QuickSetOverlay::drawBottom() const
 {
 	Overlay::dim();
 
-	if (selcursor == 0)
+	if (selcursor == SELMENU_SETTINGS)
 		Gui::DrawSolidRectangle(20, MENU_ICON_HORIZONTAL, 60, 60, C2D_Color32(80, 217, 238, 90));
-	else if (selcursor == 1)
+	else if (selcursor == SELMENU_RADIO)
 		Gui::DrawSolidRectangle(80, MENU_ICON_HORIZONTAL, 60, 60, C2D_Color32(80, 217, 238, 90));
-	else if (selcursor == 2)
+	else if (selcursor == SELMENU_GLOBE)
 		Gui::DrawSolidRectangle(140, MENU_ICON_HORIZONTAL, 60, 60, C2D_Color32(80, 217, 238, 90));
-	else if (selcursor == 3)
+	else if (selcursor == SELMENU_CREDITS)
 		Gui::DrawSolidRectangle(200, MENU_ICON_HORIZONTAL, 60, 60, C2D_Color32(80, 217, 238, 90));
 
 	Gui::DrawImage(sprites_menu_settings_idx, 20, MENU_ICON_HORIZONTAL);
 	Gui::DrawImage(sprites_menu_radio_idx, 80, MENU_ICON_HORIZONTAL);
 	Gui::DrawImage(sprites_menu_globe_idx, 140, MENU_ICON_HORIZONTAL);
-	Gui::DrawImage(sprites_menu_copyright_idx, 200, MENU_ICON_HORIZONTAL);
+	Gui::DrawImage(sprites_menu_copyright_colored_idx, 200, MENU_ICON_HORIZONTAL);
 }
 
 void QuickSetOverlay::update(touchPosition* touch)
@@ -59,7 +67,10 @@ void QuickSetOverlay::update(touchPosition* touch)
 	if (kDown & KEY_LEFT && selcursor > 0)
 		selcursor--;
 
-	if (kDown & KEY_A && selcursor == 0) {
+	if (kDown & KEY_A && selcursor == SELMENU_SETTINGS) {
 		Gui::SetMenu(std::make_unique<SettingsMenu>());
+	}
+	if (kDown & KEY_A && selcursor == SELMENU_CREDITS) {
+		Gui::SetMenu(std::make_unique<AboutMenu>());
 	}
 }
