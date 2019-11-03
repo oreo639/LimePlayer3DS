@@ -1,6 +1,9 @@
 {
 	"TEXT_LOADING_GENERIC": "ロード中…",
 	"TEXT_WELCOME": "LimePlayer3DSへようこそ",
+	"TEXT_PRESS_A_CONTINUE": "Press the <A> button to continue.",
+	"TEXT_QUICKMENU": "Quick menu",
 	"TEXT_MENU_SETTINGS": "設定",
+	"TEXT_MENU_CREDITS_ABOUT": "About:",
 	"TEXT_LIMEPLAYER": "LimePlayer3DS"
 }

@@ -1,6 +1,9 @@
 {
 	"TEXT_LOADING_GENERIC": "Cargando…",
 	"TEXT_WELCOME": "Bienvenido a LimePlayer3DS.",
+	"TEXT_PRESS_A_CONTINUE": "Press the <A> button to continue.",
+	"TEXT_QUICKMENU": "Quick menu",
 	"TEXT_MENU_SETTINGS": "Ajustes",
+	"TEXT_MENU_CREDITS_ABOUT": "About:",
 	"TEXT_LIMEPLAYER": "LimePlayer3DS"
 }
