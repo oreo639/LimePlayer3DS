@@ -7,12 +7,12 @@
 
 class TitleScreen : public Menu
 {
-public:
-    TitleScreen();
-    ~TitleScreen() {}
-    void drawTop() const override;
-    void drawBottom() const override;
-    void update(touchPosition* touch) override;
+	public:
+		TitleScreen();
+		~TitleScreen() {}
+		void drawTop() const override;
+		void drawBottom() const override;
+		void update(touchPosition* touch) override;
 };
 
 #endif

@@ -29,7 +29,7 @@ namespace Gui {
 
 	void BackMenu(void);
 
-	C2D_Text StaticTextGen(std::string str);
+	C2D_Text StaticTextGen(const std::string& str);
 
 	void Print(const std::string& text, float xloc, float yloc, float scaleX, float scaleY);
 

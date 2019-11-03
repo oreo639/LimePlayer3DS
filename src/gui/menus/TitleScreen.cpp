@@ -7,7 +7,7 @@ TitleScreen::TitleScreen() {}
 void TitleScreen::drawTop() const
 {
 	Gui::PrintStatic("TEXT_WELCOME", 25, 25, 0.5f, 0.5f);
-	Gui::Print("Press the <A> button to continue.", 25, 35, 0.5f, 0.5f);
+	Gui::PrintStatic("TEXT_PRESS_A_CONTINUE", 25, 35, 0.5f, 0.5f);
 }
 
 void TitleScreen::drawBottom() const

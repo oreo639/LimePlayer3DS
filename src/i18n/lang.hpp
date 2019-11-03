@@ -6,6 +6,7 @@
 #include <citro2d.h>
 
 typedef std::unordered_map<std::string, std::pair<std::string, C2D_Text>> textMap;
+typedef C2D_Text* staticString;
 
 // Internal language values
 typedef enum
@@ -25,24 +26,12 @@ typedef enum
 	LANG_TW,          ///< Traditional Chinese
 } Language;
 
-// Enums for strings used in lang.json
-// Must be in the correct order as in lang.json
-// All lang.json files must follow this order.
-typedef enum
-{
-	TEXT_LOADING_GENERIC = 0,
-	TEXT_WELCOME,
-	TEXT_MENU_SETTINGS,
-	TEXT_LIMEPLAYER
-} JsonStrings;
-
 class TranslationStrings {
 	public:
 		TranslationStrings(int lang);
 		int ParseJson(int lang, std::string file, textMap& strings);
-		C2D_Text* LocalizeStatic(const std::string& key);
+		staticString LocalizeStatic(const std::string& key);
 		std::string Localize(const std::string& key);
-
 	private:
 		textMap gui;
 };

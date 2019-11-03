@@ -67,9 +67,10 @@ void Gui::Init(settings_t* settings) {
 
 void Gui::Exit(void) {
 	DEBUG("Gui is exiting.\n");
-	i18n::Exit();
 	while (!menus.empty())
 		Gui::BackMenu();
+
+	i18n::Exit();
 	C2D_TextBufDelete(g_dynamicBuf);
 	C2D_TextBufDelete(g_staticBuf);
 
@@ -87,9 +88,8 @@ void Gui::Update(playbackInfo_t* playbackInfo)
 	hidScanInput();
 	u32 kDown = hidKeysDown();
 
-	if (kDown & KEY_START) {
+	if (kDown & KEY_START)
 		App::exit = true;
-	}
 
 	C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
 
@@ -146,7 +146,7 @@ void Gui::BackMenu(void)
     menus.pop();
 }
 
-C2D_Text Gui::StaticTextGen(std::string str) {
+C2D_Text Gui::StaticTextGen(const std::string& str) {
 	C2D_Text tmpStaticText;
 	C2D_TextParse(&tmpStaticText, g_staticBuf, str.c_str());
 	C2D_TextOptimize(&tmpStaticText);
@@ -267,9 +267,7 @@ void Gui::DrawError(void) {
 	}
 	else if (errorcode == ERRORH_GENERIC);
 	else {
-		char errstr[30];
-		snprintf(errstr, 30, "ERR: Undefined error.");
-		Gui::Print(errstr, 20.0f, 40.0f, 0.5f, 0.5f);
+		Gui::Print("ERR: Undefined error.", 20.0f, 40.0f, 0.5f, 0.5f);
 	}
 
 	if (error.extra_info.size())

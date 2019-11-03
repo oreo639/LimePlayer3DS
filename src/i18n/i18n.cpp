@@ -61,8 +61,10 @@ void i18n::Exit(void)
 	delete ru;
 }
 
-C2D_Text* i18n::LocalizeStatic(int lang, const std::string& val) {
+staticString i18n::LocalizeStatic(int lang, const std::string& val) {
 	int tmplang = LANG_EN;
+	staticString lang_string = NULL;
+
 	if (lang == LANG_SYSTEM)
 		tmplang = getSystemLanguage();
 	else
@@ -70,38 +72,54 @@ C2D_Text* i18n::LocalizeStatic(int lang, const std::string& val) {
 
 	switch (tmplang)
 	{
-		case LANG_DE:
-			return de->LocalizeStatic(val);
-		case LANG_EN:
-			return en->LocalizeStatic(val);
-		case LANG_ES:
-			return es->LocalizeStatic(val);
-		case LANG_FR:
-			return fr->LocalizeStatic(val);
-		case LANG_IT:
-			return it->LocalizeStatic(val);
 		case LANG_JP:
-			return jp->LocalizeStatic(val);
-		case LANG_KO:
-			return ko->LocalizeStatic(val);
-		case LANG_NL:
-			return nl->LocalizeStatic(val);
-		case LANG_PT:
-			return pt->LocalizeStatic(val);
+			lang_string = jp->LocalizeStatic(val);
+			break;
+		case LANG_EN:
+			lang_string = en->LocalizeStatic(val);
+			break;
+		case LANG_FR:
+			lang_string = fr->LocalizeStatic(val);
+			break;
+		case LANG_DE:
+			lang_string = de->LocalizeStatic(val);
+			break;
+		case LANG_IT:
+			lang_string = it->LocalizeStatic(val);
+			break;
+		case LANG_ES:
+			lang_string = es->LocalizeStatic(val);
+			break;
 		case LANG_ZH:
-			return zh->LocalizeStatic(val);
-		case LANG_TW:
-			return tw->LocalizeStatic(val);
+			lang_string = zh->LocalizeStatic(val);
+			break;
+		case LANG_KO:
+			lang_string = ko->LocalizeStatic(val);
+			break;
+		case LANG_NL:
+			lang_string = nl->LocalizeStatic(val);
+			break;
+		case LANG_PT:
+			lang_string = pt->LocalizeStatic(val);
+			break;
 		case LANG_RU:
-			return ru->LocalizeStatic(val);
-		default:
-			return NULL;
+			lang_string = ru->LocalizeStatic(val);
+			break;
+		case LANG_TW:
+			lang_string = tw->LocalizeStatic(val);
+			break;
 	}
-	return NULL;
+
+	if (!lang_string)
+		lang_string = en->LocalizeStatic(val);
+
+	return lang_string;
 }
 
 std::string i18n::Localize(int lang, const std::string& val) {
 	int tmplang = LANG_EN;
+	std::string lang_string;
+
 	if (lang == LANG_SYSTEM)
 		tmplang = getSystemLanguage();
 	else
@@ -109,34 +127,48 @@ std::string i18n::Localize(int lang, const std::string& val) {
 
 	switch (tmplang)
 	{
-		case LANG_DE:
-			return de->Localize(val);
-		case LANG_EN:
-			return en->Localize(val);
-		case LANG_ES:
-			return es->Localize(val);
-		case LANG_FR:
-			return fr->Localize(val);
-		case LANG_IT:
-			return it->Localize(val);
 		case LANG_JP:
-			return jp->Localize(val);
-		case LANG_KO:
-			return ko->Localize(val);
-		case LANG_NL:
-			return nl->Localize(val);
-		case LANG_PT:
-			return pt->Localize(val);
+			lang_string = jp->Localize(val);
+			break;
+		case LANG_EN:
+			lang_string = en->Localize(val);
+			break;
+		case LANG_FR:
+			lang_string = fr->Localize(val);
+			break;
+		case LANG_DE:
+			lang_string = de->Localize(val);
+			break;
+		case LANG_IT:
+			lang_string = it->Localize(val);
+			break;
+		case LANG_ES:
+			lang_string = es->Localize(val);
+			break;
 		case LANG_ZH:
-			return zh->Localize(val);
-		case LANG_TW:
-			return tw->Localize(val);
+			lang_string = zh->Localize(val);
+			break;
+		case LANG_KO:
+			lang_string = ko->Localize(val);
+			break;
+		case LANG_NL:
+			lang_string = nl->Localize(val);
+			break;
+		case LANG_PT:
+			lang_string = pt->Localize(val);
+			break;
 		case LANG_RU:
-			return ru->Localize(val);
-		default:
-			return NULL;
+			lang_string = ru->Localize(val);
+			break;
+		case LANG_TW:
+			lang_string = tw->Localize(val);
+			break;
 	}
-	return NULL;
+
+	if (lang_string.empty())
+		lang_string = en->Localize(val);
+
+	return lang_string;
 }
 
 int i18n::Code2Int(const std::string& str) {
