@@ -109,9 +109,8 @@ void App::LibInit(void) {
 	romfsInit();
 	gfxInitDefault();
 	httpcInit(0);
-	if(ndspInit()) {
+	if(ndspInit())
 		noDspFirmExit();
-	}
 	consoleDebugInit(debugDevice_SVC);
 }
 
@@ -123,9 +122,9 @@ void App::LibExit(void) {
 }
 
 int App::MainLoop() {
-	if (App::exit != true) {
+	if (App::exit != true)
 		return aptMainLoop();
-	} else {
+	else {
 		aptMainLoop();
 		return 0;
 	}
