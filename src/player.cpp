@@ -159,7 +159,7 @@ uint32_t PlayerInterface::GetCurrentTime(void) {
 /*
  * Seeks to a specific sample in the file,
  * although it is not meant to be called directly
- * it is avliable to be used by other functions to provide seeking
+ * it is avaliable to be used by other functions to provide seeking
  * using percent, seconds, etc.
  */
 void PlayerInterface::SeekSection(uint32_t location) {
@@ -175,7 +175,7 @@ void PlayerInterface::SeekSection(uint32_t location) {
  * Seeks to a percent in the file.
  */
 void PlayerInterface::SeekSectionPercent(uint32_t percent) {
-	PlayerInterface::SeekSection((PlayerInterface::GetTotalLength() * (percent / 100.0)));
+	PlayerInterface::SeekSection((PlayerInterface::GetTotalLength() * (percent / 100.0f)));
 }
 
 /*

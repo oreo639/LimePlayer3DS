@@ -5,6 +5,7 @@
 
 #include "menu.hpp"
 #include "explorer.hpp"
+#include "progressbar.hpp"
 
 class PlayerMenu : public Menu
 {

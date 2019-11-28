@@ -10,6 +10,8 @@
 
 Thread thread = NULL;
 
+std::vector<ProgressBar> progressbars;
+
 enum {
 	WINDOW_MIN = 0,
 	WINDOW_BROWSER = 0,
@@ -123,11 +125,13 @@ void drawBrowserPlayer(playbackInfo_t* info)
 PlayerMenu::PlayerMenu() {
 	expInst = std::make_unique<Explorer>("sdmc:/");
 	expInst->ChangeDir("music");
+	progressbars.emplace_back(40, 160, 240, 7, C2D_Color32(0x29, 0x71, 0xEE, 0xFF));
 }
 
 PlayerMenu::~PlayerMenu()
 {
 	exitPlayback();
+	progressbars.clear();
 }
 
 void PlayerMenu::drawTop() const
@@ -158,6 +162,10 @@ void PlayerMenu::drawBottom() const
 		Gui::DrawImage(sprites_player_skip_idx, 187, 203);
 		Gui::DrawImage(sprites_player_ffw_idx, 229, 203);
 
+		progressbars[0].Draw();
+		//C2D_DrawRectSolid(40, 160, 0.5f,  240, 7, C2D_Color32(0xC9, 0xCA, 0xDD, 0xFF));
+		//C2D_DrawRectSolid(41, 161, 0.5f, (int)(238 * (PlayerInterface::GetCurrentPos()/(float)PlayerInterface::GetTotalLength())), 5, C2D_Color32(0x29, 0x71, 0xEE, 0xFF));
+
 		Gui::Print("Position = " + std::to_string(PlayerInterface::GetTotalLength()) + "/" + std::to_string(PlayerInterface::GetCurrentPos()), 10.0f, 20.0f, 0.5f, 0.5f);
 		if (!PlayerInterface::GetTotalLength())
 			Gui::Print("Warn: Seeking not avalible for this file.", 10.0f, 40.0f, 0.5f, 0.5f);
@@ -169,6 +177,9 @@ void PlayerMenu::update(touchPosition* touch)
 {
 	u32 kDown = hidKeysDown();
 	u32 kHeld = hidKeysHeld();
+	u32 kUp = hidKeysUp();
+
+	progressbars[0].UpdateProgress((float)PlayerInterface::GetCurrentPos()/PlayerInterface::GetTotalLength());
 
 	if (kDown & KEY_SELECT) {
 		addOverlay<QuickSetOverlay>();
@@ -209,6 +220,15 @@ void PlayerMenu::update(touchPosition* touch)
 
 	if (window == WINDOW_BROWSER)
 		PlayerMenu::BrowserControls(touch);
+
+	if (window == WINDOW_CONTROLS) {
+		if (kDown & KEY_TOUCH) {
+			int seekto = progressbars[0].SeekByClick(touch->px, touch->py);
+
+			if (seekto > -1)
+				PlayerInterface::SeekSectionPercent(seekto);
+		}
+	}
 }
 
 void PlayerMenu::BrowserControls(touchPosition* touch) {
