@@ -82,7 +82,7 @@ App::~App(void) {
 void noDspFirmExit(void) {
 	consoleInit(GFX_TOP, NULL);
 	std::printf("\x1b[01;00H/////////////FATAL///ERROR////////////////////////");
-	std::printf("\x1b[03;00HFatal error: Ndsp could not be Initalized.");
+	std::printf("\x1b[03;00HNDSP could not be initalized.");
 	std::printf("\x1b[05;00HThis is probably because your dspfirm is missing.");
 	std::printf("\x1b[07;00HYou can correct this by running dsp1.");
 	std::printf("\x1b[09;00HPress start to exit.");
