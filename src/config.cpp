@@ -22,16 +22,16 @@
 #include "config.hpp"
 #include "i18n/i18n.hpp"
 
-#define CONFIG_STRING "settings"
-#define ENTRIES_STRING "playlists"
-#define RADIO_STRING "station"
+#define CONFIG_STRING "Settings"
+#define ENTRIES_STRING "Playlists"
+#define RADIO_STRING "Station"
 
 #define PLAYLIST_NAME "name"
 #define PLAYLIST_FILE "file"
 
 #define SETTING_MIDI "WildMidiCFG"
-#define SETTING_THEME "theme"
-#define SETTING_LANGUAGE "language"
+#define SETTING_THEME "Theme"
+#define SETTING_LANGUAGE "Language"
 
 
 void parse_entries(json_t* entries_elem, settings_t* todo_config)
