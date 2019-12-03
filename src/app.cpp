@@ -71,7 +71,7 @@ App::App(void) {
 
 App::~App(void) {
 	Gui::Exit();
-	DEBUG("App is exiting!\n");
+	DEBUG("Leaving LimePlayer!\n");
 	Cfg::CleanSettings(&App::pInfo.settings);
 	osSetSpeedupEnable(false);
 	debug_exit();
