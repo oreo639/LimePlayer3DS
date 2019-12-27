@@ -78,9 +78,9 @@ VERSION_HASH	:=	$(shell git rev-parse --short HEAD)
 endif
 
 ifneq ($(VERSION_HASH),)
-VERSION_ALL	:=	$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_BUILD)-$(VERSION_HASH)
+VERSION_ALL	:=	"\"$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_BUILD)-$(VERSION_HASH)\""
 else
-VERSION_ALL	:=	$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_BUILD)
+VERSION_ALL	:=	"\"$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_BUILD)\""
 endif
 
 #---------------------------------------------------------------------------------

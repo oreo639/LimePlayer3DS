@@ -21,7 +21,7 @@ void debug_init(bool use_file) {
 		if (logFP) {
 			is_init = true;
 			log_file = use_file;
-			debug_perform("Debug output for LimePlayer3DS version %s\nTHIS FILE IS AUTOMATICALY GENERATED PLEASE DO NOT MODIFY!\n", STRINGIFY(LIMEPLAYER_VERSION));
+			debug_perform("Debug output for LimePlayer3DS version %s\nTHIS FILE IS AUTOMATICALY GENERATED PLEASE DO NOT MODIFY!\n", LIMEPLAYER_VERSION);
 		}
 	}
 }
