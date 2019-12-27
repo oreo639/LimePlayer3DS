@@ -6,6 +6,7 @@
 
 #include "player.hpp"
 #include "menu.hpp"
+#include "color.hpp"
 
 // Generated at build time
 #include "sprites.h"
