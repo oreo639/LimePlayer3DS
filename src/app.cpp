@@ -15,6 +15,7 @@
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <stdio.h>
+#include <malloc.h>
 
 #include "app.hpp"
 #include "gui.hpp"
@@ -30,6 +31,10 @@
 
 bool App::exit = false;
 playbackInfo_t App::pInfo;
+uint32_t* socketBuffer;
+
+#define SOC_ALIGN 0x1000
+#define SOC_BUFFERSIZE 0x100000
 
 App::App(void) {
 	LibInit();
@@ -109,13 +114,25 @@ void App::LibInit(void) {
 	romfsInit();
 	gfxInitDefault();
 	httpcInit(0);
+	socketBuffer = (u32*)memalign(SOC_ALIGN, SOC_BUFFERSIZE);
+	if (socketBuffer)
+		socInit(socketBuffer, SOC_BUFFERSIZE);
 	if(ndspInit())
 		noDspFirmExit();
 	consoleDebugInit(debugDevice_SVC);
 }
 
+static void socShutdown() {
+	socExit();
+	if (socketBuffer) {
+		free(socketBuffer);
+		socketBuffer=NULL;
+	}
+}
+
 void App::LibExit(void) {
 	httpcExit();
+	socShutdown();
 	ndspExit();
 	romfsExit();
 	gfxExit();

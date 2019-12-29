@@ -5,6 +5,7 @@
 
 #include "settings.hpp"
 #include "debug.hpp"
+#include "transport/transport.hpp"
 
 typedef struct
 {

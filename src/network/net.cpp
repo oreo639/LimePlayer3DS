@@ -9,7 +9,7 @@
 #include "debug.hpp"
 #include "content.hpp"
 
-#define HTTP_USER_AGENT "LimePlayer3DS (Nintendo 3DS; HOS ARMv6k) version/" LIMEPLAYER_VERSION
+#define HTTP_USER_AGENT "LimePlayer3DS (Nintendo 3DS; HOS ARMv6k; HTTP:C) version/" LIMEPLAYER_VERSION
 
 #define R_APP_OUT_OF_MEMORY MAKERESULT(RL_FATAL, RS_OUTOFRESOURCE, RM_APPLICATION, RD_OUT_OF_MEMORY)
 
@@ -113,6 +113,7 @@ Result http_open(http_context* httpctx, const char* url, bool allowIcyCast) {
 		return R_APP_OUT_OF_MEMORY;
 	}
 	httpctx->dbufSize = 4096;
+	httpctx->is_init = true;
 
 	return ret;
 }
@@ -126,5 +127,6 @@ void http_close(http_context* httpctx) {
 		free(httpctx->dbuf);
 	httpctx->dbufSize = 0;
 	httpcCloseContext(&httpctx->httpc);
+	httpctx->is_init = false;
 	return;
 }

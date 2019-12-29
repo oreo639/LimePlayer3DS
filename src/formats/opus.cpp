@@ -26,12 +26,42 @@ static const size_t		buffSize = 32 * 1024;
 
 uint64_t fillOpusBuffer(int16_t* bufferOut);
 
+static int opus_callback_read(void *_stream, unsigned char *_ptr, int _nbytes) {
+	return ((FileTransport*) _stream)->f_read(_ptr, 1, _nbytes);
+}
 
-OpusDecoder::OpusDecoder(const char* filename) : Decoder("Opus") {
+static int opus_callback_seek(void *_stream, opus_int64 _offset, int _whence) {
+	int ret = 0;
+	if ((ret = ((FileTransport*) _stream)->f_seek(_offset, _whence)) < 0)
+		return -1;
+
+	return ret;
+}
+
+static opus_int64 opus_callback_tell(void *_stream) {
+	return ((FileTransport*) _stream)->f_tell();
+}
+
+static int opus_callback_close(void *_stream) {
+	
+	return 0;
+}
+
+OpusFileCallbacks transport_callbacks;
+
+
+OpusDecoder::OpusDecoder(FileTransport* transport) : Decoder("Opus") {
 	int err = 0;
 
-	if((opusFile = op_open_file(filename, &err)) == NULL)
+	transport_callbacks.read = opus_callback_read;
+	transport_callbacks.close = opus_callback_close;
+	transport_callbacks.tell = opus_callback_tell;
+	transport_callbacks.seek = opus_callback_seek;
+
+	if ((opusFile = op_open_callbacks(transport, &transport_callbacks, NULL, 0, &err)) == NULL) {
+		DEBUG("Opusfile errored with %d\n", err);
 		return;
+	}
 
 	if((err = op_current_link(opusFile)) < 0)
 		return;

@@ -26,7 +26,20 @@ static mpg123_handle*	mh;
 static long		rate;
 static int		channels;
 
-Mp3Decoder::Mp3Decoder(const char* filename) : Decoder("Mp3") {
+static ssize_t replace_read(void * file, void * buffer, size_t length)
+{
+    return ((FileTransport*) file)->f_read(buffer, 1, length);
+}
+
+static off_t replace_lseek(void * file, off_t to, int whence)
+{
+    if (((FileTransport*) file)->f_seek(to, whence) < 0)
+        return -1;
+
+    return ((FileTransport*) file)->f_tell();
+}
+
+Mp3Decoder::Mp3Decoder(FileTransport *ftrans) : Decoder("Mp3") {
 	int err = 0;
 	int encoding = 0;
 
@@ -35,14 +48,15 @@ Mp3Decoder::Mp3Decoder(const char* filename) : Decoder("Mp3") {
 
 	if((mh = mpg123_new(NULL, &err)) == NULL)
 	{
-		fprintf(stderr, "Error: %s\n", mpg123_plain_strerror(err));
+		DEBUG("Error: %s\n", mpg123_plain_strerror(err));
 		return;
 	}
 
-	if(mpg123_open(mh, filename) != MPG123_OK ||
-			mpg123_getformat(mh, &rate, &channels, &encoding) != MPG123_OK)
+	mpg123_replace_reader_handle(mh, replace_read, replace_lseek, nullptr);
+
+	if(mpg123_open_handle(mh, ftrans) != MPG123_OK || mpg123_getformat(mh, &rate, &channels, &encoding) != MPG123_OK)
 	{
-		fprintf(stderr, "Trouble with mpg123: %s\n", mpg123_strerror(mh));
+		DEBUG("Trouble with mpg123: %s\n", mpg123_strerror(mh));
 		return;
 	}
 

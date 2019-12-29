@@ -5,7 +5,7 @@
 
 class Mp3Decoder : public Decoder {
 	public:
-		Mp3Decoder(const char* filename);
+		Mp3Decoder(FileTransport *ftrans);
 		
 		~Mp3Decoder(void);
 		

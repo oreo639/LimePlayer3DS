@@ -24,9 +24,32 @@
 #include "formats/stream/mp3stream.hpp"
 #include "formats/stream/opusstream.hpp"
 #include "formats/stream/vorbisstream.hpp"
+#include "nettransport.hpp"
+#include "mp3.hpp"
+#include "opus.hpp"
 
 std::unique_ptr<StreamDecoder> streamdec = nullptr;
 metaInfo_t* MetaPtr = NULL;
+
+std::unique_ptr<Decoder> Netfmt::GetFormat(const std::string& url, FileTransport* ftrans) {
+	if (ftrans->content_type == CONTENT_MPEG3) {
+		DEBUG("Attempting to load the Mp3 decoder.\n");
+		auto mp3dec = std::make_unique<Mp3Decoder>(ftrans);
+		if (mp3dec->GetIsInit())
+			return mp3dec;
+	}
+	else if (ftrans->content_type == CONTENT_OGG) {
+		DEBUG("Attempting to load the Opus decoder.\n");
+		auto opsudec = std::make_unique<OpusDecoder>(ftrans);
+		if (opsudec->GetIsInit())
+			return opsudec;
+	}
+	else
+		DEBUG("Unsupported content type %d\n", ftrans->content_type);
+
+	DEBUG("Failed to load network decoders.\n");
+	return nullptr;//return std::make_unique<NetfmtDecoder>(url.c_str());
+}
 
 NetfmtDecoder::NetfmtDecoder(const char* url) {
 	if (http_open(&this->httpctx, url, false)) {

@@ -5,6 +5,7 @@
 
 typedef struct {
 	httpcContext httpc;
+	bool is_init;
 	uint32_t content_type;
 	bool isShoutcastSupported;
 	uint32_t icy_byteinterval;

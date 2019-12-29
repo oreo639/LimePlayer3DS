@@ -36,6 +36,11 @@
 #include "formats/wav.hpp"
 #include "formats/netfmt.hpp"
 
+#include "transport.hpp"
+#include "nettransport.hpp"
+#include "curltransport.hpp"
+#include "stdiotransport.hpp"
+
 #define MUSIC_CHANNEL 0
 
 static bool		skip = false;
@@ -49,7 +54,9 @@ namespace Player
 
 		void ClearMetadata(metaInfo_t* fileMeta);
 
-		std::unique_ptr<Decoder> GetFormat(const playbackInfo_t* playbackInfo, int filetype);
+		std::unique_ptr<Decoder> GetFormat(const playbackInfo_t* playbackInfo, int filetype, FileTransport* transport);
+
+		std::unique_ptr<FileTransport> GetTransport(int filetype);
 };
 
 void PlayerInterface::ThreadMainFunct(void *input) {
@@ -199,6 +206,7 @@ std::string PlayerInterface::GetDecoderName(void) {
 }
 
 void Player::Play(playbackInfo_t* playbackInfo) {
+	std::unique_ptr<FileTransport> transport = nullptr;
 	skip = false;
 
 	int filetype = File::GetFileType(playbackInfo->filepath);
@@ -211,8 +219,20 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 	else if (filetype == FMT_NETWORK)
 		playbackInfo->filename = playbackInfo->filepath;
 
-	decoder = GetFormat(playbackInfo, filetype);
-	
+	transport = GetTransport(filetype);
+
+	if (transport != nullptr)
+		if (!transport->f_open(playbackInfo->filepath.c_str(), "rb"))
+			decoder = GetFormat(playbackInfo, filetype, transport.get());
+		else {
+			Error::Add(DECODER_INIT_FAIL, "Failed to open transport.");
+			DEBUG("Failed to open transport.\n");
+		}
+	else {
+		Error::Add(DECODER_INIT_FAIL, "Failed initalize transport.");
+		DEBUG("Failed to initalize transport.\n");
+	}
+
 	if (decoder != nullptr) {
 		bool lastbuf = false;
 		decoder->Info(&playbackInfo->fileMeta);
@@ -290,6 +310,7 @@ player_exit:
 		ClearMetadata(&playbackInfo->fileMeta);
 		DEBUG("Playback complete.\n");
 		decoder = nullptr;
+		transport = nullptr;
 	} else {
 		DEBUG("Decoder could not be initalized.\n");
 	}
@@ -300,7 +321,7 @@ void Player::ClearMetadata(metaInfo_t* fileMeta) {
 	fileMeta->Artist.clear();
 }
 
-std::unique_ptr<Decoder> Player::GetFormat(const playbackInfo_t* playbackInfo, int filetype) {
+std::unique_ptr<Decoder> Player::GetFormat(const playbackInfo_t* playbackInfo, int filetype, FileTransport* transport) {
 	std::string errInfo;
 
 	if (filetype == FILE_WAV) {
@@ -317,7 +338,7 @@ std::unique_ptr<Decoder> Player::GetFormat(const playbackInfo_t* playbackInfo, i
 	}
 	else if (filetype == FILE_MP3) {
 		DEBUG("Attempting to load the Mp3 decoder.\n");
-		auto mp3dec = std::make_unique<Mp3Decoder>(playbackInfo->filepath.c_str());
+		auto mp3dec = std::make_unique<Mp3Decoder>(transport);
 		if (mp3dec->GetIsInit())
 			return mp3dec;
 	}
@@ -329,7 +350,7 @@ std::unique_ptr<Decoder> Player::GetFormat(const playbackInfo_t* playbackInfo, i
 	}
 	else if (filetype == FILE_OPUS) {
 		DEBUG("Attempting to load the Opus decoder.\n");
-		auto opusdec = std::make_unique<OpusDecoder>(playbackInfo->filepath.c_str());
+		auto opusdec = std::make_unique<OpusDecoder>(transport);
 		if (opusdec->GetIsInit())
 			return opusdec;
 	}	
@@ -341,16 +362,36 @@ std::unique_ptr<Decoder> Player::GetFormat(const playbackInfo_t* playbackInfo, i
 	}
 	else if (filetype == FMT_NETWORK) {
 		DEBUG("Attempting to load the Network decoder.\n");
-		auto netdec = std::make_unique<NetfmtDecoder>(playbackInfo->filepath.c_str());
-		if (netdec->GetIsInit())
-			return netdec;
+		auto netdec = Netfmt::GetFormat(playbackInfo->filepath.c_str(), transport);
 
-		errInfo = netdec->GetErrInfo();
+		if (netdec) {
+			if (netdec->GetIsInit())
+				return netdec;
+
+			errInfo = netdec->GetErrInfo();
+		}
 	}
-
 	else
 		DEBUG("No decoder found.\n");
 
 	Error::Add(DECODER_INIT_FAIL, errInfo);
+	return nullptr;
+}
+
+std::unique_ptr<FileTransport> Player::GetTransport(int filetype) {
+	if (filetype < FMT_NETWORK) {
+		DEBUG("Using stdio transport.\n");
+		auto stdiotrans = std::make_unique<StdioTransport>();
+		return stdiotrans;
+	}
+	else if (filetype == FMT_NETWORK) {
+		DEBUG("Using network transport.\n");
+		auto nettrans = std::make_unique<NetTransport>();
+		//auto nettrans = std::make_unique<CurlTransport>();
+		return nettrans;
+	}
+	else
+		DEBUG("No transport avaliable.\n");
+
 	return nullptr;
 }

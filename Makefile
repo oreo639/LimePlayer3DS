@@ -39,6 +39,8 @@ APP_AUTHOR          :=	LimePlayer Team
 SOURCES		:=	src src/formats \
 			src/formats/stream \
 			src/network \
+			src/transport \
+			src/transport/curl \
 			src/gui \
 			src/gui/menus \
 			src/gui/overlays \
@@ -98,7 +100,9 @@ else
 	CFLAGS += -Og -ggdb
 endif
 
-CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS `arm-none-eabi-pkg-config opusfile --cflags` \
+CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS \
+		`arm-none-eabi-pkg-config opusfile --cflags` \
+		`curl-config --libs` \
 		-DLIMEPLAYER_VERSION=$(VERSION_ALL) \
 		-DNODEBUG=${NODEBUG} \
 		${CUSTOMFLAGS}
@@ -108,7 +112,7 @@ CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++17
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS	:= -lcitro2d -lcitro3d -lmpg123 -lopusfile -lopus -lvorbisidec -logg -lFLAC -lWildMidi -ljansson -lctrud -lm
+LIBS	:= -lcitro2d -lcitro3d -lmpg123 -lopusfile -lopus -lvorbisidec -logg -lFLAC -lWildMidi -ljansson -lctrud `curl-config --libs` -lm
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
 # include and lib

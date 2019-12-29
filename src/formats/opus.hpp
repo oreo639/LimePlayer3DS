@@ -5,7 +5,7 @@
 
 class OpusDecoder : public Decoder {
 	public:
-		OpusDecoder(const char* filename);
+		OpusDecoder(FileTransport* transport);
 		
 		~OpusDecoder(void);
 		

@@ -25,7 +25,7 @@
 
 #include "midi.hpp"
 
-#define MIDISAMPLERATE 22050
+#define MIDISAMPLERATE 32000
 #define SAMPLESPERBUF 4096
 #define BYTESPERSAMPLE 4
 

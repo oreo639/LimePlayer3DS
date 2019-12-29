@@ -4,6 +4,10 @@
 #include "player.hpp"
 #include "net.hpp"
 
+namespace Netfmt {
+	std::unique_ptr<Decoder> GetFormat(const std::string& url, FileTransport* ftrans);
+}
+
 class NetfmtDecoder : public Decoder {
 	public:
 		NetfmtDecoder(const char* url);
