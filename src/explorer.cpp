@@ -64,7 +64,8 @@ int Explorer::LoadEntries(void) {
 		if ((isDirectory = (ep->d_type == DT_DIR)))
 			filename.append("/");
 
-		this->entries.emplace_back(filename, isDirectory);
+		if (filteredExt.empty() || isDirectory || filename.substr(filename.find_last_of(".") + 1) == filteredExt)
+			this->entries.emplace_back(filename, isDirectory);
 	}
 
 	std::sort(this->entries.begin(), this->entries.end(), entSort);

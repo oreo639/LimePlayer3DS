@@ -48,6 +48,7 @@ class Explorer
 	void GotoRoot(void) {relativePath.clear(); LoadEntries();}
 	int Size(void) {return entries.size();}
 	std::string GetCurrentDir(void) {return rootDir / relativePath;}
+	void SetExtFilter(const std::string& extension) {filteredExt = extension;}
 
 	private:
 	int LoadEntries(void);
@@ -56,6 +57,7 @@ class Explorer
 	std::vector<DirEntry_t> entries;
 	PathType rootDir;
 	PathType relativePath;
+	std::string filteredExt;
 };
 
 #endif

@@ -43,7 +43,6 @@ static opus_int64 opus_callback_tell(void *_stream) {
 }
 
 static int opus_callback_close(void *_stream) {
-	
 	return 0;
 }
 

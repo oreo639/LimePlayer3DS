@@ -7,6 +7,7 @@ static int seloffs = 0;
 SelectFileMenu::SelectFileMenu(std::string* path) : filepath(path)
 {
 	expInst = std::make_unique<Explorer>("");
+	expInst->SetExtFilter("cfg");
 	switch (expInst->ChangeDir(filepath->substr(0, filepath->find_last_of('/')+1))) {
 		case EXPATH_NOEXIST:
 		case EXPATH_EMPTY:
@@ -54,6 +55,7 @@ void SelectFileMenu::drawTop() const
 {
 	Gui::Print("Select a config file.", 20.0f, 40.0f, 0.5f, 0.5f);
 	Gui::Print("Press <X> to exit.", 20.0f, 60.0f, 0.5f, 0.5f);
+	Gui::Print("Filter: *.cfg.", 20.0f, 80.0f, 0.5f, 0.5f);
 }
 
 void SelectFileMenu::drawBottom() const
