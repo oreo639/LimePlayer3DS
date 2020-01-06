@@ -36,6 +36,20 @@ uint32_t* socketBuffer;
 #define SOC_ALIGN 0x1000
 #define SOC_BUFFERSIZE 0x100000
 
+/*static void socStartup() {
+	socketBuffer = (u32*)memalign(SOC_ALIGN, SOC_BUFFERSIZE);
+	if (socketBuffer)
+		socInit(socketBuffer, SOC_BUFFERSIZE);
+}
+
+static void socShutdown() {
+	socExit();
+	if (socketBuffer) {
+		free(socketBuffer);
+		socketBuffer=NULL;
+	}
+}*/
+
 App::App(void) {
 	LibInit();
 	osSetSpeedupEnable(true);
@@ -114,25 +128,15 @@ void App::LibInit(void) {
 	romfsInit();
 	gfxInitDefault();
 	httpcInit(0);
-	socketBuffer = (u32*)memalign(SOC_ALIGN, SOC_BUFFERSIZE);
-	if (socketBuffer)
-		socInit(socketBuffer, SOC_BUFFERSIZE);
+	//socStartup();
 	if(ndspInit())
 		noDspFirmExit();
 	consoleDebugInit(debugDevice_SVC);
 }
 
-static void socShutdown() {
-	socExit();
-	if (socketBuffer) {
-		free(socketBuffer);
-		socketBuffer=NULL;
-	}
-}
-
 void App::LibExit(void) {
 	httpcExit();
-	socShutdown();
+	//socShutdown();
 	ndspExit();
 	romfsExit();
 	gfxExit();

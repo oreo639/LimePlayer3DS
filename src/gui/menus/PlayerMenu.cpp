@@ -5,6 +5,7 @@
 #include "plsparse.hpp"
 #include "m3uparse.hpp"
 #include "error.hpp"
+#include "color.hpp"
 
 #include "QuickSetOverlay.hpp"
 
@@ -125,7 +126,7 @@ void drawBrowserPlayer(playbackInfo_t* info)
 PlayerMenu::PlayerMenu() {
 	expInst = std::make_unique<Explorer>("sdmc:/");
 	expInst->ChangeDir("music");
-	progressbars.emplace_back(40, 160, 240, 7, C2D_Color32(0x29, 0x71, 0xEE, 0xFF));
+	progressbars.emplace_back(40, 160, 240, 7, COLOR_LIMEGREEN);
 }
 
 PlayerMenu::~PlayerMenu()
@@ -162,7 +163,7 @@ void PlayerMenu::drawBottom() const
 		Gui::DrawImage(sprites_player_skip_idx, 187, 203);
 		Gui::DrawImage(sprites_player_ffw_idx, 229, 203);
 
-		//progressbars.at(0).Draw();
+		progressbars.at(0).Draw();
 
 		Gui::Print("Position = " + std::to_string(PlayerInterface::GetTotalLength()) + "/" + std::to_string(PlayerInterface::GetCurrentPos()), 10.0f, 20.0f, 0.5f, 0.5f);
 		if (!PlayerInterface::GetTotalLength())
@@ -177,7 +178,10 @@ void PlayerMenu::update(touchPosition* touch)
 	u32 kHeld = hidKeysHeld();
 	u32 kUp = hidKeysUp();
 
-	//progressbars.at(0).UpdateProgress((float)PlayerInterface::GetCurrentPos()/PlayerInterface::GetTotalLength());
+	if (PlayerInterface::IsPlaying())
+		progressbars.at(0).UpdateProgress(PlayerInterface::GetCurrentPos()*100/PlayerInterface::GetTotalLength());
+	else
+		progressbars.at(0).UpdateProgress(-1);
 
 	if (kDown & KEY_SELECT) {
 		addOverlay<QuickSetOverlay>();

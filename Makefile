@@ -104,10 +104,10 @@ endif
 
 CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS \
 		`arm-none-eabi-pkg-config opusfile --cflags` \
-		`curl-config --libs` \
 		-DLIMEPLAYER_VERSION=$(VERSION_ALL) \
 		-DNODEBUG=${NODEBUG} \
 		${CUSTOMFLAGS}
+#`curl-config --cflags` \
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++17
 
