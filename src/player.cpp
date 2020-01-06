@@ -38,7 +38,7 @@
 
 #include "transport.hpp"
 #include "nettransport.hpp"
-#include "curltransport.hpp"
+//#include "curltransport.hpp"
 #include "stdiotransport.hpp"
 
 #define MUSIC_CHANNEL 0

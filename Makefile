@@ -40,7 +40,6 @@ SOURCES		:=	src src/formats \
 			src/formats/stream \
 			src/network \
 			src/transport \
-			src/transport/curl \
 			src/gui \
 			src/gui/menus \
 			src/gui/overlays \
@@ -49,6 +48,9 @@ SOURCES		:=	src src/formats \
 			src/parsecfg/INIReader \
 			src/parsecfg/INIReader/cpp \
 			src/formats/flac_callbacks
+			# Disable unfinished transports
+			#src/transport/curl \
+			#src/transport/curl_transport \
 
 INCLUDES	:=	include $(SOURCES)
 
@@ -112,7 +114,8 @@ CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++17
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS	:= -lcitro2d -lcitro3d -lmpg123 -lopusfile -lopus -lvorbisidec -logg -lFLAC -lWildMidi -ljansson -lctrud `curl-config --libs` -lm
+LIBS	:= -lcitro2d -lcitro3d -lmpg123 -lopusfile -lopus -lvorbisidec -logg -lFLAC -lWildMidi -ljansson -lctrud -lm
+# `curl-config --libs`
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
 # include and lib
