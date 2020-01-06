@@ -76,7 +76,7 @@ NODEBUG := 0
 
 VERSION_MAJOR	:=	0
 VERSION_MINOR	:=	0
-VERSION_BUILD	:=	8
+VERSION_BUILD	:=	9
 ifndef RELEASE
 VERSION_HASH	:=	$(shell git rev-parse --short HEAD)
 endif
