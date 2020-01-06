@@ -75,39 +75,6 @@ class Decoder {
 		const char* DecoderName = "Unknown";
 };
 
-class StreamDecoder {
-	public:
-		// Stream Decoder interface
-		StreamDecoder(const char* name) : DecoderName(name) {}
-
-		virtual ~StreamDecoder() {}
-
-		virtual std::string GetDecoderName(void) {return DecoderName;}
-
-		bool GetIsInit(void) {return IsInit;};
-		
-		virtual void Info(metaInfo_t* Meta);
-		
-		virtual uint32_t Position(void);
-		
-		virtual uint32_t Length(void);
-		
-		virtual void Seek(uint32_t location);
-		
-		virtual uint32_t Decode(uint8_t* inbuffer, uint32_t inbuffsize, void* outbuffer);
-		
-		virtual uint32_t Samplerate(void);
-		
-		virtual uint32_t Buffsize(void);
-		
-		virtual int Channels(void);
-
-	protected:
-		bool IsInit = 0;
-
-		const char* DecoderName = "Stream (Generic)";
-};
-
 namespace PlayerInterface {
 	void ThreadMainFunct(void* input);
 	

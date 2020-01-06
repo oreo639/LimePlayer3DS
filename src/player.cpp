@@ -281,6 +281,10 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 		while(!stop && !skip)
 		{
 			svcSleepThread(100 * 1000);
+
+			//if (decoder->UpdateInfo())
+			//	decoder->Info(&playbackInfo->fileMeta);
+
 	
 			/* When the last buffer has finished playing, break. */
 			if (lastbuf == true)
