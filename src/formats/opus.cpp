@@ -73,15 +73,29 @@ OpusDecoder::~OpusDecoder(void) {
 	this->IsInit = false;
 }
 
-void OpusDecoder::Info(metaInfo_t* Meta) {
+void ProcessInfo(const OpusTags *comment, metaInfo_t* Meta) {
 	const char *ret;
-	const OpusTags *comment = op_tags(opusFile, -1);
+
+	if ((ret = opus_tags_query(comment, const_cast<char*>("title"), 0)))
+		Meta->Title.assign(ret);
 
 	if ((ret = opus_tags_query(comment, const_cast<char*>("artist"), 0)))
 		Meta->Artist.assign(ret);
 
 	if (Meta->Artist.empty())
 		Meta->Artist.assign("(No Author-Opus)");
+}
+
+void OpusDecoder::Info(metaInfo_t* Meta) {
+	const OpusTags *comment = op_tags(opusFile, -1);
+
+	const char *old_title = Meta->Title.c_str();
+	const char *new_title = opus_tags_query(comment, const_cast<char*>("title"), 0);
+
+	if (!new_title || (old_title && !strcmp(old_title, new_title)))
+        	return;
+
+	ProcessInfo(comment, Meta);
 }
 
 uint32_t OpusDecoder::Position(void) {

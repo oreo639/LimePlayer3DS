@@ -282,8 +282,8 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 		{
 			svcSleepThread(100 * 1000);
 
-			//if (decoder->UpdateInfo())
-			//	decoder->Info(&playbackInfo->fileMeta);
+			if (decoder->AllowUpdateInfo())
+				decoder->Info(&playbackInfo->fileMeta);
 
 	
 			/* When the last buffer has finished playing, break. */
@@ -325,7 +325,12 @@ player_exit:
 
 void Player::ClearMetadata(metaInfo_t* fileMeta) {
 	fileMeta->isParsed = false;
+	fileMeta->Title.clear();
+	fileMeta->Album.clear();
 	fileMeta->Artist.clear();
+	fileMeta->Year.clear();
+	fileMeta->Comment.clear();
+	fileMeta->Genre.clear();
 }
 
 std::unique_ptr<Decoder> Player::GetFormat(const playbackInfo_t* playbackInfo, int filetype, FileTransport* transport) {

@@ -8,7 +8,9 @@ class OpusDecoder : public Decoder {
 		OpusDecoder(FileTransport* transport);
 		
 		~OpusDecoder(void);
-		
+
+		bool AllowUpdateInfo() override {return true;}
+
 		void Info(metaInfo_t* Meta) override;
 		
 		uint32_t Position(void) override;

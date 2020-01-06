@@ -50,7 +50,15 @@ class Decoder {
 
 		const char* GetErrInfo(void) {return ErrInfo;}
 
-		virtual std::string GetDecoderName(void) {return DecoderName;}
+		virtual std::string GetDecoderName(void) {
+			if (DecoderName)
+				return DecoderName;
+			else
+				return "";
+		}
+
+		// Allow the decoder to specify if the medadata needs to be updated.
+		virtual bool AllowUpdateInfo() {return false;}
 
 		virtual void Info(metaInfo_t* Meta);
 		

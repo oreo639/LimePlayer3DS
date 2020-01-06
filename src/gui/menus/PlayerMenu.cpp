@@ -112,7 +112,9 @@ void drawBrowserPlayer(playbackInfo_t* info)
 	if (!PlayerInterface::GetDecoderName().empty())
 		Gui::Print(PlayerInterface::GetDecoderName(), 150.0f, 80.0f, 0.5f, 0.5f);
 
-	if (!info->filename.empty())
+	if (!info->fileMeta.Title.empty())
+		Gui::Print(info->fileMeta.Title, 150.0f, 20.0f, 0.5f, 0.5f);
+	else if (!info->filename.empty())
 		Gui::Print(info->filename, 150.0f, 20.0f, 0.5f, 0.5f);
 	else
 		Gui::PrintStatic("TEXT_LOADING_GENERIC", 150.0f, 20.0f, 0.5f, 0.5f);
