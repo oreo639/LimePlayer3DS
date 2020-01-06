@@ -225,7 +225,10 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 		if (!transport->f_open(playbackInfo->filepath.c_str(), "rb"))
 			decoder = GetFormat(playbackInfo, filetype, transport.get());
 		else {
-			Error::Add(DECODER_INIT_FAIL, "Failed to open transport.");
+			if (transport->GetError().empty())
+				Error::Add(DECODER_INIT_FAIL, "Failed to open transport.");
+			else
+				Error::Add(DECODER_INIT_FAIL, transport->GetError());
 			DEBUG("Failed to open transport.\n");
 		}
 	else {

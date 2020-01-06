@@ -6,6 +6,8 @@
 
 int NetTransport::f_open(const char *filename, const char *mode) {
 	int ret = http_open(&httpcontext, filename, false);
+	if (ret)
+		errorStr = "Failed to connect to url.";
 	content_type = httpcontext.content_type;
 	return ret;
 }

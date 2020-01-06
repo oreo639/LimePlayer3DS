@@ -1,5 +1,6 @@
 #ifndef __LIMEPLAYER_FILETRANS__
 #define __LIMEPLAYER_FILETRANS__
+#include <string>
 
 class FileTransport {
 	public:
@@ -19,6 +20,13 @@ class FileTransport {
 		virtual int64_t f_size();
 		virtual bool f_eof();
 
+		std::string GetError() {
+			if (errorStr)
+				return errorStr;
+			else
+				return "";
+		}
+
 		int content_type;
 
 		//int64_t fwrite(const void * ptr, int64_t size, int64_t nmemb);
@@ -26,6 +34,8 @@ class FileTransport {
 		//int fflush();
 
 		//String get_metadata(const char * field);
+		protected:
+			const char* errorStr = "";
 };
 
 #endif
