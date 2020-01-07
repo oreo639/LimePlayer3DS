@@ -58,6 +58,8 @@ App::App(void) {
 	if (!File::Exists("/3ds/limeplayer3ds/config.json")) {
 		mkdir("/3ds/", 0777);
 		mkdir("/3ds/limeplayer3ds/", 0777);
+		mkdir("/3ds/limeplayer3ds/Music", 0777);
+		mkdir("/3ds/limeplayer3ds/Themes", 0777);
 
 		File::Copy("romfs:/defaultcfg/config.json", "/3ds/limeplayer3ds/config.json");
 
