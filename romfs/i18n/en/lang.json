@@ -6,5 +6,6 @@
 	"TEXT_MENU_SETTINGS": "Settings",
 	"TEXT_MENU_CREDITS": "Credits",
 	"TEXT_MENU_CREDITS_ABOUT": "About:",
-	"TEXT_LIMEPLAYER": "LimePlayer3DS"
+	"TEXT_LIMEPLAYER": "LimePlayer3DS",
+	"TEXT_LIMEPLAYER_BUILD": "Build 0030 (beta)",
 }
