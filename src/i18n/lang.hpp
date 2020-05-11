@@ -1,6 +1,7 @@
 #ifndef __LIME_LANG_i18n__
 #define __LIME_LANG_i18n__
 
+#include <string>
 #include <unordered_map>
 
 #include <citro2d.h>

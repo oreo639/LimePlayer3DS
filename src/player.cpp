@@ -46,7 +46,7 @@
 static bool		skip = false;
 static bool		stop = true;
 static ndspWaveBuf	waveBuf[2];
-std::unique_ptr<Decoder> decoder;
+std::unique_ptr<Decoder> decoder = nullptr;
 
 namespace Player
 {

@@ -17,13 +17,7 @@
 
 #include <string.h>
 
-#include <FLAC/stream_decoder.h>
-
 #include "flac.hpp"
-#include "flac_callbacks/flac_callbacks.hpp"
-
-static FLAC__StreamDecoder	*dFlac;
-static callback_info		*cFlac;
 
 FlacDecoder::FlacDecoder(const char* filename) : Decoder("FLAC") {
 	dFlac = FLAC__stream_decoder_new();
@@ -43,14 +37,14 @@ FlacDecoder::FlacDecoder(const char* filename) : Decoder("FLAC") {
 
 	FLAC__stream_decoder_process_until_end_of_metadata(dFlac);
 
-	this->IsInit = true;
+	mIsInit = true;
 }
 
 FlacDecoder::~FlacDecoder(void) {
 	FLAC__stream_decoder_finish(dFlac);
 	FLAC__stream_decoder_delete(dFlac);
 	delete cFlac;
-	this->IsInit = false;
+	mIsInit = false;
 }
 
 void FlacDecoder::Info(metaInfo_t* Meta) {

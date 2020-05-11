@@ -1,6 +1,8 @@
 #ifndef __GUICTR_LIME_2D__
 #define __GUICTR_LIME_2D__
 
+#include <string>
+
 #include <citro3d.h>
 #include <citro2d.h>
 

@@ -2,6 +2,7 @@
 #define __LP_MENU_HPP__
 
 #include <memory>
+#include <string>
 
 #include <3ds.h>
 #include <citro3d.h>

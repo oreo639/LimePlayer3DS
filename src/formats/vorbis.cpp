@@ -17,17 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <tremor/ivorbiscodec.h>
-#include <tremor/ivorbisfile.h>
-
 #include "vorbis.hpp"
-
-static OggVorbis_File		vorbisFile;
-static vorbis_info		*vi;
-static FILE			*f;
-static const size_t		buffSize = 8 * 4096;
-
-uint64_t fillVorbisBuffer(char* bufferOut);
 
 VorbisDecoder::VorbisDecoder(const char* filename) : Decoder("Vorbis") {
 	if((f = fopen(filename, "rb")) == NULL)
@@ -39,13 +29,13 @@ VorbisDecoder::VorbisDecoder(const char* filename) : Decoder("Vorbis") {
 	if((vi = ov_info(&vorbisFile, -1)) == NULL)
 		return;
 	
-	this->IsInit = true;
+	mIsInit = true;
 }
 
 VorbisDecoder::~VorbisDecoder(void) {
 	ov_clear(&vorbisFile);
 	fclose(f);
-	this->IsInit = false;
+	mIsInit = false;
 }
 
 void VorbisDecoder::Info(metaInfo_t* Meta) {
@@ -95,23 +85,7 @@ int VorbisDecoder::Channels(void)
 	return vi->channels;
 }
 
-int isVorbis(const char *in)
-{
-	FILE *ft = fopen(in, "r");
-	OggVorbis_File testvf;
-	int err;
-
-	if(ft == NULL)
-		return -1;
-
-	err = ov_test(ft, &testvf, NULL, 0);
-
-	ov_clear(&testvf);
-	fclose(ft);
-	return err;
-}
-
-uint64_t fillVorbisBuffer(char* bufferOut)
+uint64_t VorbisDecoder::fillVorbisBuffer(char* bufferOut)
 {
 	uint64_t samplesRead = 0;
 	int samplesToRead = buffSize;
@@ -138,4 +112,20 @@ uint64_t fillVorbisBuffer(char* bufferOut)
 	}
 
 	return samplesRead / sizeof(int16_t);
+}
+
+int isVorbis(const char *in)
+{
+	FILE *ft = fopen(in, "r");
+	OggVorbis_File testvf;
+	int err;
+
+	if(ft == NULL)
+		return -1;
+
+	err = ov_test(ft, &testvf, NULL, 0);
+
+	ov_clear(&testvf);
+	fclose(ft);
+	return err;
 }

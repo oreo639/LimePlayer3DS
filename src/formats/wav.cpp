@@ -15,13 +15,8 @@
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #define DR_WAV_IMPLEMENTATION
-#include <dr_libs/dr_wav.h>
 
 #include "wav.hpp"
-
-static const size_t	buffSize	= 16 * 1024;
-static drwav*		pWav		= NULL;
-static uint32_t		wavprogress; //credit tangerine
 
 WavDecoder::WavDecoder(const char* filename) : Decoder("Wave") {
 	pWav = drwav_open_file(filename);
@@ -29,12 +24,12 @@ WavDecoder::WavDecoder(const char* filename) : Decoder("Wave") {
 	if (pWav == NULL)
 		return;
 	
-	this->IsInit = true;
+	mIsInit = true;
 }
 
 WavDecoder::~WavDecoder(void) {
 	drwav_close(pWav);
-	this->IsInit = false;
+	mIsInit = false;
 }
 
 void WavDecoder::Info(metaInfo_t* Meta) {

@@ -17,12 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <opusfile.h>
-
 #include "opus.hpp"
-
-static OggOpusFile*		opusFile;
-static const size_t		buffSize = 32 * 1024;
 
 uint64_t fillOpusBuffer(int16_t* bufferOut);
 
@@ -65,12 +60,12 @@ OpusDecoder::OpusDecoder(FileTransport* transport) : Decoder("Opus") {
 	if((err = op_current_link(opusFile)) < 0)
 		return;
 	
-	this->IsInit = true;
+	mIsInit = true;
 }
 
 OpusDecoder::~OpusDecoder(void) {
 	op_free(opusFile);
-	this->IsInit = false;
+	mIsInit = false;
 }
 
 void ProcessInfo(const OpusTags *comment, metaInfo_t* Meta) {
@@ -134,16 +129,7 @@ int OpusDecoder::Channels(void)
 	return 2;
 }
 
-int isOpus(const char* in)
-{
-	int err = 0;
-	OggOpusFile* opusTest = op_test_file(in, &err);
-
-	op_free(opusTest);
-	return err;
-}
-
-uint64_t fillOpusBuffer(int16_t* bufferOut)
+uint64_t OpusDecoder::fillOpusBuffer(int16_t* bufferOut)
 {
 	uint64_t samplesRead = 0;
 	int samplesToRead = buffSize;
@@ -167,4 +153,13 @@ uint64_t fillOpusBuffer(int16_t* bufferOut)
 	}
 
 	return samplesRead;
+}
+
+int isOpus(const char* in)
+{
+	int err = 0;
+	OggOpusFile* opusTest = op_test_file(in, &err);
+
+	op_free(opusTest);
+	return err;
 }

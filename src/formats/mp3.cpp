@@ -14,17 +14,11 @@
 *    You should have received a copy of the GNU General Public License
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <mpg123.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "mp3.hpp"
-
-static size_t		buffSize;
-static mpg123_handle*	mh;
-static long		rate;
-static int		channels;
 
 static ssize_t replace_read(void * file, void * buffer, size_t length)
 {
@@ -74,14 +68,14 @@ Mp3Decoder::Mp3Decoder(FileTransport *ftrans) : Decoder("Mp3") {
 	buffSize = mpg123_outblock(mh) * 16;
 
 	
-	this->IsInit = true;
+	mIsInit = true;
 }
 
 Mp3Decoder::~Mp3Decoder(void) {
 	mpg123_close(mh);
 	mpg123_delete(mh);
 	mpg123_exit();
-	this->IsInit = false;
+	mIsInit = false;
 }
 
 void Mp3Decoder::Info(metaInfo_t* Meta) {

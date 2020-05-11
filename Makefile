@@ -36,8 +36,8 @@ APP_TITLE           :=	LimePlayer3DS
 APP_DESCRIPTION     :=	Graphical music player for mp3, midi, and more.
 APP_AUTHOR          :=	LimePlayer Team
 
-SOURCES		:=	src src/formats \
-			src/formats/stream \
+SOURCES		:=	src \
+			src/formats \
 			src/network \
 			src/transport \
 			src/gui \
@@ -92,8 +92,9 @@ endif
 #---------------------------------------------------------------------------------
 ARCH	:=	-march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft
 
-CFLAGS	:=	-Wall -mword-relocations \
+CFLAGS	:=	-Wall -Wextra -mword-relocations \
 			-fomit-frame-pointer -ffunction-sections \
+			-Wno-unused-parameter \
 			$(ARCH)
 
 ifdef RELEASE
@@ -109,7 +110,7 @@ CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS \
 		${CUSTOMFLAGS}
 #`curl-config --cflags` \
 
-CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++17
+CXXFLAGS	:= $(CFLAGS) -fno-rtti -std=gnu++17
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)

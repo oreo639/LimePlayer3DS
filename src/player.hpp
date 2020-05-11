@@ -1,6 +1,7 @@
 #ifndef __LIME_PLAYER_H__
 #define __LIME_PLAYER_H__
 
+#include <string>
 #include <memory>
 
 #include "settings.hpp"
@@ -40,19 +41,19 @@ enum Format {
 class Decoder {
 	public:
 		// Decoder interface
-		Decoder(const char* name) : DecoderName(name) {}
+		Decoder(const char* name) : decoderName(name) {}
 
-		Decoder(void) {}
+		Decoder() {}
 
 		virtual ~Decoder() {}
 
-		bool GetIsInit(void) {return IsInit;}
+		bool GetIsInit(void) {return mIsInit;}
 
-		const char* GetErrInfo(void) {return ErrInfo;}
+		const char* GetErrInfo(void) {return mErrInfo;}
 
-		virtual std::string GetDecoderName(void) {
-			if (DecoderName)
-				return DecoderName;
+		std::string GetDecoderName(void) {
+			if (decoderName)
+				return decoderName;
 			else
 				return "";
 		}
@@ -60,27 +61,29 @@ class Decoder {
 		// Allow the decoder to specify if the medadata needs to be updated.
 		virtual bool AllowUpdateInfo() {return false;}
 
-		virtual void Info(metaInfo_t* Meta);
+		virtual void Info(metaInfo_t* Meta) = 0;
 		
-		virtual uint32_t Position(void);
+		virtual uint32_t Position(void) = 0;
 		
-		virtual uint32_t Length(void);
+		virtual uint32_t Length(void) = 0;
 		
-		virtual void Seek(uint32_t location);
+		virtual void Seek(uint32_t location) = 0;
 		
-		virtual uint32_t Decode(void* buffer);
+		virtual uint32_t Decode(void* buffer) = 0;
 		
-		virtual uint32_t Samplerate(void);
+		virtual uint32_t Samplerate(void) = 0;
 		
-		virtual uint32_t Buffsize(void);
+		virtual uint32_t Buffsize(void) = 0;
 		
-		virtual int Channels(void);
+		virtual int Channels(void) = 0;
 
 	protected:
-		bool IsInit = 0;
+		bool mIsInit = 0;
 
-		const char* ErrInfo;
-		const char* DecoderName = "Unknown";
+		const char* mErrInfo;
+
+	private:
+		const char* decoderName = "Unknown";
 };
 
 namespace PlayerInterface {

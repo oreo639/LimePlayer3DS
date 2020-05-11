@@ -1,6 +1,8 @@
 #ifndef DECODER_WAV_H
 #define DECODER_WAV_H
 
+#include <dr_libs/dr_wav.h>
+
 #include "player.hpp"
 
 class WavDecoder : public Decoder {
@@ -24,6 +26,10 @@ class WavDecoder : public Decoder {
 		uint32_t Buffsize(void) override;
 		
 		int Channels(void) override;
+	private:
+		const size_t buffSize = 16 * 1024;
+		drwav*       pWav = NULL;
+		uint32_t     wavprogress;
 };
 
 #endif

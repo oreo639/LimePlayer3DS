@@ -14,24 +14,13 @@
 *    You should have received a copy of the GNU General Public License
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <wildmidi_lib.h>
-
 #include <memory>
-#include <string>
 
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 
 #include "midi.hpp"
-
-#define MIDISAMPLERATE 32000
-#define SAMPLESPERBUF 4096
-#define BYTESPERSAMPLE 4
-
-static midi		*wMidi;
-static struct _WM_Info	*midiInfo;
-static const size_t	buffSize = SAMPLESPERBUF*BYTESPERSAMPLE;
 
 MidiDecoder::MidiDecoder(const char* filename, const char* midicfg) : Decoder("Midi") {
 	int res = WildMidi_Init(midicfg, MIDISAMPLERATE, 0);
@@ -40,13 +29,13 @@ MidiDecoder::MidiDecoder(const char* filename, const char* midicfg) : Decoder("M
 	if (!wMidi || res != 0)
 		return;
 
-	this->IsInit = true;
+	mIsInit = true;
 }
 
 MidiDecoder::~MidiDecoder(void) {
 	WildMidi_Close(wMidi);
 	WildMidi_Shutdown();
-	this->IsInit = false;
+	mIsInit = false;
 }
 
 void MidiDecoder::Info(metaInfo_t* Meta) {

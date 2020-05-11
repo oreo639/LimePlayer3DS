@@ -7,7 +7,6 @@
 class NetTransport : public FileTransport {
 	public:
 		NetTransport() {}
-		//FileTransport(const char* filename) {f_open(filename, "rb");}
 
 		~NetTransport() {f_close();}
 
@@ -22,11 +21,6 @@ class NetTransport : public FileTransport {
 		int64_t f_size() override;
 		bool f_eof() override;
 
-		//int64_t fwrite(const void * ptr, int64_t size, int64_t nmemb);
-		//int ftruncate(int64_t length);
-		//int fflush();
-
-		//String get_metadata(const char * field);
 	private:
 		http_context httpcontext;
 		bool ctx_eof;
