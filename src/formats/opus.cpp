@@ -81,7 +81,7 @@ void ProcessInfo(const OpusTags *comment, metaInfo_t* Meta) {
 		Meta->Artist.assign("(No Author-Opus)");
 }
 
-void OpusDecoder::Info(metaInfo_t* Meta) {
+void OpusDecoder::UpdateInfo(metaInfo_t* Meta) {
 	const OpusTags *comment = op_tags(opusFile, -1);
 
 	const char *old_title = Meta->Title.c_str();
@@ -89,6 +89,12 @@ void OpusDecoder::Info(metaInfo_t* Meta) {
 
 	if (!new_title || (old_title && !strcmp(old_title, new_title)))
         	return;
+
+	ProcessInfo(comment, Meta);
+}
+
+void OpusDecoder::GetInfo(metaInfo_t* Meta) {
+	const OpusTags *comment = op_tags(opusFile, -1);
 
 	ProcessInfo(comment, Meta);
 }

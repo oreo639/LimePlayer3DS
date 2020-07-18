@@ -11,7 +11,7 @@ class WavDecoder : public Decoder {
 		
 		~WavDecoder(void);
 		
-		void Info(metaInfo_t* Meta) override;
+		void GetInfo(metaInfo_t* Meta) override;
 		
 		uint32_t Position(void) override;
 		

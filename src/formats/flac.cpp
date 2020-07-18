@@ -47,7 +47,7 @@ FlacDecoder::~FlacDecoder(void) {
 	mIsInit = false;
 }
 
-void FlacDecoder::Info(metaInfo_t* Meta) {
+void FlacDecoder::GetInfo(metaInfo_t* Meta) {
 	Meta->Artist.assign("(No Author-Flac)", strlen("(No Author-Flac)"));
 }
 

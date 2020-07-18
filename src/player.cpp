@@ -251,7 +251,7 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 
 	if (decoder != nullptr) {
 		bool lastbuf = false;
-		decoder->Info(&playbackInfo->fileMeta);
+		decoder->GetInfo(&playbackInfo->fileMeta);
 
 		int16_t* audioBuffer = (int16_t*)linearAlloc((decoder->Buffsize() * sizeof(int16_t)) * 2);
 
@@ -293,7 +293,7 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 				continue;
 
 			if (decoder->AllowUpdateInfo())
-				decoder->Info(&playbackInfo->fileMeta);
+				decoder->UpdateInfo(&playbackInfo->fileMeta);
 
 			LightEvent_Wait(&soundEvent);
 		}

@@ -12,7 +12,11 @@ class VorbisDecoder : public Decoder {
 
 		~VorbisDecoder(void);
 
-		void Info(metaInfo_t* Meta) override;
+		bool AllowUpdateInfo() override {return true;}
+
+		void UpdateInfo(metaInfo_t* Meta) override;
+
+		void GetInfo(metaInfo_t* Meta) override;
 
 		uint32_t Position(void) override;
 

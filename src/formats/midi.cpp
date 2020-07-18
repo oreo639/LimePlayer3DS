@@ -38,7 +38,7 @@ MidiDecoder::~MidiDecoder(void) {
 	mIsInit = false;
 }
 
-void MidiDecoder::Info(metaInfo_t* Meta) {
+void MidiDecoder::GetInfo(metaInfo_t* Meta) {
 	midiInfo = WildMidi_GetInfo(wMidi);	
 	if (midiInfo && midiInfo->copyright)
 		Meta->Artist.assign(midiInfo->copyright);

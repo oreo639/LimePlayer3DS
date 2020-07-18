@@ -78,16 +78,11 @@ Mp3Decoder::~Mp3Decoder(void) {
 	mIsInit = false;
 }
 
-void Mp3Decoder::Info(metaInfo_t* Meta) {
-	mpg123_id3v1* v1;
+void Mp3Decoder::GetInfo(metaInfo_t* Meta) {
 	mpg123_id3v2* v2;
 	if (mpg123_meta_check(mh) & MPG123_ID3) {
-		mpg123_id3(mh, &v1, &v2);
-	
-		/*I will deal with this later.*/
-		//if (v1->artist) {
-		//	infoOut->fileMeta->authorCpright = strdup(v1->artist);
-		//}
+		mpg123_id3(mh, NULL, &v2);
+
 		if (mpg123_strlen(v2->artist, true)) {
 			Meta->Artist.assign(v2->artist->p);
 		}

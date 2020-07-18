@@ -12,7 +12,7 @@ class FlacDecoder : public Decoder {
 
 		~FlacDecoder(void);
 
-		void Info(metaInfo_t* Meta) override;
+		void GetInfo(metaInfo_t* Meta) override;
 
 		uint32_t Position(void) override;
 

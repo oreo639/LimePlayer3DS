@@ -61,7 +61,9 @@ class Decoder {
 		// Allow the decoder to specify if the medadata needs to be updated.
 		virtual bool AllowUpdateInfo() {return false;}
 
-		virtual void Info(metaInfo_t* Meta) = 0;
+		virtual void UpdateInfo(metaInfo_t* Meta) {};
+
+		virtual void GetInfo(metaInfo_t* Meta) = 0;
 		
 		virtual uint32_t Position(void) = 0;
 		

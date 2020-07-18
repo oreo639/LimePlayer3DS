@@ -38,15 +38,35 @@ VorbisDecoder::~VorbisDecoder(void) {
 	mIsInit = false;
 }
 
-void VorbisDecoder::Info(metaInfo_t* Meta) {
-	const char *ret = NULL;
-	vorbis_comment *comment = ov_comment(&vorbisFile, -1);
+void ProcessInfo(vorbis_comment *comment, metaInfo_t* Meta) {
+	const char *ret;
+
+	if ((ret = vorbis_comment_query(comment, const_cast<char*>("title"), 0)))
+		Meta->Title.assign(ret);
 
 	if ((ret = vorbis_comment_query(comment, const_cast<char*>("artist"), 0)))
 		Meta->Artist.assign(ret);
 
 	if (Meta->Artist.empty())
 		Meta->Artist.assign("(No Author-Vorbis)");
+}
+
+void VorbisDecoder::UpdateInfo(metaInfo_t* Meta) {
+	vorbis_comment *comment = ov_comment(&vorbisFile, -1);
+
+	const char *old_title = Meta->Title.c_str();
+	const char *new_title = vorbis_comment_query(comment, const_cast<char*>("title"), 0);
+
+	if (!new_title || (old_title && !strcmp(old_title, new_title)))
+        	return;
+
+	ProcessInfo(comment, Meta);
+}
+
+void VorbisDecoder::GetInfo(metaInfo_t* Meta) {
+	vorbis_comment *comment = ov_comment(&vorbisFile, -1);
+
+	ProcessInfo(comment, Meta);
 }
 
 uint32_t VorbisDecoder::Position(void) {
