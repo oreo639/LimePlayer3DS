@@ -47,6 +47,7 @@ static bool		skip = false;
 static bool		stop = true;
 static ndspWaveBuf	waveBuf[2];
 std::unique_ptr<Decoder> decoder = nullptr;
+LightEvent soundEvent;
 
 namespace Player
 {
@@ -94,6 +95,7 @@ bool PlayerInterface::TogglePlayback(void) {
 void PlayerInterface::ExitPlayback(void) {
 	DEBUG("Exit Playback called!\n");
 	stop = true;
+	LightEvent_Signal(&soundEvent);
 }
 
 /**
@@ -205,9 +207,20 @@ std::string PlayerInterface::GetDecoderName(void) {
 		return "";
 }
 
+static inline void audioCallback(void *const nul_) {
+	(void)nul_;  // Unused
+
+	if(stop || skip) { // Quit flag
+		return;
+	}
+    
+	LightEvent_Signal(&soundEvent);
+}
+
 void Player::Play(playbackInfo_t* playbackInfo) {
 	std::unique_ptr<FileTransport> transport = nullptr;
 	skip = false;
+	LightEvent_Init(&soundEvent, RESET_ONESHOT);
 
 	int filetype = File::GetFileType(playbackInfo->filepath);
 
@@ -247,6 +260,7 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 		ndspChnSetInterp(MUSIC_CHANNEL, decoder->Channels() == 2 ? NDSP_INTERP_POLYPHASE : NDSP_INTERP_LINEAR);
 		ndspChnSetRate(MUSIC_CHANNEL, decoder->Samplerate());
 		ndspChnSetFormat(MUSIC_CHANNEL, decoder->Channels() == 2 ? NDSP_FORMAT_STEREO_PCM16 : NDSP_FORMAT_MONO_PCM16);
+		ndspSetCallback(audioCallback, NULL);
 
 		memset(waveBuf, 0, sizeof(waveBuf));
 		waveBuf[0].data_vaddr = audioBuffer;
@@ -254,11 +268,6 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 
 		while(!stop && !skip)
 		{
-			svcSleepThread(100 * 1000);
-
-			if (decoder->AllowUpdateInfo())
-				decoder->Info(&playbackInfo->fileMeta);
-
 			for (auto& buf : waveBuf) {
 				if(buf.status == NDSP_WBUF_DONE || buf.status == NDSP_WBUF_FREE)
 				{
@@ -282,6 +291,11 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 
 			if (ndspChnIsPaused(MUSIC_CHANNEL) == true || lastbuf == true)
 				continue;
+
+			if (decoder->AllowUpdateInfo())
+				decoder->Info(&playbackInfo->fileMeta);
+
+			LightEvent_Wait(&soundEvent);
 		}
 
 		linearFree(audioBuffer);
