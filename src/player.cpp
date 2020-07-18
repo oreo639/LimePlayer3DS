@@ -243,7 +243,6 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 		int16_t* audioBuffer = (int16_t*)linearAlloc((decoder->Buffsize() * sizeof(int16_t)) * 2);
 
 		ndspChnReset(MUSIC_CHANNEL);
-		ndspChnWaveBufClear(MUSIC_CHANNEL);
 		ndspSetOutputMode(NDSP_OUTPUT_STEREO);
 		ndspChnSetInterp(MUSIC_CHANNEL, decoder->Channels() == 2 ? NDSP_INTERP_POLYPHASE : NDSP_INTERP_LINEAR);
 		ndspChnSetRate(MUSIC_CHANNEL, decoder->Samplerate());
@@ -252,31 +251,6 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 		memset(waveBuf, 0, sizeof(waveBuf));
 		waveBuf[0].data_vaddr = audioBuffer;
 		waveBuf[1].data_vaddr = audioBuffer + decoder->Buffsize();
-		for (auto& buf : waveBuf) {
-			buf.nsamples = decoder->Decode(buf.data_pcm16) / decoder->Channels();
-			if(read <= 0)
-			{
-				buf.status = NDSP_WBUF_DONE;
-				lastbuf = true;
-				continue;
-			}
-			DSP_FlushDataCache(buf.data_pcm16, decoder->Buffsize() * sizeof(int16_t));
-			ndspChnWaveBufAdd(MUSIC_CHANNEL, &buf);
-		}
-
-		/**
-		 * There may be a chance that the music has not started by the time we get
-		 * to the while loop. So we ensure that music has started here.
-		 */
-		for(int i = 0; ndspChnIsPlaying(MUSIC_CHANNEL) == false; i++) {
-			svcSleepThread(1000000); // Wait one millisecond.
-			if(i > 5 * 1000) { // Wait 5 seconds
-				DEBUG("Chnn wait imeout.\n");
-				stop = true;
-				Error::Add(DECODER_INIT_TIMEOUT);
-				goto player_exit;
-			}
-		}
 
 		while(!stop && !skip)
 		{
@@ -285,16 +259,8 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 			if (decoder->AllowUpdateInfo())
 				decoder->Info(&playbackInfo->fileMeta);
 
-	
-			/* When the last buffer has finished playing, break. */
-			if (lastbuf == true)
-				break;
-
-			if (ndspChnIsPaused(MUSIC_CHANNEL) == true || lastbuf == true)
-				continue;
-
 			for (auto& buf : waveBuf) {
-				if(buf.status == NDSP_WBUF_DONE)
+				if(buf.status == NDSP_WBUF_DONE || buf.status == NDSP_WBUF_FREE)
 				{
 					size_t read = decoder->Decode(buf.data_pcm16);
 
@@ -303,17 +269,23 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 						lastbuf = true;
 						continue;
 					}
-					else if(read < decoder->Buffsize())
-						buf.nsamples = read / decoder->Channels();
+					buf.nsamples = read / decoder->Channels();
 		
 					ndspChnWaveBufAdd(MUSIC_CHANNEL, &buf);
 				}
 				DSP_FlushDataCache(buf.data_pcm16, decoder->Buffsize() * sizeof(int16_t));
 			}
+
+			/* When the last buffer has finished playing, break. */
+			if (lastbuf == true)
+				break;
+
+			if (ndspChnIsPaused(MUSIC_CHANNEL) == true || lastbuf == true)
+				continue;
 		}
-player_exit:
+
 		linearFree(audioBuffer);
-		ndspChnWaveBufClear(MUSIC_CHANNEL);
+		ndspChnReset(MUSIC_CHANNEL);
 		ClearMetadata(&playbackInfo->fileMeta);
 		DEBUG("Playback complete.\n");
 		decoder = nullptr;
