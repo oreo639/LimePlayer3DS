@@ -1,8 +1,8 @@
-romfs/gfx
-libsbuild
-tmplibs
-build
-out
+romfs/gfx/
+libsbuild/
+tmplibs/
+build/
+out/
 *.3dsx
 *.cia
 *.smdh
