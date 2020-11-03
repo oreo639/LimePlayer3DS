@@ -85,6 +85,7 @@ void PlayerInterface::ThreadMainFunct(void *input) {
  */
 bool PlayerInterface::TogglePlayback(void) {
 	bool paused = ndspChnIsPaused(MUSIC_CHANNEL);
+	DEBUG("Playback %s.\n", !paused ? "paused" : "unpaused");
 	ndspChnSetPaused(MUSIC_CHANNEL, !paused);
 	return !paused;
 }
@@ -102,7 +103,9 @@ void PlayerInterface::ExitPlayback(void) {
  * Skips to the next song if playlist. Otherwise, the music will exit.
  */
 void PlayerInterface::SkipPlayback(void) {
+	DEBUG("Exit Playback called!\n");
 	skip = true;
+	LightEvent_Signal(&soundEvent);
 }
 
 /**
