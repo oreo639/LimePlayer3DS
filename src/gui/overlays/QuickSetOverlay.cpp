@@ -5,9 +5,10 @@
 
 enum {
 	SELMENU_SETTINGS = 0,
-	SELMENU_RADIO,
-	SELMENU_GLOBE,
-	SELMENU_CREDITS
+//	SELMENU_RADIO,
+//	SELMENU_GLOBE,
+	SELMENU_CREDITS,
+	SELMENU_MAX,
 };
 
 #define MENU_ICON_HORIZONTAL 100
@@ -38,17 +39,21 @@ void QuickSetOverlay::drawBottom() const
 
 	if (selcursor == SELMENU_SETTINGS)
 		Gui::DrawSolidRectangle(20, MENU_ICON_HORIZONTAL, 60, 60, C2D_Color32(80, 217, 238, 90));
-	else if (selcursor == SELMENU_RADIO)
-		Gui::DrawSolidRectangle(80, MENU_ICON_HORIZONTAL, 60, 60, C2D_Color32(80, 217, 238, 90));
-	else if (selcursor == SELMENU_GLOBE)
-		Gui::DrawSolidRectangle(140, MENU_ICON_HORIZONTAL, 60, 60, C2D_Color32(80, 217, 238, 90));
 	else if (selcursor == SELMENU_CREDITS)
-		Gui::DrawSolidRectangle(200, MENU_ICON_HORIZONTAL, 60, 60, C2D_Color32(80, 217, 238, 90));
+		Gui::DrawSolidRectangle(80, MENU_ICON_HORIZONTAL, 60, 60, C2D_Color32(80, 217, 238, 90));
+
+	//else if (selcursor == SELMENU_RADIO)
+	//	Gui::DrawSolidRectangle(80, MENU_ICON_HORIZONTAL, 60, 60, C2D_Color32(80, 217, 238, 90));
+	//else if (selcursor == SELMENU_GLOBE)
+	//	Gui::DrawSolidRectangle(140, MENU_ICON_HORIZONTAL, 60, 60, C2D_Color32(80, 217, 238, 90));
+	//else if (selcursor == SELMENU_CREDITS)
+	//	Gui::DrawSolidRectangle(200, MENU_ICON_HORIZONTAL, 60, 60, C2D_Color32(80, 217, 238, 90));
 
 	Gui::DrawImage(sprites_menu_settings_idx, 20, MENU_ICON_HORIZONTAL);
-	Gui::DrawImage(sprites_menu_radio_idx, 80, MENU_ICON_HORIZONTAL);
-	Gui::DrawImage(sprites_menu_globe_idx, 140, MENU_ICON_HORIZONTAL);
-	Gui::DrawImage(sprites_menu_copyright_colored_idx, 200, MENU_ICON_HORIZONTAL);
+	Gui::DrawImage(sprites_menu_copyright_colored_idx, 82, MENU_ICON_HORIZONTAL);
+	//Gui::DrawImage(sprites_menu_radio_idx, 80, MENU_ICON_HORIZONTAL);
+	//Gui::DrawImage(sprites_menu_globe_idx, 140, MENU_ICON_HORIZONTAL);
+	//Gui::DrawImage(sprites_menu_copyright_colored_idx, 200, MENU_ICON_HORIZONTAL);
 }
 
 void QuickSetOverlay::update(touchPosition* touch)
@@ -61,7 +66,7 @@ void QuickSetOverlay::update(touchPosition* touch)
 		return;
 	}
 
-	if (kDown & KEY_RIGHT && selcursor < 3)
+	if (kDown & KEY_RIGHT && selcursor < SELMENU_MAX-1)
 		selcursor++;
 
 	if (kDown & KEY_LEFT && selcursor > 0)
