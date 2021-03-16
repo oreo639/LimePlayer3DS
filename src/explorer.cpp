@@ -37,7 +37,7 @@ bool entSort(DirEntry a, DirEntry b) {
 	return srt;
 }
 
-Explorer::Explorer(const std::string& root) : rootDir(root) {
+Explorer::Explorer(const std::string& root) : m_rootDir(root) {
 	this->LoadEntries();
 }
 
@@ -50,9 +50,9 @@ int Explorer::LoadEntries(void) {
 		return EXPATH_NOEXIST;
 	}
 
-	this->entries.clear();
+	m_entries.clear();
 
-	this->entries.emplace_back("..", true);
+	m_entries.emplace_back("..", true);
 
 	while((ep = readdir(dp)) != NULL) {
 		std::string filename(ep->d_name);
@@ -64,11 +64,11 @@ int Explorer::LoadEntries(void) {
 		if ((isDirectory = (ep->d_type == DT_DIR)))
 			filename.append("/");
 
-		if (filteredExt.empty() || isDirectory || filename.substr(filename.find_last_of(".") + 1) == filteredExt)
-			this->entries.emplace_back(filename, isDirectory);
+		if (m_filteredExt.empty() || isDirectory || filename.substr(filename.find_last_of(".") + 1) == m_filteredExt)
+			m_entries.emplace_back(filename, isDirectory);
 	}
 
-	std::sort(this->entries.begin(), this->entries.end(), entSort);
+	std::sort(m_entries.begin(), m_entries.end(), entSort);
 
 	closedir(dp);
 	return 0;
@@ -108,29 +108,29 @@ int Explorer::CheckDir(const PathType& path) {
 }
 
 std::string Explorer::Item(uint32_t index) {
-	if (index < this->entries.size())
-		return this->entries[index].filename;
+	if (index < m_entries.size())
+		return m_entries[index].filename;
 	return "";
 }
 
 bool Explorer::IsDir(uint32_t index) {
-	if (index < this->entries.size())
-		return this->entries[index].directory;
+	if (index < m_entries.size())
+		return m_entries[index].directory;
 	return false;
 }
 
 DirEntry Explorer::GetEntry(uint32_t index) {
-	return this->entries[index];
+	return m_entries[index];
 }
 
 std::string Explorer::GetAbsolutePath(uint32_t index) {
-	if (index < this->entries.size()) {
+	if (index < m_entries.size()) {
 		std::string absolutePath(this->GetCurrentDir());
 
 		if (absolutePath.find_last_of('/') != absolutePath.size()-1)
 			absolutePath.append("/");
 
-		absolutePath.append(this->entries[index].filename);
+		absolutePath.append(m_entries[index].filename);
 		return absolutePath;
 	}
 
@@ -138,7 +138,7 @@ std::string Explorer::GetAbsolutePath(uint32_t index) {
 }
 
 int Explorer::ChangeTo(uint32_t index) {
-	ChangeDir(this->entries[index].filename);
+	ChangeDir(m_entries[index].filename);
 	return this->LoadEntries();
 }
 
@@ -150,12 +150,12 @@ int Explorer::ChangeDir(const PathType path) {
 	if (this->CheckDir(GetCurrentDir() / path))
 		return EXPATH_NOEXIST;
 
-	relativePath /= path;
-	relativePath = this->NormalizePath(relativePath);
+	m_relativePath /= path;
+	m_relativePath = this->NormalizePath(m_relativePath);
 
 	ret = this->LoadEntries();
 
-	if (relativePath.empty())
+	if (m_relativePath.empty())
 		if (!ret)
 			ret = EXPATH_EXIT;
 

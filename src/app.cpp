@@ -143,9 +143,9 @@ void App::LibExit(void) {
 }
 
 int App::MainLoop() {
-	if (App::exit != true)
+	if (App::exit != true) {
 		return aptMainLoop();
-	else {
+	} else {
 		aptMainLoop();
 		return 0;
 	}

@@ -35,7 +35,7 @@ enum {
 
 class Explorer
 {
-	public:
+public:
 	Explorer(const std::string& root);
 	~Explorer() {}
 	std::string Item(uint32_t index);
@@ -45,19 +45,19 @@ class Explorer
 	int ChangeTo(uint32_t index);
 	int ChangeDir(const PathType path);
 	int BackDir(void);
-	void GotoRoot(void) {relativePath.clear(); LoadEntries();}
-	int Size(void) {return entries.size();}
-	std::string GetCurrentDir(void) {return rootDir / relativePath;}
-	void SetExtFilter(const std::string& extension) {filteredExt = extension;}
+	void GotoRoot(void) { m_relativePath.clear(); LoadEntries(); }
+	int Size(void) { return m_entries.size(); }
+	std::string GetCurrentDir(void) { return m_rootDir / m_relativePath; }
+	void SetExtFilter(const std::string& extension) {m_filteredExt = extension;}
 
-	private:
+private:
 	int LoadEntries(void);
 	PathType NormalizePath(const PathType& path);
 	int CheckDir(const PathType& path);
-	std::vector<DirEntry_t> entries;
-	PathType rootDir;
-	PathType relativePath;
-	std::string filteredExt;
+	std::vector<DirEntry_t> m_entries;
+	PathType m_rootDir;
+	PathType m_relativePath;
+	std::string m_filteredExt;
 };
 
 #endif

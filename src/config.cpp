@@ -34,8 +34,7 @@
 #define SETTING_LANGUAGE "language"
 
 
-void parse_entries(json_t* entries_elem, settings_t* todo_config)
-{
+void parse_entries(json_t* entries_elem, settings_t* todo_config) {
 	if (json_is_array(entries_elem)) {
 		size_t entries_number = json_array_size(entries_elem);
 
@@ -82,8 +81,7 @@ void parse_entries(json_t* entries_elem, settings_t* todo_config)
 	}
 }
 
-void parse_options(json_t* entries_elem, settings_t* todo_config)
-{
+void parse_options(json_t* entries_elem, settings_t* todo_config) {
 	const char *key;
 	json_t *value;
 	todo_config->language = 0;
@@ -117,8 +115,7 @@ void parse_options(json_t* entries_elem, settings_t* todo_config)
 	free(iter);
 }
 
-void parse_station(json_t* entries_elem, std::string* url)
-{
+void parse_station(json_t* entries_elem, std::string* url) {
 	const char *key;
 	json_t *value;
 

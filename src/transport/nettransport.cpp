@@ -5,25 +5,25 @@
 #include "nettransport.hpp"
 
 int NetTransport::f_open(const char *filename, const char *mode) {
-	int ret = http_open(&httpcontext, filename, false);
+	int ret = http_open(&m_httpcontext, filename, false);
 	if (ret)
-		errorStr = "Failed to connect to url.";
-	content_type = httpcontext.content_type;
+		m_errorStr = "Failed to connect to url.";
+	this->content_type = m_httpcontext.content_type;
 	return ret;
 }
 
 void NetTransport::f_close() {
-	if (httpcontext.is_init)
-		http_close(&httpcontext);
+	if (m_httpcontext.is_init)
+		http_close(&m_httpcontext);
 }
 
 int64_t NetTransport::f_read(void* ptr, int64_t size, int64_t nmemb) {
-	if (!httpcontext.is_init)
+	if (!m_httpcontext.is_init)
 		return -1;
 
-	ctx_eof = httpcDownloadData(&httpcontext.httpc, (u8*)ptr, nmemb*size, &httpcontext.readsize) != (s32)HTTPC_RESULTCODE_DOWNLOADPENDING;
+	m_ctx_eof = httpcDownloadData(&m_httpcontext.httpc, (u8*)ptr, nmemb*size, &m_httpcontext.readsize) != (s32)HTTPC_RESULTCODE_DOWNLOADPENDING;
 
-	return httpcontext.readsize;
+	return m_httpcontext.readsize;
 }
 
 
@@ -55,8 +55,8 @@ int64_t NetTransport::f_size() {
 }
 
 bool NetTransport::f_eof() {
-	if (!httpcontext.is_init)
+	if (!m_httpcontext.is_init)
 		return true;
 
-	return ctx_eof;
+	return m_ctx_eof;
 }
