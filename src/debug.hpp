@@ -1,10 +1,12 @@
-#include "macrotools.h"
-
 #ifndef __LP_DEBUG_H__
 #define __LP_DEBUG_H__
 
 #if !NODEBUG
-#define DEBUG(...) debug_perform("[" __FILE__ "] " STRINGIFY(__LINE__) ": " __VA_ARGS__)
+#define DSTRFY(X) DSTRFY2(X)    
+#define DSTRFY2(X) #X
+
+#define DEBUG(...) debug_perform("[" __FILE__ "] " DSTRFY(__LINE__) ": " __VA_ARGS__)
+
 
 void debug_init(bool use_file);
 

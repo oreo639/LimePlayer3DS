@@ -15,19 +15,12 @@
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <stdio.h>
-#include <malloc.h>
 
 #include "app.hpp"
 #include "gui.hpp"
-#include "error.hpp"
-#include "explorer.hpp"
-#include "player.hpp"
 #include "file.hpp"
 #include "config.hpp"
-#include "macrotools.h"
 #include "TitleScreen.hpp"
-#include "parsecfg/plsparse.hpp"
-#include "parsecfg/m3uparse.hpp"
 
 bool App::exit = false;
 playbackInfo_t App::pInfo;

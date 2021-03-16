@@ -1,2 +1,0 @@
-#define STRINGIFY(X) STRINGIFY2(X)    
-#define STRINGIFY2(X) #X
