@@ -17,6 +17,7 @@ typedef enum
 
 namespace File {
 	int GetFileType(const std::string& file);
+	int Move(const char* filein, const char* fileout);
 	int Copy(const char* filein, const char* fileout);
 	int Exists(const char* filepath);
 }

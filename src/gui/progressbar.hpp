@@ -11,10 +11,10 @@ class ProgressBar {
 		int SeekByClick(uint32_t clickX, uint32_t clickY);
 		void Draw(void);
 	private:
-		float locationX;
-		float locationY;
-		float width;
-		float height;
-		int progress;
-		uint32_t color;
+		float m_LocationX;
+		float m_LocationY;
+		float m_Width;
+		float m_Height;
+		int m_Progress;
+		uint32_t m_Color;
 };

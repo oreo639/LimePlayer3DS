@@ -17,11 +17,11 @@ void debug_perform(const char* fmt, ...);
 #pragma message("Note: Debug strings are disabled.")
 #define DEBUG(...)
 
-static void debug_init(bool use_file) {};
+static inline void debug_init(bool use_file) {};
 
-static void debug_exit(void) {};
+static inline void debug_exit(void) {};
 
-static void debug_perform(const char* fmt, ...) {};
+static inline void debug_perform(const char* fmt, ...) {};
 
 #endif // if !NODEBUG
 #endif // ifndef __LP_DEBUG_H__

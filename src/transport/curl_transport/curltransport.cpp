@@ -4,11 +4,14 @@
 #include <stdlib.h>
 
 #include "debug.hpp"
+#include "content.hpp"
 
 #include "curltransport.hpp"
 
 int CurlTransport::f_open(const char *filename, const char *mode) {
 	fcurl_handle = fcurl_open(filename, mode);
+
+	content_type = CONTENT_MPEG3;
 
 	return fcurl_handle ? 0 : errno;
 }
@@ -58,7 +61,7 @@ int64_t CurlTransport::f_size() {
 
 bool CurlTransport::f_eof() {
 	if (!fcurl_handle)
-		return true;
+		return false;
 
 	return true;
 }

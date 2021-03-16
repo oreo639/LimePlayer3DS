@@ -88,6 +88,19 @@ int File::GetFileType(const std::string& filename) {
 	return -1; //Negetive means that the file is not officaly supported.
 }
 
+int File::Move(const char* filein, const char* fileout) {
+	if (!File::Exists(filein))
+		return 1;
+
+	if (File::Exists(fileout))
+		remove(fileout);
+
+	if (rename(filein, fileout))
+		return 2;
+
+	return 0;
+}
+
 int File::Copy(const char* filein, const char* fileout) {
 	FILE* fin = fopen(filein, "r");
 	int c;

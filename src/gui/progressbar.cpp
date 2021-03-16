@@ -1,7 +1,7 @@
 #include "progressbar.hpp"
 #include "color.hpp"
 
-ProgressBar::ProgressBar(float x, float y, float w, float h, uint32_t color) : locationX(x), locationY(y), width(w), height(h), color(color)
+ProgressBar::ProgressBar(float x, float y, float w, float h, uint32_t color) : m_LocationX(x), m_LocationY(y), m_Width(w), m_Height(h), m_Color(color)
 {
 
 }
@@ -13,31 +13,31 @@ ProgressBar::~ProgressBar()
 
 void ProgressBar::UpdateColor(uint32_t color)
 {
-	this->color = color;
+	m_Color = color;
 }
 
 void ProgressBar::UpdateSize(float x, float y)
 {
-	this->width = x;
-	this->height = y;
+	m_Width = x;
+	m_Height = y;
 }
 
 void ProgressBar::UpdateLocation(float x, float y)
 {
-	this->locationX = x;
-	this->locationY = y;
+	m_LocationX = x;
+	m_LocationY = y;
 }
 
 void ProgressBar::UpdateProgress(int percent)
 {
 	if (percent >= -1)
-		progress = percent;
+		m_Progress = percent;
 }
 
 int ProgressBar::SeekByClick(uint32_t clickX, uint32_t clickY)
 {
-	if ((clickX > locationX) && (clickY > locationY) && (clickX < locationX + width) && (clickY < locationY + height)) {
-		return (int)(((clickX-locationX)/width) * 100);
+	if ((clickX > m_LocationX) && (clickY > m_LocationY) && (clickX < m_LocationX + m_Width) && (clickY < m_LocationY + m_Height)) {
+		return (int)(((clickX-m_LocationX)/m_Width) * 100);
 	}
 
 	return -1;
@@ -45,9 +45,9 @@ int ProgressBar::SeekByClick(uint32_t clickX, uint32_t clickY)
 
 void ProgressBar::Draw(void)
 {
-	if (progress >= 0) {
-		Gui::DrawSolidRectangle(locationX, locationY,  width, height, COLOR_GRAY);
-		Gui::DrawSolidRectangle(locationX+1, locationY+1, (width-2) * (progress/100.0f), height-2, color);
+	if (m_Progress >= 0) {
+		Gui::DrawSolidRectangle(m_LocationX, m_LocationY, m_Width, m_Height, COLOR_GRAY);
+		Gui::DrawSolidRectangle(m_LocationX+1, m_LocationY+1, (m_Width-2) * (m_Progress/100.0f), m_Height-2, m_Color);
 	} else
-		Gui::DrawSolidRectangle(locationX, locationY,  width, height, COLOR_DARKGRAY);
+		Gui::DrawSolidRectangle(m_LocationX, m_LocationY, m_Width, m_Height, COLOR_DARKGRAY);
 }
