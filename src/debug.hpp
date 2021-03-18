@@ -7,7 +7,6 @@
 
 #define DEBUG(...) debug_perform("[" __FILE__ "] " DSTRFY(__LINE__) ": " __VA_ARGS__)
 
-
 void debug_init(bool use_file);
 
 void debug_exit(void);

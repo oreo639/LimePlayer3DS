@@ -98,9 +98,10 @@ CFLAGS	:=	-Wall -Wextra -mword-relocations \
 			$(ARCH)
 
 ifdef RELEASE
-	CFLAGS += -O3 -g
+	CFLAGS += -O3
+	NODEBUG := 1
 else
-	CFLAGS += -Og -ggdb
+	CFLAGS += -Og -g
 endif
 
 CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS \
