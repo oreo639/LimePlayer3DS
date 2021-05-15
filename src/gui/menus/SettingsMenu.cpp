@@ -5,6 +5,8 @@
 #include "error.hpp"
 #include "config.hpp"
 
+#define MAX_LIST 15
+
 static bool set_wm_config();
 static bool save_all_settings();
 

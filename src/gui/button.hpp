@@ -3,6 +3,7 @@
 class Button {
 	public:
 		Button(float x, float y, int imageid);
+		Button(float x, float y, float w, float h, char* string);
 		~Button();
 		void SetSize(float w, float h);
 		void SetLocation(float x, float y);
@@ -15,4 +16,5 @@ class Button {
 		float m_Width;
 		float m_Height;
 		int m_imageid;
+		char* m_str = NULL;
 };

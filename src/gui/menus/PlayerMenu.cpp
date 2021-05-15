@@ -9,6 +9,8 @@
 
 #include "QuickSetOverlay.hpp"
 
+#define MAX_LIST 14
+
 Thread thread = NULL;
 
 enum {
@@ -29,6 +31,16 @@ enum DrawControls {
 static int window = WINDOW_BROWSER;
 static int cursor = 1;
 static int seloffs = 0;
+
+struct {
+	float x;
+	float y;
+	float w;
+	float h;
+} topbut[2] = {
+	{0, 0, BOT_SCREEN_WIDTH/2, 15},
+	{BOT_SCREEN_WIDTH/2, 0, BOT_SCREEN_WIDTH/2, 15},
+};
 
 std::vector<ProgressBar> m_progressbars;
 std::vector<Button> m_buttons;
@@ -80,9 +92,9 @@ static int changeFile(const std::string &filepath, playbackInfo_t* playbackInfo)
 	return 0;
 }
 
-void List(const char* text, int row)
+void PrintDir(const char* text, int startpoint)
 {
-	Gui::PrintColor(text, 8.0f, row*12, 0.4f, 0.4f, 0xFF000000);
+	Gui::PrintColor(text, 8.0f, startpoint, 0.4f, 0.4f, 0xFF000000);
 }
 
 void PlayerMenu::fblist(int rows, int startpoint, float size) const
@@ -162,10 +174,14 @@ void PlayerMenu::drawTop() const
 void PlayerMenu::drawBottom() const
 {
 	if (window == WINDOW_BROWSER) {
-		menuList(cursor, seloffs, 15, 15, expInst->Size());
-		C2D_DrawRectSolid(0, 0, 0.5f, SCREEN_WIDTH, 15, C2D_Color32(119, 131, 147, 255));
-		List(expInst->GetCurrentDir().c_str(), 0);
-		PlayerMenu::fblist(expInst->Size(), 15, 15);
+		menuList(cursor, seloffs, 30, 15, expInst->Size());
+		Gui::DrawSolidRectangle(0, 15, BOT_SCREEN_WIDTH, 15, C2D_Color32(119, 131, 147, 255));
+		PrintDir(expInst->GetCurrentDir().c_str(), 15);
+		PlayerMenu::fblist(expInst->Size(), 30, 15);
+
+		Gui::DrawSolidRectangle(topbut[0].x, topbut[0].y, topbut[0].w, topbut[0].h, C2D_Color32(119, 131, 147, 255)); // For top buttons
+		Gui::PrintColor("Browser", 10, 0, 0.5f, 0.5f, 0xFF000000);
+		Gui::PrintColor("Controls", BOT_SCREEN_WIDTH/2 + 10, 0, 0.5f, 0.5f, 0xFFFFFFFF);
 	} else if (window == WINDOW_CONTROLS) {
 		m_buttons[CON_REWIND].Draw();
 		m_buttons[CON_STOP].Draw();
@@ -178,7 +194,11 @@ void PlayerMenu::drawBottom() const
 		Gui::Print("Position = " + std::to_string(PlayerInterface::GetTotalLength()) + "/" + std::to_string(PlayerInterface::GetCurrentPos()), 10.0f, 20.0f, 0.5f, 0.5f);
 		if (!PlayerInterface::GetTotalLength())
 			Gui::Print("Warn: Seeking not avalible for this file.", 10.0f, 40.0f, 0.5f, 0.5f);
-	}else
+
+		Gui::DrawSolidRectangle(topbut[1].x, topbut[1].y, topbut[1].w, topbut[1].h, C2D_Color32(119, 131, 147, 255)); // For top buttons
+		Gui::PrintColor("Browser", 10, 0, 0.5f, 0.5f, 0xFFFFFFFF);
+		Gui::PrintColor("Controls", BOT_SCREEN_WIDTH/2 + 10, 0, 0.5f, 0.5f, 0xFF000000);
+	} else
 		Gui::Print("window = " + std::to_string(window), 150.0f, 20.0f, 0.5f, 0.5f);
 }
 
@@ -259,6 +279,16 @@ void PlayerMenu::update(touchPosition* touch)
 			if (seekto > -1)
 				PlayerInterface::SeekSectionPercent(seekto);
 		}
+	}
+
+	if (kDown & KEY_TOUCH) {
+		int clickX = touch->px;
+		int clickY = touch->py;
+
+		if ((clickX > topbut[0].x) && (clickY > topbut[0].y) && (clickX < topbut[0].x + topbut[0].w) && (clickY < topbut[0].y + topbut[0].h))
+			window = WINDOW_BROWSER;
+		else if ((clickX > topbut[1].x) && (clickY > topbut[1].y) && (clickX < topbut[1].x + topbut[1].w) && (clickY < topbut[1].y + topbut[1].h))
+			window = WINDOW_CONTROLS;
 	}
 }
 

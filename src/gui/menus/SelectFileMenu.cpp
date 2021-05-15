@@ -1,6 +1,8 @@
 #include "SelectFileMenu.hpp"
 #include "gui.hpp"
 
+#define MAX_LIST 15
+
 static int cursor = 1;
 static int seloffs = 0;
 

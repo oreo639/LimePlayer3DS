@@ -15,7 +15,8 @@
 
 #define SCREEN_WIDTH  400
 #define SCREEN_HEIGHT 240
-#define MAX_LIST 15
+
+#define BOT_SCREEN_WIDTH 320
 
 namespace Gui {
 	void Init(settings_t* settings);
