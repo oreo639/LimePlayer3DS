@@ -3,7 +3,7 @@ LimePlayer3DS is a graphical music player for the 3ds with metadata parsing and 
 
 It checks for music in the `sdmc:/music` folder. If it doesn't exist then it just goes to `sdmc:/`, just like ctrmus. 
 
-The default path for midi patchsets is `/3ds/limeplayer3ds/dgguspat`.
+The default path for midi patchsets is `/3ds/limeplayer3ds/8mbgmpat/`.
 
 This path be changed in the config file located at `/3ds/limeplayer3ds/config.json` which should be created (if it doesn't already exist) upon launching the application.
 
