@@ -137,7 +137,7 @@ void drawBrowserPlayer(playbackInfo_t* info)
 PlayerMenu::PlayerMenu() {
 	expInst = std::make_unique<Explorer>("sdmc:/");
 	expInst->ChangeDir("music");
-	m_progressbars.emplace_back(40, 160, 240, 7, COLOR_LIMEGREEN);
+	m_progressbars.emplace_back(40, 160, 240, 10, COLOR_LIMEGREEN);
 	m_buttons.emplace_back(58, 203, sprites_player_rew_idx);
 	m_buttons.emplace_back(100, 203, sprites_player_stop_idx);
 	m_buttons.emplace_back(145, 203, sprites_player_play_idx);
