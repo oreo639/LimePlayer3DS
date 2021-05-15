@@ -20,6 +20,8 @@
 #include <stdio.h>
 #include <time.h>
 
+#include <citro2d.h>
+
 #include "gui.hpp"
 #include "app.hpp"
 #include "error.hpp"

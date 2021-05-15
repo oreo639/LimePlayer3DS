@@ -111,7 +111,7 @@ CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS \
 		${CUSTOMFLAGS}
 #`curl-config --cflags` \
 
-CXXFLAGS	:= $(CFLAGS) -fno-rtti -std=gnu++17
+CXXFLAGS	:= $(CFLAGS) -fno-rtti -std=gnu++17 -fno-exceptions
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)

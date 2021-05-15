@@ -6,6 +6,7 @@
 #include "menu.hpp"
 #include "explorer.hpp"
 #include "progressbar.hpp"
+#include "button.hpp"
 
 class PlayerMenu : public Menu
 {

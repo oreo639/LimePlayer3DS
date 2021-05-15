@@ -11,8 +11,6 @@
 
 Thread thread = NULL;
 
-std::vector<ProgressBar> progressbars;
-
 enum {
 	WINDOW_MIN = 0,
 	WINDOW_BROWSER = 0,
@@ -20,9 +18,20 @@ enum {
 	WINDOW_MAX
 };
 
+enum DrawControls {
+	CON_REWIND = 0,
+	CON_STOP,
+	CON_PLAYPAUSE,
+	CON_SKIP,
+	CON_FASTFOWARD,
+};
+
 static int window = WINDOW_BROWSER;
 static int cursor = 1;
 static int seloffs = 0;
+
+std::vector<ProgressBar> m_progressbars;
+std::vector<Button> m_buttons;
 
 static void exitPlayback(void)
 {
@@ -128,13 +137,18 @@ void drawBrowserPlayer(playbackInfo_t* info)
 PlayerMenu::PlayerMenu() {
 	expInst = std::make_unique<Explorer>("sdmc:/");
 	expInst->ChangeDir("music");
-	progressbars.emplace_back(40, 160, 240, 7, COLOR_LIMEGREEN);
+	m_progressbars.emplace_back(40, 160, 240, 7, COLOR_LIMEGREEN);
+	m_buttons.emplace_back(58, 203, sprites_player_rew_idx);
+	m_buttons.emplace_back(100, 203, sprites_player_stop_idx);
+	m_buttons.emplace_back(145, 203, sprites_player_play_idx);
+	m_buttons.emplace_back(187, 203, sprites_player_skip_idx);
+	m_buttons.emplace_back(229, 203, sprites_player_ffw_idx);
 }
 
 PlayerMenu::~PlayerMenu()
 {
 	exitPlayback();
-	progressbars.clear();
+	m_progressbars.clear();
 }
 
 void PlayerMenu::drawTop() const
@@ -153,19 +167,13 @@ void PlayerMenu::drawBottom() const
 		List(expInst->GetCurrentDir().c_str(), 0);
 		PlayerMenu::fblist(expInst->Size(), 15, 15);
 	} else if (window == WINDOW_CONTROLS) {
-		Gui::DrawImage(sprites_player_rew_idx, 58, 203);
-		Gui::DrawImage(sprites_player_stop_idx, 100, 203);
+		m_buttons[CON_REWIND].Draw();
+		m_buttons[CON_STOP].Draw();
+		m_buttons[CON_PLAYPAUSE].Draw();
+		m_buttons[CON_SKIP].Draw();
+		m_buttons[CON_FASTFOWARD].Draw();
 
-		if (PlayerInterface::IsPaused()) {
-			Gui::DrawImage(sprites_player_play_idx, 145, 203);
-		} else {
-			Gui::DrawImage(sprites_player_pause_idx, 145, 203);
-		}
-
-		Gui::DrawImage(sprites_player_skip_idx, 187, 203);
-		Gui::DrawImage(sprites_player_ffw_idx, 229, 203);
-
-		progressbars.at(0).Draw();
+		m_progressbars[0].Draw();
 
 		Gui::Print("Position = " + std::to_string(PlayerInterface::GetTotalLength()) + "/" + std::to_string(PlayerInterface::GetCurrentPos()), 10.0f, 20.0f, 0.5f, 0.5f);
 		if (!PlayerInterface::GetTotalLength())
@@ -181,9 +189,9 @@ void PlayerMenu::update(touchPosition* touch)
 	u32 kUp = hidKeysUp();
 
 	if (PlayerInterface::IsPlaying())
-		progressbars.at(0).UpdateProgress(PlayerInterface::GetCurrentPos()*100/PlayerInterface::GetTotalLength());
+		m_progressbars[0].UpdateProgress(PlayerInterface::GetCurrentPos()*100/PlayerInterface::GetTotalLength());
 	else
-		progressbars.at(0).UpdateProgress(-1);
+		m_progressbars[0].UpdateProgress(-1);
 
 	if (kDown & KEY_SELECT) {
 		addOverlay<QuickSetOverlay>();
@@ -226,8 +234,27 @@ void PlayerMenu::update(touchPosition* touch)
 		PlayerMenu::BrowserControls(touch);
 
 	if (window == WINDOW_CONTROLS) {
+		if (PlayerInterface::IsPaused()) {
+			m_buttons[CON_PLAYPAUSE].SetIcon(sprites_player_play_idx);
+		} else {
+			m_buttons[CON_PLAYPAUSE].SetIcon(sprites_player_pause_idx);
+		}
+
 		if (kDown & KEY_TOUCH) {
-			int seekto = progressbars[0].SeekByClick(touch->px, touch->py);
+			if (PlayerInterface::IsPlaying()) {
+				if (m_buttons[CON_REWIND].Update(touch->px, touch->py))
+					PlayerInterface::SeekSectionTime(PlayerInterface::GetCurrentTime()-15);
+				else if (m_buttons[CON_STOP].Update(touch->px, touch->py))
+					exitPlayback();
+				else if (m_buttons[CON_PLAYPAUSE].Update(touch->px, touch->py))
+					PlayerInterface::TogglePlayback();
+				else if (m_buttons[CON_SKIP].Update(touch->px, touch->py))
+					PlayerInterface::SkipPlayback();
+				else if (m_buttons[CON_FASTFOWARD].Update(touch->px, touch->py))
+					PlayerInterface::SeekSectionTime(PlayerInterface::GetCurrentTime()+15);
+			}
+
+			int seekto = m_progressbars[0].SeekByClick(touch->px, touch->py);
 
 			if (seekto > -1)
 				PlayerInterface::SeekSectionPercent(seekto);

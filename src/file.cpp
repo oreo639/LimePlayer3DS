@@ -110,12 +110,13 @@ int File::Copy(const char* filein, const char* fileout) {
 
 	FILE* fout = fopen(fileout, "w+");
 
-	if (!fout)
+	if (!fout) {
+		fclose(fin);
 		return 2;
-
-	while ((c = fgetc(fin)) && c != EOF) {
-		fputc(c, fout);
 	}
+
+	while ((c = fgetc(fin)) && c != EOF)
+		fputc(c, fout);
 
 	fclose(fin);
 	fclose(fout);

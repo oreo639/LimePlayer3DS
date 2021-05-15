@@ -16,10 +16,10 @@ void ProgressBar::UpdateColor(uint32_t color)
 	m_Color = color;
 }
 
-void ProgressBar::UpdateSize(float x, float y)
+void ProgressBar::UpdateSize(float w, float h)
 {
-	m_Width = x;
-	m_Height = y;
+	m_Width = w;
+	m_Height = h;
 }
 
 void ProgressBar::UpdateLocation(float x, float y)

@@ -5,7 +5,7 @@ class ProgressBar {
 		ProgressBar(float x, float y, float w, float h, uint32_t color);
 		~ProgressBar();
 		void UpdateColor(uint32_t color);
-		void UpdateSize(float x, float y);
+		void UpdateSize(float w, float h);
 		void UpdateLocation(float x, float y);
 		void UpdateProgress(int percent);
 		int SeekByClick(uint32_t clickX, uint32_t clickY);
