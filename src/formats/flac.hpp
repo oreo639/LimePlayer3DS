@@ -29,7 +29,7 @@ class FlacDecoder : public Decoder {
 		int Channels(void) override;
 	private:
 		FLAC__StreamDecoder *dFlac;
-		callback_info *cFlac;
+		flac_callback_info *cFlac;
 };
 
 //int isFlac(const char* in);

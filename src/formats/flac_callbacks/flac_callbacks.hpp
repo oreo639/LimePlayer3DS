@@ -5,7 +5,7 @@
 
 #define BUFTYPE_BITS 16
 
-typedef struct
+typedef struct flac_callback_info
 {
 	unsigned bits_per_sample = 0;
 	unsigned sample_rate = 0;
@@ -13,18 +13,11 @@ typedef struct
 	unsigned long total_samples = 0;
 
 	int32_t output_buffer[BUFFER_SIZE];
-	int32_t *write_pointer = nullptr;
-	unsigned samples_used = 0;
+	int32_t *write_pointer = NULL;
+	unsigned buffer_used = 0;
+} flac_callback_info;
 
-	void clear()
-	{
-		samples_used = 0;
-		memset(output_buffer, 0, sizeof(output_buffer));
-		write_pointer = &output_buffer[0];
-	}
-} callback_info;
-
-int FLAC_decode(FLAC__StreamDecoder* decoder, callback_info* cinfo, int16_t *buffer, int numSamples);
+int FLAC_decode(FLAC__StreamDecoder* decoder, flac_callback_info* cinfo, int16_t *buffer, int numSamples);
 
 
 // Callbacks

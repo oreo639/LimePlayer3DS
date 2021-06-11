@@ -21,7 +21,7 @@
 
 FlacDecoder::FlacDecoder(const char* filename) : Decoder("FLAC") {
 	dFlac = FLAC__stream_decoder_new();
-	cFlac = new callback_info;
+	cFlac = new flac_callback_info;
 
 	FLAC__StreamDecoderInitStatus ret;	
 	if((ret = FLAC__stream_decoder_init_file(dFlac,

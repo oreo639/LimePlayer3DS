@@ -48,11 +48,18 @@ static void convertBuffersGeneric(int32_t* src, int16_t* dst, unsigned count, un
 	}
 }
 
-int FLAC_decode(FLAC__StreamDecoder* decoder, callback_info* cinfo, int16_t *buffer, int numSamples) {
+static inline void callbackFrameClear(struct flac_callback_info* cinfo)
+{
+	cinfo->buffer_used = 0;
+	memset(cinfo->output_buffer, 0, sizeof(cinfo->output_buffer));
+	cinfo->write_pointer = &cinfo->output_buffer[0];
+}
+
+int FLAC_decode(FLAC__StreamDecoder* decoder, flac_callback_info* cinfo, int16_t *buffer, int numSamples) {
 	if (FLAC__stream_decoder_get_state(decoder) == FLAC__STREAM_DECODER_END_OF_STREAM)
 		return 0;
 
-	cinfo->clear();
+	callbackFrameClear(cinfo);
 
 	/* Try to decode a single frame of audio */
 	if (FLAC__stream_decoder_process_single(decoder) == false)
@@ -62,13 +69,13 @@ int FLAC_decode(FLAC__StreamDecoder* decoder, callback_info* cinfo, int16_t *buf
 	}
 
 	/* Copy data to audio buffer and if necessary, convert the data */
-	convertBuffersGeneric(cinfo->output_buffer, buffer, cinfo->samples_used, cinfo->bits_per_sample);
-	return cinfo->samples_used;
+	convertBuffersGeneric(cinfo->output_buffer, buffer, cinfo->buffer_used, cinfo->bits_per_sample);
+	return cinfo->buffer_used;
 }
 
 FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, const FLAC__int32 *const buffer[], void *client_data)
 {
-	callback_info *info = (callback_info*)client_data;
+	flac_callback_info *info = (flac_callback_info*)client_data;
 
 	if (info->channels != frame->header.channels ||
 		info->sample_rate != frame->header.sample_rate)
@@ -80,8 +87,8 @@ FLAC__StreamDecoderWriteStatus write_callback(const FLAC__StreamDecoder *decoder
 	{
 		for (unsigned channel = 0; channel < frame->header.channels; channel++)
 		{
-		*(info->write_pointer++) = buffer[channel][sample];
-		info->samples_used += 1;
+			*(info->write_pointer++) = buffer[channel][sample];
+			info->buffer_used += 1;
 		}
 	}
 
@@ -98,7 +105,7 @@ void error_callback(const FLAC__StreamDecoder *decoder, FLAC__StreamDecoderError
 
 void metadata_callback(const FLAC__StreamDecoder *decoder, const FLAC__StreamMetadata *metadata, void *client_data)
 {
-	callback_info *info = (callback_info*)client_data;
+	flac_callback_info *info = (flac_callback_info*)client_data;
 
 	if (metadata->type == FLAC__METADATA_TYPE_STREAMINFO)
 	{
