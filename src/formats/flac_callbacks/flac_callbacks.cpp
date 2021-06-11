@@ -17,7 +17,9 @@
 
 /* Based on https://github.com/audacious-media-player/audacious-plugins/tree/master/src/flac */
 
+#include <assert.h>
 #include <string.h>
+
 #include <FLAC/all.h>
 
 #include "flac_callbacks.hpp"
@@ -26,25 +28,25 @@
 /* This is a mix between squeeze_audio from audacious and convertBuffersGeneric from scummvm */
 static void convertBuffersGeneric(int32_t* src, int16_t* dst, unsigned count, unsigned res)
 {
+	assert(BUFTYPE_BITS == 16);
 	int32_t* rp = src;
+	//int8_t* wp1 = dst;
 	int16_t* wp2 = dst;
+	//int32_t* wp3 = dst;
 
 	if (res < BUFTYPE_BITS) {
 		const uint8_t kPower = (uint8_t)(BUFTYPE_BITS - res);
 
-		for (unsigned i = 0; i < count; i++) {
-			*wp2++ = static_cast<int16_t>(rp[i]) << kPower;
-		}
+		for (unsigned i = 0; i < count; i++)
+			*wp2++ = rp[i] << kPower;
 	} else if (res > BUFTYPE_BITS) {
 		const uint8_t kPower = (uint8_t)(res - BUFTYPE_BITS);
 
-		for (unsigned i = 0; i < count; i++) {
-			*wp2++ = static_cast<int16_t>(rp[i] >> kPower);
-		}
+		for (unsigned i = 0; i < count; i++)
+			*wp2++ = rp[i] >> kPower;
 	} else {
-		for (unsigned i = 0; i < count; i++) {
-			*wp2++ = static_cast<int16_t>(rp[i]);
-		}
+		for (unsigned i = 0; i < count; i++)
+			*wp2++ = rp[i];
 	}
 }
 
