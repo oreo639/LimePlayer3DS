@@ -260,7 +260,7 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 
 		ndspChnReset(MUSIC_CHANNEL);
 		ndspSetOutputMode(NDSP_OUTPUT_STEREO);
-		ndspChnSetInterp(MUSIC_CHANNEL, decoder->Channels() == 2 ? NDSP_INTERP_POLYPHASE : NDSP_INTERP_LINEAR);
+		ndspChnSetInterp(NDSP_INTERP_POLYPHASE);
 		ndspChnSetRate(MUSIC_CHANNEL, decoder->Samplerate());
 		ndspChnSetFormat(MUSIC_CHANNEL, decoder->Channels() == 2 ? NDSP_FORMAT_STEREO_PCM16 : NDSP_FORMAT_MONO_PCM16);
 		ndspSetCallback(audioCallback, NULL);
