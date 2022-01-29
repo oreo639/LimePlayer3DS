@@ -93,7 +93,7 @@ endif
 ARCH	:=	-march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft
 
 CFLAGS	:=	-Wall -Wextra -mword-relocations \
-			-fomit-frame-pointer -ffunction-sections \
+			-ffunction-sections \
 			-Wno-unused-parameter \
 			$(ARCH)
 
@@ -104,7 +104,7 @@ else
 	CFLAGS += -Og -g
 endif
 
-CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS \
+CFLAGS	+=	$(INCLUDE) -D__3DS__ \
 		`arm-none-eabi-pkg-config opusfile --cflags` \
 		-DLIMEPLAYER_VERSION=$(VERSION_ALL) \
 		-DNODEBUG=${NODEBUG} \
