@@ -110,9 +110,7 @@ void parse_options(json_t* entries_elem, settings_t* todo_config) {
 			}
 		}
 		iter = json_object_iter_next(entries_elem, iter);
-		free(value);
 	}
-	free(iter);
 }
 
 void parse_station(json_t* entries_elem, std::string* url) {
@@ -129,9 +127,7 @@ void parse_station(json_t* entries_elem, std::string* url) {
 			url->assign(json_string_value(value));
 		}
 		iter = json_object_iter_next(entries_elem, iter);
-		free(value);
 	}
-	free(iter);
 }
 
 int Cfg::ParseSettings(const char* filepath, settings_t* settings) {
@@ -158,8 +154,10 @@ int Cfg::ParseSettings(const char* filepath, settings_t* settings) {
 	}
 	else
 	{
+		json_decref(pJson);
 		return 1;
 	}
+	json_decref(pJson);
 
 	return 0;
 }
@@ -184,6 +182,7 @@ int Cfg::ParseNC(const char* filepath, std::string* url) {
 	}
 	else
 	{
+		json_decref(pJson);
 		return 1;
 	}
 	json_decref(pJson);
