@@ -57,7 +57,7 @@ void VorbisDecoder::UpdateInfo(metaInfo_t* Meta) {
 	const char *old_title = Meta->Title.c_str();
 	const char *new_title = vorbis_comment_query(comment, const_cast<char*>("title"), 0);
 
-	if (!new_title || (old_title && !strcmp(old_title, new_title)))
+	if (!new_title || (old_title && strcmp(old_title, new_title)==0))
         	return;
 
 	ProcessInfo(comment, Meta);

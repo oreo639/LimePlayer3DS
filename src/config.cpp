@@ -45,12 +45,12 @@ void parse_entries(json_t* entries_elem, settings_t* todo_config) {
 			if (json_is_object(json_array_get(entries_elem, i))) {
 				playlist_t tmp_playlist;
 				json_object_foreach(json_array_get(entries_elem, i), key, value) {
-					if(!strcmp(key, PLAYLIST_NAME))
+					if(strcmp(key, PLAYLIST_NAME)==0)
 					{
 						if (json_is_string(value))
 							tmp_playlist.name.assign(json_string_value(value));
 					}
-					else if(!strcmp(key, PLAYLIST_FILE))
+					else if(strcmp(key, PLAYLIST_FILE)==0)
 					{
 						if (json_is_array(value)) {
 							size_t index;
@@ -91,17 +91,17 @@ void parse_options(json_t* entries_elem, settings_t* todo_config) {
 	{
 		key = json_object_iter_key(iter);
 		value = json_object_iter_value(iter);
-		if(!strcmp(key, SETTING_MIDI))
+		if(strcmp(key, SETTING_MIDI)==0)
 		{
 			if(json_is_string(value)) {
 				todo_config->wildMidiConfig.assign(json_string_value(value));
 			}
 		}
-		else if(!strcmp(key, SETTING_THEME))
+		else if(strcmp(key, SETTING_THEME)==0)
 		{
 			todo_config->theme = json_integer_value(value);
 		}
-		else if(!strcmp(key, SETTING_LANGUAGE))
+		else if(strcmp(key, SETTING_LANGUAGE)==0)
 		{
 			if(json_is_string(value)) {
 				todo_config->language = i18n::Code2Int(json_string_value(value));
@@ -124,7 +124,7 @@ void parse_station(json_t* entries_elem, std::string* url) {
 	{
 		key = json_object_iter_key(iter);
 		value = json_object_iter_value(iter);
-		if(!strcmp(key, "url"))
+		if(strcmp(key, "url")==0)
 		{
 			url->assign(json_string_value(value));
 		}
@@ -146,11 +146,11 @@ int Cfg::ParseSettings(const char* filepath, settings_t* settings) {
 
 	if (json_is_object(pJson)) {
 		json_object_foreach(pJson, key, value) {
-			if (!strcmp(key, ENTRIES_STRING))
+			if (strcmp(key, ENTRIES_STRING)==0)
 			{
 				parse_entries(value, settings);
 			}
-			if (!strcmp(key, CONFIG_STRING))
+			if (strcmp(key, CONFIG_STRING)==0)
 			{
 				parse_options(value, settings);
 			}
@@ -176,7 +176,7 @@ int Cfg::ParseNC(const char* filepath, std::string* url) {
 
 	if (json_is_object(pJson)) {
 		json_object_foreach(pJson, key, value) {
-			if (!strcmp(key, RADIO_STRING))
+			if (strcmp(key, RADIO_STRING)==0)
 			{
 				parse_station(value, url);
 			}
