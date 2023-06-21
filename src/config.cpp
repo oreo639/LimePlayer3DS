@@ -186,12 +186,12 @@ int Cfg::ParseNC(const char* filepath, std::string* url) {
 	{
 		return 1;
 	}
+	json_decref(pJson);
 
 	return 0;
 }
 
 int Cfg::WriteJson(const char* outpath, settings_t* settings) {
-	// Probably a memory leak somewhere here. Make sure to look at this later.
 	json_t *root = json_object();
 	json_t *set_obj = json_object();
 	json_t *pls_json_arr = json_array();
@@ -221,8 +221,8 @@ int Cfg::WriteJson(const char* outpath, settings_t* settings) {
 		json_array_append_new(pls_json_arr, pls_obj);
 	}
 	json_object_set_new(root, ENTRIES_STRING, pls_json_arr);
-
 	json_dump_file(root, outpath, JSON_INDENT(8));
+	json_decref(root);
 	return 0;
 }
 
