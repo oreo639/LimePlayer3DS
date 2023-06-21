@@ -59,8 +59,10 @@ int TranslationStrings::ParseJson(int lang, std::string file, textMap& strings) 
 	}
 	else
 	{
+		json_decref(pJson);
 		return 2;
 	}
+	json_decref(pJson);
 
 	return 0;
 }

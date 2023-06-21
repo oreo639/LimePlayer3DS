@@ -161,6 +161,8 @@ PlayerMenu::~PlayerMenu()
 {
 	exitPlayback();
 	m_progressbars.clear();
+	m_buttons.clear();
+	removeOverlays();
 }
 
 void PlayerMenu::drawTop() const

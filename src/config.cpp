@@ -48,7 +48,7 @@ void parse_entries(json_t* entries_elem, settings_t* todo_config) {
 					if(strcmp(key, PLAYLIST_NAME)==0)
 					{
 						if (json_is_string(value))
-							tmp_playlist.name.assign(json_string_value(value));
+							tmp_playlist.name = std::string{json_string_value(value)};
 					}
 					else if(strcmp(key, PLAYLIST_FILE)==0)
 					{
@@ -94,7 +94,7 @@ void parse_options(json_t* entries_elem, settings_t* todo_config) {
 		if(strcmp(key, SETTING_MIDI)==0)
 		{
 			if(json_is_string(value)) {
-				todo_config->wildMidiConfig.assign(json_string_value(value));
+				todo_config->wildMidiConfig = std::string{json_string_value(value)};
 			}
 		}
 		else if(strcmp(key, SETTING_THEME)==0)
@@ -124,7 +124,7 @@ void parse_station(json_t* entries_elem, std::string* url) {
 		value = json_object_iter_value(iter);
 		if(strcmp(key, "url")==0)
 		{
-			url->assign(json_string_value(value));
+			*url = std::string{json_string_value(value)};
 		}
 		iter = json_object_iter_next(entries_elem, iter);
 	}
