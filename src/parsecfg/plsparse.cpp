@@ -11,7 +11,7 @@ int Pls::Parse(const std::string& file, playlist_t* playlist) {
 	int entries = 0;
 	INIReader plsFile(file);
 
-	playlist->filepath.clear();
+	playlist->files.clear();
 
 	if (plsFile.ParseError() != 0) {
 		return 1;
@@ -25,7 +25,7 @@ int Pls::Parse(const std::string& file, playlist_t* playlist) {
 			std::string tmpfp;
 			tmpfp = plsFile.Get("playlist", "File"+std::to_string(i), "");
 			if (tmpfp.size()) {
-				playlist->filepath.push_back(tmpfp);
+				playlist->files.push_back(tmpfp);
 			}
 		}
 		return 0;
