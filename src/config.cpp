@@ -58,16 +58,16 @@ void parse_entries(json_t* entries_elem, settings_t* todo_config) {
 							json_array_foreach(value, index, value_arr) {
 								if (json_is_string(value_arr)) {
 									std::string tmp_filepath(json_string_value(value_arr));
-									tmp_playlist.filepath.push_back(tmp_filepath);
+									tmp_playlist.files.push_back(tmp_filepath);
 								}
 							}
 						} else if (json_is_string(value)) {
 							std::string tmp_filepath(json_string_value(value));
-							tmp_playlist.filepath.push_back(tmp_filepath);
+							tmp_playlist.files.push_back(tmp_filepath);
 						}
 					}
 				}
-				todo_config->playlist.push_back(tmp_playlist);
+				todo_config->playlists.push_back(tmp_playlist);
 			}
 			else
 			{
@@ -202,20 +202,20 @@ int Cfg::WriteJson(const char* outpath, settings_t* settings) {
 	json_object_set_new(set_obj, SETTING_LANGUAGE, json_string(i18n::Int2Code(settings->language).c_str()));
 	json_object_set_new(root, CONFIG_STRING, set_obj);
 
-	for (uint32_t i = 0; settings->playlist.size() > i; i++) {
+	for (uint32_t i = 0; settings->playlists.size() > i; i++) {
 		json_t *pls_obj = json_object();
-		json_object_set_new(pls_obj, PLAYLIST_NAME, json_string(settings->playlist[i].name.c_str()));
+		json_object_set_new(pls_obj, PLAYLIST_NAME, json_string(settings->playlists[i].name.c_str()));
 
-		if (settings->playlist[i].filepath.size() > 1) {
+		if (settings->playlists[i].files.size() > 1) {
 			json_t *pls_obj_arr = json_array();
 
-			for (uint32_t j = 0; settings->playlist[i].filepath.size() > j; j++)
-				json_array_append_new(pls_obj_arr, json_string(settings->playlist[i].filepath[j].c_str()));
+			for (uint32_t j = 0; settings->playlists[i].files.size() > j; j++)
+				json_array_append_new(pls_obj_arr, json_string(settings->playlists[i].files[j].c_str()));
 
 			json_object_set_new(pls_obj, PLAYLIST_FILE, pls_obj_arr);
 
-		} else if (settings->playlist[i].filepath.size() == 1)
-			json_object_set_new(pls_obj, PLAYLIST_FILE, json_string(settings->playlist[i].filepath[0].c_str()));
+		} else if (settings->playlists[i].files.size() == 1)
+			json_object_set_new(pls_obj, PLAYLIST_FILE, json_string(settings->playlists[i].files[0].c_str()));
 
 		json_array_append_new(pls_json_arr, pls_obj);
 	}
@@ -229,5 +229,5 @@ int Cfg::WriteJson(const char* outpath, settings_t* settings) {
 void Cfg::CleanSettings(settings_t* parsed_config)
 {
 	parsed_config->wildMidiConfig.clear();
-	parsed_config->playlist.clear();
+	parsed_config->playlists.clear();
 }

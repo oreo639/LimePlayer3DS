@@ -24,7 +24,7 @@ int M3u::Parse(const std::string& file, playlist_t* playlist) {
 			std::printf("Ignored.\n");
 		else {
 			std::string tmpfp(line);
-			playlist->filepath.push_back(tmpfp);
+			playlist->files.push_back(tmpfp);
 		}
 		
 	}
