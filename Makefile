@@ -253,7 +253,7 @@ endif
 all: 3dsx
 
 #---------------------------------------------------------------------------------
-3dsx: $(BUILD) $(GFXBUILD) $(DEPSDIR) $(ROMFS_T3XFILES) $(T3XHFILES)
+3dsx: $(BUILD) $(OUTDIR) $(GFXBUILD) $(DEPSDIR) $(ROMFS_T3XFILES) $(T3XHFILES)
 ifdef RELEASE
 	@echo "Building Release!"
 endif
@@ -277,6 +277,9 @@ ifneq ($(DEPSDIR),$(BUILD))
 $(DEPSDIR):
 	@mkdir -p $@
 endif
+
+$(OUTDIR):
+	@mkdir -p $@
 
 #---------------------------------------------------------------------------------
 clean:
