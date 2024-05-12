@@ -137,17 +137,6 @@ uint32_t PlayerInterface::GetTotalLength(void) {
 }
 
 /*
- * Returns the estimated total number of seconds in the file.
- * \return	Estimated total seconds.
- */
-uint32_t PlayerInterface::GetTotalTime(void) {
-	if (!stop && decoder)
-		return PlayerInterface::GetTotalLength()/decoder->Samplerate();
-
-	return 0;
-}
-
-/*
  * Returns the current sample.
  * \return	Current sample.
  */
@@ -159,14 +148,31 @@ uint32_t PlayerInterface::GetCurrentPos(void) {
 }
 
 /*
- * Returns the estimated number of seconds elapsed.
- * \return	Current location in file in seconds.
+ * Seeks to the next section in the file,
+ * although it is not meant to be called directly
+ * it is avaliable to be used by other functions.
  */
-uint32_t PlayerInterface::GetCurrentTime(void) {
-	if (!stop && decoder)
-		return PlayerInterface::GetCurrentPos()/decoder->Samplerate();
+void PlayerInterface::NextSection(void) {
+	if (!stop && decoder) {
+		bool oldstate = ndspChnIsPaused(MUSIC_CHANNEL);
+		ndspChnSetPaused(MUSIC_CHANNEL, true); //Pause playback...
+		decoder->Next();
+		ndspChnSetPaused(MUSIC_CHANNEL, oldstate); //once the seeking is done, playback can continue.
+	}
+}
 
-	return 0;
+/*
+ * Seeks to the previous section in the file,
+ * although it is not meant to be called directly
+ * it is avaliable to be used by other functions.
+ */
+void PlayerInterface::PreviousSection(void) {
+	if (!stop && decoder) {
+		bool oldstate = ndspChnIsPaused(MUSIC_CHANNEL);
+		ndspChnSetPaused(MUSIC_CHANNEL, true); //Pause playback...
+		decoder->Previous();
+		ndspChnSetPaused(MUSIC_CHANNEL, oldstate); //once the seeking is done, playback can continue.
+	}
 }
 
 /*
@@ -189,15 +195,6 @@ void PlayerInterface::SeekSection(uint32_t location) {
  */
 void PlayerInterface::SeekSectionPercent(uint32_t percent) {
 	PlayerInterface::SeekSection((PlayerInterface::GetTotalLength() * (percent / 100.0f)));
-}
-
-/*
- * Estimates the elapsed samples for a given time in seconds.
- */
-void PlayerInterface::SeekSectionTime(int time) {
-	if (time < 0)
-		time = 0;
-	PlayerInterface::SeekSection(time * decoder->Samplerate());
 }
 
 /**

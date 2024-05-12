@@ -66,6 +66,16 @@ void XmpDecoder::Seek(uint32_t location)
 	xmp_set_position(ctx, location);
 }
 
+void XmpDecoder::Next(void)
+{
+	Seek(Position() + 1);
+}
+
+void XmpDecoder::Previous(void)
+{
+	Seek(Position() - 1);
+}
+
 /**
  * Decode part of open module file.
  *

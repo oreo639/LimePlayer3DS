@@ -60,6 +60,17 @@ class Decoder {
 
 		virtual void UpdateInfo(metaInfo_t* Meta) {};
 
+		// Allow the decoder to implement custom next/previous behaviour.
+		virtual void Next() {
+			uint32_t time = (Position() / Samplerate());
+			Seek((time + 15) * Samplerate());
+		}
+
+		virtual void Previous() {
+			uint32_t time = (Position() / Samplerate());
+			Seek((time < 15 ? 0 : time - 15) * Samplerate());
+		}
+
 		virtual void GetInfo(metaInfo_t* Meta) = 0;
 		
 		virtual uint32_t Position(void) = 0;
@@ -99,17 +110,15 @@ namespace PlayerInterface {
 
 	uint32_t GetTotalLength(void);
 
-	uint32_t GetTotalTime(void);
-
 	uint32_t GetCurrentPos(void);
 
-	uint32_t GetCurrentTime(void);
+	void NextSection(void);
+
+	void PreviousSection(void);
 
 	void SeekSection(uint32_t location);
 
 	void SeekSectionPercent(uint32_t percent);
-
-	void SeekSectionTime(int time);
 
 	std::string GetDecoderName(void);
 }

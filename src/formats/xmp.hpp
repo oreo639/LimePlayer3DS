@@ -23,6 +23,10 @@ class XmpDecoder : public Decoder {
 
 		void Seek(uint32_t location) override;
 
+		void Next(void) override;
+
+		void Previous(void) override;
+
 		uint32_t Decode(void* buffer) override;
 
 		uint32_t Samplerate(void) override;
