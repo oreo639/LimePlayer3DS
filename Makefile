@@ -116,7 +116,7 @@ CXXFLAGS	:= $(CFLAGS) -fno-rtti -std=gnu++17 -fno-exceptions
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS	:= -lcitro2d -lcitro3d -lmpg123 -lopusfile -lopus -lvorbisidec -logg -lFLAC -lWildMidi -ljansson -lctrud -lm
+LIBS	:= -lcitro2d -lcitro3d -lmpg123 -lopusfile -lopus -lvorbisidec -logg -lFLAC -lWildMidi -lxmp -ljansson -lctrud -lm
 # `curl-config --libs`
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing

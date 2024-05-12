@@ -52,10 +52,7 @@ class Decoder {
 		const char* GetErrInfo(void) {return mErrInfo;}
 
 		std::string GetDecoderName(void) {
-			if (decoderName)
-				return decoderName;
-			else
-				return "";
+			return decoderName;
 		}
 
 		// Allow the decoder to specify if the medadata needs to be updated.
@@ -84,8 +81,7 @@ class Decoder {
 
 		const char* mErrInfo;
 
-	private:
-		const char* decoderName = "Unknown";
+		std::string decoderName = "Unknown";
 };
 
 namespace PlayerInterface {

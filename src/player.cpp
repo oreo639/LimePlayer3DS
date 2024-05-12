@@ -34,6 +34,7 @@
 #include "formats/opus.hpp"
 #include "formats/vorbis.hpp"
 #include "formats/wav.hpp"
+#include "formats/xmp.hpp"
 #include "formats/netfmt.hpp"
 
 #include "transport.hpp"
@@ -360,6 +361,12 @@ std::unique_ptr<Decoder> Player::GetFormat(const playbackInfo_t* playbackInfo, i
 		auto mididec = std::make_unique<MidiDecoder>(playbackInfo->filepath.c_str(), playbackInfo->settings.wildMidiConfig.c_str());
 		if (mididec->GetIsInit())
 			return mididec;
+	}
+	else if (filetype == FILE_MOD) {
+		DEBUG("Attempting to load the Xmp decoder.\n");
+		auto xmpdec = std::make_unique<XmpDecoder>(playbackInfo->filepath.c_str());
+		if (xmpdec->GetIsInit())
+			return xmpdec;
 	}
 	else if (filetype == FMT_NETWORK) {
 		DEBUG("Attempting to load the Network decoder.\n");

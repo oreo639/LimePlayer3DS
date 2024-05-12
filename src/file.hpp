@@ -12,6 +12,7 @@ typedef enum
 	FILE_OPUS,        ///< Ogg Opus
 	FILE_MP3,         ///< Mp3
 	FILE_MIDI,        ///< Midi and midilike
+	FILE_MOD,         ///< MOD and modlike
 	FMT_NETWORK,      ///< Network http stream
 } FILE_audioformat;
 

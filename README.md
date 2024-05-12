@@ -16,13 +16,13 @@ https://github.com/Oreo639/LimePlayer3DS/wiki/config.json
 LimePlayer3DS is currently in alpha so not all features are going to be avalible.
 
 ## Officaly Supported Formats
-Mp3, Wav, Flac, Midi, Xmi, Mus, Hmi, Hmp, Ogg vorbis, and Opus.
+Mp3, Wav, Flac, Midi, Xmi, Mus, Hmi, Hmp, Mod, Xm, S3m, It, Ogg vorbis, and Opus.
 
 ## Building
 ### Prerequsites:
 [dkp-pacman](https://devkitpro.org/wiki/devkitPro_pacman)
 
-3ds-dev 3ds-mpg123 3ds-libvorbisidec 3ds-opusfile 3ds-flac 3ds-wildmidi 3ds-jansson 3ds-pkg-config
+3ds-dev 3ds-mpg123 3ds-libvorbisidec 3ds-opusfile 3ds-flac 3ds-wildmidi 3ds-xmp 3ds-jansson 3ds-pkg-config
 
 You may also need [makerom](https://github.com/profi200/Project_CTR) and [bannertool](https://github.com/Steveice10/bannertool/) for cia building (optional).
 
