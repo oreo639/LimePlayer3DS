@@ -13,7 +13,7 @@ https://github.com/Oreo639/LimePlayer3DS/wiki/config.json
 [For more information on usage of the various features LimePlayer offers, check here.](https://github.com/Oreo639/LimePlayer3DS/wiki)
 
 ## Note
-LimePlayer3DS is currently in alpha so not all features are going to be avalible.
+LimePlayer3DS is currently in alpha so not all features are going to be available.
 
 ## Officaly Supported Formats
 Mp3, Wav, Flac, Midi, Xmi, Mus, Hmi, Hmp, Ogg vorbis, and Opus.
