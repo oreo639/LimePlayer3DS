@@ -195,7 +195,7 @@ void PlayerMenu::drawBottom() const
 
 		Gui::Print("Position = " + std::to_string(PlayerInterface::GetTotalLength()) + "/" + std::to_string(PlayerInterface::GetCurrentPos()), 10.0f, 20.0f, 0.5f, 0.5f);
 		if (!PlayerInterface::GetTotalLength())
-			Gui::Print("Warn: Seeking not avalible for this file.", 10.0f, 40.0f, 0.5f, 0.5f);
+			Gui::Print("Warn: Seeking not available for this file.", 10.0f, 40.0f, 0.5f, 0.5f);
 
 		Gui::DrawSolidRectangle(topbut[1].x, topbut[1].y, topbut[1].w, topbut[1].h, C2D_Color32(119, 131, 147, 255)); // For top buttons
 		Gui::PrintColor("Browser", 10, 0, 0.5f, 0.5f, 0xFFFFFFFF);
