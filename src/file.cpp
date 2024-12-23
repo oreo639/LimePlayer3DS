@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <xmp.h>
 
 #include "file.hpp"
 #include "formats/vorbis.hpp"
@@ -84,6 +85,10 @@ int File::GetFileType(const std::string& filename) {
 	/*eXtended Midi Interface (XMI)*/
 	else if (!strncmp(magic, "FORM", 4) && !strncmp(magic+8, "XDIRINFO", 8))
 		return FILE_MIDI;
+
+	/* MOD, XM, S3M, IT, etc. */
+	else if (xmp_test_module(filename.c_str(), NULL) == 0)
+		return FILE_MOD;
 
 	return -1; //Negetive means that the file is not officaly supported.
 }

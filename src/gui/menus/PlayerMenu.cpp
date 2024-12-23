@@ -227,12 +227,12 @@ void PlayerMenu::update(touchPosition* touch)
 
 		if (kDown & KEY_RIGHT) {
 			if(PlayerInterface::IsPlaying())
-				PlayerInterface::SeekSectionTime(PlayerInterface::GetCurrentTime()+15);
+				PlayerInterface::NextSection();
 		}
 
 		if (kDown & KEY_LEFT) {
 			if(PlayerInterface::IsPlaying())
-				PlayerInterface::SeekSectionTime(PlayerInterface::GetCurrentTime()-15);
+				PlayerInterface::PreviousSection();
 		}
 
 		if(kDown & KEY_A) {
@@ -265,7 +265,7 @@ void PlayerMenu::update(touchPosition* touch)
 		if (kDown & KEY_TOUCH) {
 			if (PlayerInterface::IsPlaying()) {
 				if (m_buttons[CON_REWIND].Update(touch->px, touch->py))
-					PlayerInterface::SeekSectionTime(PlayerInterface::GetCurrentTime()-15);
+					PlayerInterface::PreviousSection();
 				else if (m_buttons[CON_STOP].Update(touch->px, touch->py))
 					exitPlayback();
 				else if (m_buttons[CON_PLAYPAUSE].Update(touch->px, touch->py))
@@ -273,7 +273,7 @@ void PlayerMenu::update(touchPosition* touch)
 				else if (m_buttons[CON_SKIP].Update(touch->px, touch->py))
 					PlayerInterface::SkipPlayback();
 				else if (m_buttons[CON_FASTFOWARD].Update(touch->px, touch->py))
-					PlayerInterface::SeekSectionTime(PlayerInterface::GetCurrentTime()+15);
+					PlayerInterface::NextSection();
 			}
 
 			int seekto = m_progressbars[0].SeekByClick(touch->px, touch->py);
