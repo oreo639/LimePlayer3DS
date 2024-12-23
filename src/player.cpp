@@ -64,15 +64,12 @@ void PlayerInterface::ThreadMainFunct(void *input) {
 	playbackInfo_t* info = static_cast<playbackInfo_t*>(input);
 	stop = false;
 
-	if (info->usePlaylist == 1) {
-		for (uint32_t i = 0; i < info->playlistfile.filepath.size() && !stop; i++) {
-			info->filepath = info->playlistfile.filepath[i];
-			Player::Play(info);
-		}
-	} else {
+	uint32_t idx = info->playindex;
+	for (uint32_t i = idx; i < info->playlist.files.size() && !stop; i++) {
+		info->playindex = i;
 		Player::Play(info);
 	}
-	info->usePlaylist = 0;
+	
 	stop = true;
 	threadExit(0);
 	return;
@@ -225,20 +222,22 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 	skip = false;
 	LightEvent_Init(&soundEvent, RESET_ONESHOT);
 
-	int filetype = File::GetFileType(playbackInfo->filepath);
+	std::string playing = playbackInfo->playlist.files[playbackInfo->playindex];
+	int filetype = File::GetFileType(playing);
 
 	if (filetype < 0) {
 		Error::Add(FILE_NOT_SUPPORTED);
 		return;
-	} else if (filetype != FMT_NETWORK)
-		playbackInfo->filename = playbackInfo->filepath.substr(playbackInfo->filepath.find_last_of('/') + 1);
+	}
+	else if (filetype != FMT_NETWORK)
+		playbackInfo->filename = playing.substr(playing.find_last_of('/') + 1);
 	else if (filetype == FMT_NETWORK)
-		playbackInfo->filename = playbackInfo->filepath;
+		playbackInfo->filename = playing;
 
 	transport = GetTransport(filetype);
 
 	if (transport != nullptr)
-		if (!transport->f_open(playbackInfo->filepath.c_str(), "rb"))
+		if (!transport->f_open(playing.c_str(), "rb"))
 			decoder = GetFormat(playbackInfo, filetype, transport.get());
 		else {
 			if (transport->GetError().empty())
@@ -248,8 +247,8 @@ void Player::Play(playbackInfo_t* playbackInfo) {
 			DEBUG("Failed to open transport.\n");
 		}
 	else {
-		Error::Add(DECODER_INIT_FAIL, "Failed initalize transport.");
-		DEBUG("Failed to initalize transport.\n");
+		Error::Add(DECODER_INIT_FAIL, "Failed initialize transport.");
+		DEBUG("Failed to initialize transport.\n");
 	}
 
 	if (decoder != nullptr) {
@@ -325,15 +324,17 @@ void Player::ClearMetadata(metaInfo_t* fileMeta) {
 std::unique_ptr<Decoder> Player::GetFormat(const playbackInfo_t* playbackInfo, int filetype, FileTransport* transport) {
 	std::string errInfo;
 
+	const char *playing = playbackInfo->playlist.files[playbackInfo->playindex].c_str();
+
 	if (filetype == FILE_WAV) {
 		DEBUG("Attempting to load the Wav decoder.\n");
-		auto wavdec = std::make_unique<WavDecoder>(playbackInfo->filepath.c_str());
+		auto wavdec = std::make_unique<WavDecoder>(playing);
 		if (wavdec->GetIsInit())
 			return wavdec;
 	}
 	else if (filetype == FILE_FLAC) {
 		DEBUG("Attempting to load the Flac decoder.\n");
-		auto flacdec = std::make_unique<FlacDecoder>(playbackInfo->filepath.c_str());
+		auto flacdec = std::make_unique<FlacDecoder>(playing);
 		if (flacdec->GetIsInit())
 			return flacdec;
 	}
@@ -345,7 +346,7 @@ std::unique_ptr<Decoder> Player::GetFormat(const playbackInfo_t* playbackInfo, i
 	}
 	else if (filetype == FILE_VORBIS) {
 		DEBUG("Attempting to load the Vorbis decoder.\n");
-		auto vorbisdec = std::make_unique<VorbisDecoder>(playbackInfo->filepath.c_str());
+		auto vorbisdec = std::make_unique<VorbisDecoder>(playing);
 		if (vorbisdec->GetIsInit())
 			return vorbisdec;
 	}
@@ -357,13 +358,13 @@ std::unique_ptr<Decoder> Player::GetFormat(const playbackInfo_t* playbackInfo, i
 	}	
 	else if (filetype == FILE_MIDI) {
 		DEBUG("Attempting to load the Midi decoder.\n");
-		auto mididec = std::make_unique<MidiDecoder>(playbackInfo->filepath.c_str(), playbackInfo->settings.wildMidiConfig.c_str());
+		auto mididec = std::make_unique<MidiDecoder>(playing, playbackInfo->settings.wildMidiConfig.c_str());
 		if (mididec->GetIsInit())
 			return mididec;
 	}
 	else if (filetype == FMT_NETWORK) {
 		DEBUG("Attempting to load the Network decoder.\n");
-		auto netdec = Netfmt::GetFormat(playbackInfo->filepath.c_str(), transport);
+		auto netdec = Netfmt::GetFormat(playing, transport);
 
 		if (netdec) {
 			if (netdec->GetIsInit())

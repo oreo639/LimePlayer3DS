@@ -23,13 +23,11 @@ typedef struct
 
 typedef struct
 {
-	std::string	filepath;
 	std::string	filename;
 	metaInfo_t	fileMeta;
 	settings_t	settings;
-	playlist_t	playlistfile;
-	int		usePlaylist; // 0 do not use playlist, 1 use playlistfile, 2 use playlist from settings
-	uint32_t	selectPlaylistOffset;
+	playlist_t	playlist;
+	size_t		playindex;
 } playbackInfo_t;
 
 enum Format {

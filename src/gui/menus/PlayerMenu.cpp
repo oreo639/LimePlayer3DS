@@ -1,3 +1,5 @@
+#include <set>
+#include <algorithm>
 #include "PlayerMenu.hpp"
 #include "gui.hpp"
 #include "app.hpp"
@@ -45,6 +47,17 @@ struct {
 std::vector<ProgressBar> m_progressbars;
 std::vector<Button> m_buttons;
 
+static const std::set<std::string> SUPPORTED_EXTS = {
+	"mp3","wav","flac","ogg","opus",
+	"midi","xmi","mus","hmi","hmp","hmq"
+};
+
+static bool is_extension_supported(std::string ext) {
+	std::string lower_ext = ext;
+	std::transform(lower_ext.begin(),lower_ext.end(),lower_ext.begin(),[](unsigned char c){ return std::tolower(c); });
+	return SUPPORTED_EXTS.find(lower_ext) != SUPPORTED_EXTS.end();
+}
+
 static void exitPlayback(void)
 {
 	PlayerInterface::ExitPlayback();
@@ -54,10 +67,12 @@ static void exitPlayback(void)
 	thread = NULL;
 }
 
-static int changeFile(const std::string &filepath, playbackInfo_t* playbackInfo)
+int PlayerMenu::changeFile(const std::string &filepath, playbackInfo_t* playbackInfo)
 {
 	s32 prio;
 
+	std::string extension = filepath.substr(filepath.find_last_of('.') + 1);
+	
 	/**
 	* If music is playing, stop it. Only one playback thread should be playing
 	* at any time.
@@ -67,25 +82,43 @@ static int changeFile(const std::string &filepath, playbackInfo_t* playbackInfo)
 
 	if(!playbackInfo)
 		return 0;
+	
+	playbackInfo->playlist.files.clear();
+	playbackInfo->playlist.files.shrink_to_fit();
 
-	playbackInfo->usePlaylist = 0;
-
-	std::string extension = filepath.substr(filepath.find_last_of('.') + 1);
 	if (!strncmp(extension.c_str(), "json", 4)) {
 		std::string url;
 		Cfg::ParseNC(filepath.c_str(), &url);
-		playbackInfo->filepath = url;
+		playbackInfo->playlist.files.push_back(url);
 	} else if (!strncmp(extension.c_str(), "pls", 3)) {
 		// Note to future me.
 		// Add pls support to netfmt.
-		Pls::Parse(filepath, &playbackInfo->playlistfile);
-		playbackInfo->usePlaylist = 1;
+		Pls::Parse(filepath, &playbackInfo->playlist);
 	} else if (!strncmp(extension.c_str(), "m3u", 3)) {
-		M3u::Parse(filepath, &playbackInfo->playlistfile);
-		playbackInfo->usePlaylist = 1;
-	} else
-		playbackInfo->filepath = filepath;
+		M3u::Parse(filepath, &playbackInfo->playlist);
+	} else {
+		int idx = 0;
+		for (int i=0; i < expInst->Size(); i++) { 
+			// rule out unsupporteds
+			auto e = expInst->GetEntry(i);
+			std::string ext = e.filename.substr(e.filename.find_last_of(".") + 1);
+			if (e.directory || e.filename == ".." || !is_extension_supported(ext)) {
+				DEBUG("%s wasn't recognised as supported, continuing\n", e.filename);
+				continue;
+			}
 
+			std::string name = expInst->GetAbsolutePath(i);
+			if (name == filepath) { playbackInfo->playindex = idx; }
+
+			DEBUG("%s",name);
+			playbackInfo->playlist.files.push_back(name);
+			idx++;
+		}
+		if (idx+1 == expInst->Size()) {
+			DEBUG("%s wasn't recognised as supported, aborting\n", e.filename);
+			return 0;
+		}
+	}
 	svcGetThreadPriority(&prio, CUR_THREAD_HANDLE);
 	thread = threadCreate(PlayerInterface::ThreadMainFunct, (void *)playbackInfo, 32 * 1024, prio - 1, -2, false);
 
@@ -97,6 +130,7 @@ void PrintDir(const char* text, int startpoint)
 	Gui::PrintColor(text, 8.0f, startpoint, 0.4f, 0.4f, 0xFF000000);
 }
 
+/// Draws file browser
 void PlayerMenu::fblist(int rows, int startpoint, float size) const
 {
 	for (int i = 0; rows-seloffs > i && i <= MAX_LIST; i++) {
